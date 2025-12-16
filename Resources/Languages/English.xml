@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- Program Data -->
+	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Machine List</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Selected Machine: </LanguageEntry>
+	<LanguageEntry id="ID_01_0004">-- Select to Scan --</LanguageEntry>
+	<LanguageEntry id="ID_01_0005">Program Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0006">Language Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0007">About</LanguageEntry>
+	<LanguageEntry id="ID_01_0008"></LanguageEntry>
+	<LanguageEntry id="ID_01_0009"></LanguageEntry>
+	<LanguageEntry id="ID_01_0010"></LanguageEntry>
+	<LanguageEntry id="ID_01_0011"></LanguageEntry>
+	<LanguageEntry id="ID_01_0012"></LanguageEntry>
+	<LanguageEntry id="ID_01_0013"></LanguageEntry>
+	<LanguageEntry id="ID_01_0014"></LanguageEntry>
+	<LanguageEntry id="ID_01_0015"></LanguageEntry>
+	<LanguageEntry id="ID_01_0016"></LanguageEntry>
+	<LanguageEntry id="ID_01_0017"></LanguageEntry>
+	<LanguageEntry id="ID_01_0018"></LanguageEntry>
+	<LanguageEntry id="ID_01_0019"></LanguageEntry>
+	<LanguageEntry id="ID_01_0020"></LanguageEntry>
+	<LanguageEntry id="ID_01_0021"></LanguageEntry>
+</Language>

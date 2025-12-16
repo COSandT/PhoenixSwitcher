@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="PhoenixSwitcher.ControlTemplates.MachineInfoWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PhoenixSwitcher.ControlTemplates"
+             xmlns:viewmodels="clr-namespace:PhoenixSwitcher.ViewModels"
+             xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             mc:Ignorable="d" >
+
+    <Border
+        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer2BorderBrush}}"
+        BorderThickness="2">
+        <Grid>
+            <Button>
+                
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>
