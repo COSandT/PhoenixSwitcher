@@ -11,77 +11,80 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </UserControl.Resources>
-    <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Border
+        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer2BorderBrush}}"
+        BorderThickness="2">
+        <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!--Machine List Header-->
-        <Grid 
-            Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <ToggleButton
-                Grid.Column="0"
-                Width="25"
-                Height="25"
-                Margin="5"
-                VerticalAlignment="Center"
-                IsChecked="{Binding MachineListExpander, Mode=TwoWay}">
-                <ToggleButton.Style>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="Content" Value="▷"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Content" Value="◁"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Style>
-            </ToggleButton>
-            <Border
-                Grid.Column="1"
+            <!--Machine List Header-->
+            <Grid 
+                Grid.Row="0"
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ToggleButton
+                    Grid.Column="0"
+                    Width="25"
+                    Height="25"
+                    Margin="5"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding MachineListExpander, Mode=TwoWay}">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
+                            <Setter Property="Content" Value="▷"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content" Value="◁"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
                 <Viewbox
-                    Margin="0,5,10,5"
+                    Grid.Column="1"
+                    Margin="5,5,10,5"
                     Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
                     <TextBlock Text="{Binding MachineListHeaderText}" />
                 </Viewbox>
-            </Border>
-        </Grid>
-        <!-- Scan Machine Box -->
-        <Grid Grid.Row="1"
+            </Grid>
+            <!-- Scan Machine Box -->
+            <Grid Grid.Row="1"
                 Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
-            <TextBox
-                x:Name="ScannedMachineText"
-                KeyUp="ScannedMachineText_KeyUp">
-            </TextBox>
-            <TextBlock
-                Text="{Binding SelectToScanText}"
-                Foreground="Gray"
-                FontStyle="Oblique"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                IsHitTestVisible="False"
-                Visibility="{Binding ElementName=ScannedMachineText, Path=IsFocused, Converter={StaticResource BoolToVisibility}, ConverterParameter=0}">
-            </TextBlock>
-        </Grid>
-        <!--Machine List-->
-        <Grid 
-            Grid.Row="2" 
-            Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
-            <ScrollViewer 
+                <TextBox
+                    x:Name="ScannedMachineText"
+                    KeyUp="ScannedMachineText_KeyUp">
+                </TextBox>
+                <TextBlock
+                    Text="{Binding SelectToScanText}"
+                    Foreground="Gray"
+                    FontStyle="Oblique"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False"
+                    Visibility="{Binding ElementName=ScannedMachineText, Path=IsFocused, Converter={StaticResource BoolToVisibility}, ConverterParameter=0}">
+                </TextBlock>
+            </Grid>
+            <!--Machine List-->
+            <Grid 
+                Grid.Row="2" 
+                Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                <ScrollViewer 
                     Margin="0,1.5,1.5,0" 
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch" 
                     HorizontalScrollBarVisibility="Auto" 
                     VerticalScrollBarVisibility="Auto" >
-                <StackPanel x:Name="VehicleList" />
-            </ScrollViewer>
+                    <StackPanel x:Name="List" />
+                </ScrollViewer>
+            </Grid>
         </Grid>
-    </Grid>
+    </Border>
+    
 </UserControl>

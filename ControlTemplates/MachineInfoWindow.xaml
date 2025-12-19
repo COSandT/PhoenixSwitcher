@@ -14,9 +14,40 @@
         BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer2BorderBrush}}"
         BorderThickness="2">
         <Grid>
-            <Button>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Bundle Info Display-->
+            <Grid
+                Grid.Row="0">
                 
-            </Button>
+            </Grid>
+            <!-- Buttons -->
+            <Grid
+                Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <!-- Start Process Button-->
+                <Button
+                    Grid.Column="0"
+                    Height="50"
+                    Visibility="{Binding StartButtonVisibility}"
+                    Content="{Binding StartButtonText}"
+                    Click="StartProcess_Click">
+                </Button>
+                <!-- Finish Process Button-->
+                <Button
+                    Grid.Column="1"
+                    Height="50"
+                    Visibility="{Binding FinishButtonVisibility}"
+                    Content="{Binding FinishButtonText}"
+                    Click="FinishProcess_Click">
+                </Button>
+            </Grid>
         </Grid>
     </Border>
 </UserControl>

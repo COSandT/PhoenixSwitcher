@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
+using PropertyChanged;
 
 namespace PhoenixSwitcher.ViewModels
 {
-    internal class MachineInfoWindowViewModel
+    [AddINotifyPropertyChangedInterface]
+    public class MachineInfoWindowViewModel
     {
+        public Visibility StartButtonVisibility { get; set; } = Visibility.Hidden;
+        public Visibility FinishButtonVisibility { get; set; } = Visibility.Hidden;
+
+        public string StartButtonText { get; set; } = "";
+        public string FinishButtonText { get; set; } = "";
     }
 }

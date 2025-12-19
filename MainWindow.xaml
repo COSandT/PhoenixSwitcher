@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhoenixSwitcher"
         xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
-        xmlns:viewlibrary="clr-namespace:CosntCommonViewLibrary.XmlEditor;assembly=CosntCommonViewLibrary"
         xmlns:controltemplates="clr-namespace:PhoenixSwitcher.ControlTemplates"
         mc:Ignorable="d"
         Title="{Binding WindowName}" Height="450" Width="800">
@@ -29,15 +28,42 @@
                     Header="{Binding SettingsText}" 
                     Click="ChangeSettings_Click" />
                 <MenuItem 
-                    Header="{Binding LanguageSettingsText}" 
-                    Click="ChangeSettings_Click" />
+                    x:Name="LanguageSettings"
+                    Header="{Binding LanguageSettingsText}" />
                 <MenuItem 
                     Header="{Binding AboutText}" 
-                    Click="ChangeSettings_Click" />
+                    Click="About_Click" />
             </Menu>
         </Border>
-        <viewlibrary:XmlEditor  Grid.Row="1"
-                                XmlFile="{Binding FileEditorName}"
-                                Background="HotPink"/>
+        <Grid 
+            Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <controltemplates:MachineList
+                x:Name="MachineListControl"
+                Grid.Column="0">
+
+            </controltemplates:MachineList>
+            <Grid
+                Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <controltemplates:MachineInfoWindow
+                    Grid.Row="0"
+                    x:Name="MachineInfoWindowControl">
+                    
+                </controltemplates:MachineInfoWindow>
+                <controltemplates:StatusInstructionBar
+                    Grid.Row="1"
+                    x:Name="StatusInstructionBarControl">
+                    
+                </controltemplates:StatusInstructionBar>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

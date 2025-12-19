@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using AdonisUI.Controls;
 using CosntCommonLibrary.Helpers;
+using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
 namespace PhoenixSwitcher
@@ -18,7 +16,51 @@ namespace PhoenixSwitcher
                 projectSettings.CreateBlank();
                 projectSettings.Save();
             }
-            return projectSettings.Settings;
+            // Normally Settings should always be filled in at this point. 
+            return projectSettings.Settings != null ? projectSettings.Settings : new XmlProjectSettings();
+        }
+        public static string TryGetLocalizedText(string localizedTextID, string fallBackText)
+        {
+            LocalizationManager localizationManager = LocalizationManager.GetInstance();
+            if (localizationManager == null) return fallBackText;
+            return localizationManager.GetEntryForActiveLanguage(localizedTextID, fallBackText);
+        }
+
+        public static string RemoveExtraZeroFromVersionName(string versionName)
+        {
+            string result = "";
+            List<string> splitVersions = versionName.Split(".").ToList();
+            foreach (string splitVersion in splitVersions)
+            {
+                string temp = splitVersion;
+                if (splitVersion.Length > 1)
+                {
+                    for (int i = 0; i < temp.Length - 1; ++i)
+                    {
+                        if (temp[i] != '0') break;
+                        temp = temp.Remove(i, 1);
+                        --i;
+                    }
+                }
+                result = $"{result}{temp}.";
+            }
+            return result.Substring(0, result.Length - 1);
+        }
+
+        public static MessageBoxResult ShowLocalizedYesNoMessageBox(string text)
+        {
+            MessageBoxModel model = new MessageBoxModel();
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("TODO: LOCA", "yes"), MessageBoxResult.Yes));
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("TODO: LOCA", "no"), MessageBoxResult.No));
+            model.Text = text;
+            return MessageBox.Show(model);
+        }
+        public static MessageBoxResult ShowLocalizedOkMessageBox(string localizedTextId, string fallbackText)
+        {
+            MessageBoxModel model = new MessageBoxModel();
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("TODO: LOCA", "ok"), MessageBoxResult.OK));
+            model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
+            return MessageBox.Show(model);
         }
     }
 }

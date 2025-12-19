@@ -2,7 +2,9 @@
 using System.IO;
 using System.Net.Http;
 using System.Security.Policy;
+using CosntCommonLibrary.Json;
 using CosntCommonLibrary.Rest;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using RestSharp;
 
@@ -14,7 +16,7 @@ namespace PhoenixSwitcher
         private static readonly object _lock = new object();
 
         private RestClient _restClient = new RestClient();
-        private string _baseServerURL;
+        private string _baseServerURL = "";
         public static PhoenixRest GetInstance()
         {
             if (_instance == null)
@@ -50,26 +52,40 @@ namespace PhoenixSwitcher
             }
         }
 
-        public async Task<List<FileDetail>> GetBundleFiles()
+        public async Task<List<AppSettingPcm>?> GetPcmAppSettings()
         {
             try
             {
-                return await _restClient.GetAsync<List<FileDetail>>(_baseServerURL + "/pcmbundlefiles");
+                return await _restClient.GetAsync<List<AppSettingPcm>>(_baseServerURL + "PcmSettings");
+            }
+            catch
+            {
+                return new List<AppSettingPcm>();
+            }
+        }
+
+        public async Task<List<FileDetail>?> GetBundleFiles()
+        {
+            try
+            {
+                return await _restClient.GetAsync<List<FileDetail>>(_baseServerURL + "pcmbundlefiles");
             }
             catch
             {
                 return new List<FileDetail>();
             }
         }
-        public async Task<string> GetDownloadBundleFile(FileDetail detail, string drive)
+
+        // Download methods
+        public async Task<string> DownloadBundleFiles(FileDetail detail, string drive)
         {
             try
             {
                 string filePath = drive + detail.FileName;
                 if (File.Exists(filePath)) File.Delete(filePath);
 
-                RestRequest request = new RestRequest($"{_baseServerURL}/pcmbundlefiles/{detail.Id}");
-                byte[] bytes = await _restClient.DownloadDataAsync(request);
+                RestRequest request = new RestRequest($"{_baseServerURL}pcmbundlefiles/{detail.Id}");
+                byte[]? bytes = await _restClient.DownloadDataAsync(request);
                 if (bytes != null && bytes.Length == detail.FileSize)
                 {
                     using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
@@ -85,7 +101,7 @@ namespace PhoenixSwitcher
                 return "";
             }
         }
-        public async Task<bool> GetDownloadBundleFileWithCallback(FileDetail detail, string drive)
+        public async Task<bool> DownloadBundleFilesWithCallback(FileDetail detail, string drive)
         {
             try
             {

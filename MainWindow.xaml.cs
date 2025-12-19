@@ -1,136 +1,108 @@
-﻿using System.IO;
+﻿using System;
 using System.Windows;
-using CosntCommonLibrary.Esp32;
-using CosntCommonLibrary.merge.Tools;
-using CosntCommonLibrary.Rest;
+using System.Windows.Controls;
+using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools.Usb;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using Microsoft.IdentityModel.Tokens;
+using PhoenixSwitcher.ControlTemplates;
 using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.Windows;
 
 namespace PhoenixSwitcher
 {
+    public struct Version
+    {
+        public static string VersionNum = "0.1";
+    }
     public partial class MainWindow : Window
     {
         private MainWindowViewModel _viewModel = new MainWindowViewModel();
+        private PhoenixSwitcherLogic _phoenixSwitcher;
         private Logger _logger;
 
         public MainWindow()
         {
+
             InitializeComponent();
             this.DataContext = _viewModel;
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);
+            _logger.LogInfo("MainWindow::Constructor -> Start initializing.");
 
+            _phoenixSwitcher = new PhoenixSwitcherLogic(_logger);
+            InitPhoenixSwitcherLogic();
+            InitLanguageSettings();
 
-            // Setup localization for window.
-            LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
-            // Call once to setup initial language.
-            OnLanguageChanged();
+            StatusInstructionBarControl.Init(_logger);
+            MachineInfoWindowControl.Init(_logger);
+            MachineListControl.Init(_logger);
 
-
-
-
-
-            PhoenixRest phoenixRest = PhoenixRest.GetInstance();
-            Esp32Controller esp32Controller = new Esp32Controller();
-            while (!esp32Controller.IsConnected) { Thread.Yield(); }
-
-            // Connect to drive and get list of all files that need to be on drive.
-            string drive = "F:\\";
-            Task connectToDrive = ConnectToDrive(esp32Controller, drive);
-            Task<List<FileDetail>> bundleFiles = phoenixRest.GetBundleFiles();
-
-            //Wait until both are done.
-            connectToDrive.Wait();
-            bundleFiles.Wait();
-
-            // Download new bundles
-            List<string> directories = Directory.GetDirectories(drive).ToList();
-            foreach (string directory in directories)
-            {
-                bool bFoundBundleDir = false;
-                foreach (FileDetail fileDetail in bundleFiles.Result)
-                {
-                    if (Path.GetFileNameWithoutExtension(fileDetail.FileName).Contains(directory))
-                    {
-                        bFoundBundleDir = true;
-                        break;
-                    }
-                }
-                if (!bFoundBundleDir)
-                {
-                    Directory.Delete($"F:\\{directory}", true);
-                    directories.Remove(directory);
-                }
-            }
-
-            // Removing old/unused bundles
-            foreach (FileDetail fileDetail in bundleFiles.Result)
-            {
-                bool bFoundBundleDir = false;
-                foreach (string directory in directories)
-                {
-                    if (Path.GetFileNameWithoutExtension(fileDetail.FileName).Contains(directory))
-                    {
-                        bFoundBundleDir = true;
-                        break;
-                    }
-                }
-                if (!bFoundBundleDir)
-                {
-                    // TODO: download file, unzip it and delete the zip. 
-                    Task<bool> t = phoenixRest.GetDownloadBundleFileWithCallback(fileDetail, drive);
-                    t.Wait();
-                }
-            }
+            _logger.LogInfo("MainWindow::Constructor -> Finished initializing.");
         }
 
-        private void OnLanguageChanged()
+        // Init
+        private void InitLanguageSettings()
         {
-            try
+            foreach (string language in LocalizationManager.GetInstance().AvailableLanguages)
             {
-                MainWindowViewModel viewModel = (MainWindowViewModel)this.DataContext;
-                if (viewModel == null) throw new Exception("Incorrect ViewModel");
-
-                LocalizationManager localizationManager = LocalizationManager.GetInstance();
-                if (localizationManager == null) throw new Exception("Cannot get LocalizationManager");
-
-                viewModel.WindowName = localizationManager.GetEntryForActiveLanguage("ID_01_0001", "Phoe Swi");
-                viewModel.SettingsText = localizationManager.GetEntryForActiveLanguage("ID_01_0005", "Set");
-                viewModel.LanguageSettingsText = localizationManager.GetEntryForActiveLanguage("ID_01_0006", "Lan Set");
-                viewModel.AboutText = localizationManager.GetEntryForActiveLanguage("ID_01_0007", "Ab");
+                MenuItem item = new MenuItem();
+                item.Header = language;
+                item.Click += ChangeLanguage_Click;
+                item.IsCheckable = true;
+                LanguageSettings.Items.Add(item);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
+            OnLanguageChanged();
+        }
+        private async void InitPhoenixSwitcherLogic()
+        {
+            await _phoenixSwitcher.Init();
+            await _phoenixSwitcher.UpdateBundleFiles();
         }
 
-
+        // Click Events
         private void ChangeSettings_Click(object sender, RoutedEventArgs e)
         {
+            _logger?.LogInfo("MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
+            SettingsWindow settingsWindow = new SettingsWindow();
 
+            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}//Settings//");
+            settingsWindow.SetXmlToEdit(projectSettings.SettingsFileFolderPath + projectSettings.SettingsFileName);
+            settingsWindow.Show();
+        }
+        private void ChangeLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem item = (MenuItem)sender;
+            if (item == null) return;
+
+            string? newLanguage = (string?)item.Header;
+            if (newLanguage == null) return;
+
+            LocalizationManager.GetInstance().SetActiveLanguage(newLanguage);
         }
         private void About_Click(object sender, RoutedEventArgs e)
         {
-
+            _logger?.LogInfo("MainWindow::About_Click -> About button clicked, opening the about window.");
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.Show();
         }
 
-
-        private async Task ConnectToDrive(Esp32Controller esp32Controller, string drivePath)
+        // Other
+        private void OnLanguageChanged()
         {
-            esp32Controller.SetAllRelays(false);
+            _logger?.LogInfo("MainWindow::OnLanguageChanged -> Updating localized text to newly selected language.");
+            _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoe Swi");
+            _viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0005", "Set");
+            _viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0006", "Lan Set");
+            _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0007", "Ab");
 
-            UsbTool usbTool = new UsbTool();
-            while (string.IsNullOrEmpty((await usbTool.GetDrive("PHOENIXD")).DriveLetter))
+            foreach (MenuItem item in LanguageSettings.Items)
             {
-                esp32Controller.SetAllRelays(true);
-                esp32Controller.SetAllRelays(false);
-
-                Thread.Sleep(5000);
+                string? language = (string?)item.Header;
+                item.IsChecked = language == LocalizationManager.GetInstance().GetActiveLanguage();
             }
         }
     }

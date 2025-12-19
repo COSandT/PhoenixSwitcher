@@ -6,11 +6,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\Images\Phoenix_logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ProjectSettings\" />
-    <Folder Include="Resources\" />
+    <None Remove="Resources\Images\Phoenix_Icon.png" />
+    <None Remove="Resources\Images\Phoenix_logo.ico" />
+    <None Remove="Resources\Phoenix_Icon.png" />
+    <None Remove="Resources\phoenix_logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Images\Phoenix_logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,8 +32,17 @@
     <ProjectReference Include="..\CosntCommonViewLibrary\CosntCommonViewLibrary\CosntCommonViewLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Resources\Images\Phoenix_Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Phoenix_logo.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)Resources\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E" />
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E" />
   </Target>
 
 </Project>
