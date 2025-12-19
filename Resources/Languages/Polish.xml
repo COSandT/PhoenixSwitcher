@@ -1,49 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<!-- Program Data -->
-	<LanguageEntry id="ID_01_0001">Cyfrowe instrukcje pracy</LanguageEntry>
-	<LanguageEntry id="ID_01_0002">Lista maszyn</LanguageEntry>
-	<LanguageEntry id="ID_01_0003">Wybrana maszyna: </LanguageEntry>
-	<LanguageEntry id="ID_01_0004">-- Wybierz, aby skanować --</LanguageEntry>
-	<LanguageEntry id="ID_01_0005">Połącz</LanguageEntry>
-	<LanguageEntry id="ID_01_0006">Rozłącz</LanguageEntry>
-	<LanguageEntry id="ID_01_0007">Ustawienia połączenia</LanguageEntry>
-	<LanguageEntry id="ID_01_0008">Ustawienia języka</LanguageEntry>
-	<LanguageEntry id="ID_01_0009">Połączenie z proplanner nie zostało jeszcze ustanowione.</LanguageEntry>
-	<LanguageEntry id="ID_01_0010">Wybrany element ComboBox nie może zostać odczytany.</LanguageEntry>
-	<LanguageEntry id="ID_01_0011">Łączenie z serwerem SQL</LanguageEntry>
-	<LanguageEntry id="ID_01_0012">Połączenie jest już otwarte lub próbuje się otworzyć.</LanguageEntry>
-	<LanguageEntry id="ID_01_0013">Połączono.</LanguageEntry>
-	<LanguageEntry id="ID_01_0014">Wybieranie ostatnio wybranego pojazdu</LanguageEntry>
-	<LanguageEntry id="ID_01_0015">Połączenie nieudane</LanguageEntry>
-	<LanguageEntry id="ID_01_0016">Brak otwartego połączenia</LanguageEntry>
-	<LanguageEntry id="ID_01_0017">Połączenie zamknięte</LanguageEntry>
-	<LanguageEntry id="ID_01_0018">Niepołączony</LanguageEntry>
-	<LanguageEntry id="ID_01_0019">Nie znaleziono błędów dla wybranej maszyny</LanguageEntry>
-	<LanguageEntry id="ID_01_0020">Lista błędów</LanguageEntry>
-	<LanguageEntry id="ID_01_0021">-- Wybierz błąd --</LanguageEntry>
+	<!-- Main Window -->
+	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Ustawienia programu</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Ustawienia języka</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">Informacje</LanguageEntry>
+	
+	<!-- Phoenix Switcher Logic -->
+	<LanguageEntry id="ID_02_0001">Wybrano nieprawidłowy pakiet</LanguageEntry>
+	<LanguageEntry id="ID_02_0002">Program aktualizuje pakiety. Proszę czekać do zakończenia.</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Nie udało się skonfigurować 'PhoenixFile' z wybranego pakietu</LanguageEntry>
+	<LanguageEntry id="ID_02_0004">Usuwanie starych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
+	<LanguageEntry id="ID_02_0005">Pobieranie nowych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
 
-	<!-- WorkInstruction Data -->
-	<LanguageEntry id="ID_02_0001">Opis operacji</LanguageEntry>
-	<LanguageEntry id="ID_02_0002">Strefa</LanguageEntry>
-	<LanguageEntry id="ID_02_0003">Linia</LanguageEntry>
-	<LanguageEntry id="ID_02_0004">Stacja</LanguageEntry>
-	<LanguageEntry id="ID_02_0005">Operator</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Czas</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Strona</LanguageEntry>
-	<LanguageEntry id="ID_02_0008">Typ SOP</LanguageEntry>
-	<LanguageEntry id="ID_02_0009">N</LanguageEntry>
-	<LanguageEntry id="ID_02_0010">Rev.</LanguageEntry>
-	<LanguageEntry id="ID_02_0011">#Tkn</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Opublikowane przez</LanguageEntry>
-	<LanguageEntry id="ID_02_0013">Grupa podzespołów</LanguageEntry>
-	<LanguageEntry id="ID_02_0014">Opcja</LanguageEntry>
-	<LanguageEntry id="ID_02_0015">Model</LanguageEntry>
-	<LanguageEntry id="ID_02_0016">Części</LanguageEntry>
-	<LanguageEntry id="ID_02_0017">Ref</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Liczba</LanguageEntry>
-	<LanguageEntry id="ID_02_0019">P/N</LanguageEntry>
-	<LanguageEntry id="ID_02_0020">Narzędzia</LanguageEntry>
-	<LanguageEntry id="ID_02_0021">Krok</LanguageEntry>
-	<LanguageEntry id="ID_02_0022">Opis kroku</LanguageEntry>
+	<!-- Machine List -->
+	<LanguageEntry id="ID_03_0001">Lista maszyn</LanguageEntry>
+	<LanguageEntry id="ID_03_0002">Odśwież</LanguageEntry>
+	<LanguageEntry id="ID_03_0003">Wybierz maszynę</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Wybrana maszyna jest nieprawidłowa</LanguageEntry>
+
+	<!-- Bundle List -->
+	<LanguageEntry id="ID_04_0001">Lista pakietów</LanguageEntry>
+	<LanguageEntry id="ID_04_0002">Wybierz pakiet</LanguageEntry>
+
+	<!-- Settings Window -->
+	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Okno ustawień</LanguageEntry>
+	<LanguageEntry id="ID_06_0002">Zapisz</LanguageEntry>
+	<LanguageEntry id="ID_06_0003">Czy chcesz zapisać zmiany?</LanguageEntry>
+	
+	<!-- About Window -->
+	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Informacje</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Wersja:</LanguageEntry>
+	<LanguageEntry id="ID_07_0003">Projekt:</LanguageEntry>
+	
+	<!-- Generic -->
+	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
+	<LanguageEntry id="ID_08_0002">Tak</LanguageEntry>
+	<LanguageEntry id="ID_08_0003">Nie</LanguageEntry>
+	
 </Language>

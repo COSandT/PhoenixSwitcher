@@ -50,15 +50,15 @@ namespace PhoenixSwitcher
         public static MessageBoxResult ShowLocalizedYesNoMessageBox(string text)
         {
             MessageBoxModel model = new MessageBoxModel();
-            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("TODO: LOCA", "yes"), MessageBoxResult.Yes));
-            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("TODO: LOCA", "no"), MessageBoxResult.No));
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0001", "yes"), MessageBoxResult.Yes));
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0002", "no"), MessageBoxResult.No));
             model.Text = text;
             return MessageBox.Show(model);
         }
         public static MessageBoxResult ShowLocalizedOkMessageBox(string localizedTextId, string fallbackText)
         {
             MessageBoxModel model = new MessageBoxModel();
-            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("TODO: LOCA", "ok"), MessageBoxResult.OK));
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0003", "ok"), MessageBoxResult.OK));
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
             return MessageBox.Show(model);
         }

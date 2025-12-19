@@ -53,19 +53,18 @@ namespace PhoenixSwitcher.ControlTemplates
         private void OnLanguageChanged()
         {
             _logger?.LogInfo($"MachineList::OnLanguageChanged -> Updating text to match newly selected language.");
-            _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_01_0002", _defaultMachineListHeaderText);
-            _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_01_0004", _defaultSelectToScanText);
+            _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", _defaultMachineListHeaderText);
+            _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", _defaultSelectToScanText);
         }
         private async void LoadMachineList()
         {
             _logger?.LogInfo($"MachineList::LoadMachineList -> Getting all pcm app settings to generate machine list from.");
             PhoenixRest phoenixRest = PhoenixRest.GetInstance();
             List<AppSettingPcm>? pcmAppSettings = await phoenixRest.GetPcmAppSettings();
-            // TODO: report error not found any pcm settings.
             if (pcmAppSettings == null)
             {
-                _logger?.LogWarning($"MachineList::LoadMachineList -> Failed to ge tpcm app settings returning without loading machine list.");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", _defaultFailedPCMAppSettingsText);
+                _logger?.LogWarning($"MachineList::LoadMachineList -> Failed to get pcm app settings returning without loading machine list.");
+                Helpers.ShowLocalizedOkMessageBox("ID_03_0003", _defaultFailedPCMAppSettingsText);
                 return;
             }
 

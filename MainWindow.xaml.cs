@@ -94,10 +94,10 @@ namespace PhoenixSwitcher
         private void OnLanguageChanged()
         {
             _logger?.LogInfo("MainWindow::OnLanguageChanged -> Updating localized text to newly selected language.");
-            _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoe Swi");
-            _viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0005", "Set");
-            _viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0006", "Lan Set");
-            _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0007", "Ab");
+            _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoenix Switcher");
+            _viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0002", "Settings");
+            _viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0003", "Languages");
+            _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0004", "About");
 
             foreach (MenuItem item in LanguageSettings.Items)
             {

@@ -49,8 +49,8 @@ namespace PhoenixSwitcher.ControlTemplates
         private void OnLanguageChanged()
         {
             _logger?.LogInfo($"MachineInfoWindow::OnLanguageChanged -> Updating text to match newly selected language.");
-            _viewModel.StartButtonText = Helpers.TryGetLocalizedText("TODO: LOCA", "Start");
-            _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("TODO: LOCA", "Finish");
+            _viewModel.StartButtonText = Helpers.TryGetLocalizedText("ID_04_0001", "Start");
+            _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("ID_04_0002", "Finish");
         }
 
         public void SetMachineInfoFromBundle(BundleSelection bundle)

@@ -1,6 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<LanguageEntry id="ID0">ja</LanguageEntry>
-	<LanguageEntry id="ID1">warom</LanguageEntry>
-	<LanguageEntry id="ID2">dit is een test</LanguageEntry>
+	<!-- Main Window -->
+	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Programma-instellingen</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Taalinstellingen</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">Over</LanguageEntry>
+
+	<!-- Phoenix Switcher Logic -->
+	<LanguageEntry id="ID_02_0001">Ongeldige bundel geselecteerd</LanguageEntry>
+	<LanguageEntry id="ID_02_0002">Het programma is bezig met het bijwerken van bundels. Wacht tot dit is voltooid.</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Instellen van 'PhoenixFile' vanuit de geselecteerde bundel is mislukt</LanguageEntry>
+	<LanguageEntry id="ID_02_0004">Het verwijderen van oude bestanden is onderbroken. Controleer de logboeken voor details.</LanguageEntry>
+	<LanguageEntry id="ID_02_0005">Het downloaden van nieuwe bestanden is onderbroken. Controleer de logboeken voor details.</LanguageEntry>
+
+	<!-- Machine List -->
+	<LanguageEntry id="ID_03_0001">Machinelijst</LanguageEntry>
+	<LanguageEntry id="ID_03_0002">Vernieuwen</LanguageEntry>
+	<LanguageEntry id="ID_03_0003">Selecteer machine</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Geselecteerde machine is ongeldig</LanguageEntry>
+
+	<!-- Bundle List -->
+	<LanguageEntry id="ID_04_0001">Bundellijst</LanguageEntry>
+	<LanguageEntry id="ID_04_0002">Selecteer bundel</LanguageEntry>
+
+	<!-- Settings Window -->
+	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Instellingen</LanguageEntry>
+	<LanguageEntry id="ID_06_0002">Opslaan</LanguageEntry>
+	<LanguageEntry id="ID_06_0003">Wilt u de wijzigingen opslaan?</LanguageEntry>
+
+	<!-- About Window -->
+	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Over</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Versie:</LanguageEntry>
+	<LanguageEntry id="ID_07_0003">Ontworpen door:</LanguageEntry>
+
+	<!-- Generic -->
+	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
+	<LanguageEntry id="ID_08_0002">Ja</LanguageEntry>
+	<LanguageEntry id="ID_08_0003">Nee</LanguageEntry>
+
 </Language>

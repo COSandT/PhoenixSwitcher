@@ -67,21 +67,14 @@ namespace PhoenixSwitcher
             if (bundleSelection == null)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected bundle was invalid.");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", "Invalid selected bundle.");
-                return;
-            }
-
-            if (!IsDriveConnectedToPC())
-            {
-                _logger?.LogError($"PhoenixSwitcherLogic::StartProcess -> Drive somehow got disconnected from pc. Did you disconnect it you idiot?");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", "Drive is no longer connected to pc.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid selected bundle.");
                 return;
             }
 
             if (_bIsUpdatingBundles)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Program is busy updating bundles. Please wait until finished.");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", "Program is busy updating bundles. Please wait until finished.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0002", "Program is busy updating bundles. Please wait until finished.");
                 return;
             }
 
@@ -93,7 +86,7 @@ namespace PhoenixSwitcher
             if (!await SetPhoenixFileFromBundleFile(bundleSelection.Bundle))
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", "Failed to setup phoenix file from selected bundle.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to setup phoenix file from selected bundle.");
                 return;
             }
 
@@ -254,7 +247,7 @@ namespace PhoenixSwitcher
             catch (Exception ex)
             {
                 _logger?.LogError($"PhoenixSwitcherLogic::DeleteOldBundles -> Delete got interupted. Exception: {ex.Message}");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", "Deleting got interuppted, check logs for exception.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0004", "Deleting got interuppted, check logs for exception.");
                 return Task.FromResult(false);
             }
         }
@@ -293,9 +286,8 @@ namespace PhoenixSwitcher
             }
             catch (Exception ex)
             {
-                // TODO: report error.
                 _logger?.LogError($"PhoenixSwitcherLogic::DownloadNewBundles -> Download got interupted. Exception: {ex.Message}");
-                Helpers.ShowLocalizedOkMessageBox("TODO: LOCA", "Download got interuppted, check logs for exception.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0005", "Download got interuppted, check logs for exception.");
                 return false;
             }
         }

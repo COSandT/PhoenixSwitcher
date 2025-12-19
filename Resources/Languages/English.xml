@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<!-- Program Data -->
+	<!-- Main Window -->
 	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
-	<LanguageEntry id="ID_01_0002">Machine List</LanguageEntry>
-	<LanguageEntry id="ID_01_0003">Selected Machine: </LanguageEntry>
-	<LanguageEntry id="ID_01_0004">-- Select to Scan --</LanguageEntry>
-	<LanguageEntry id="ID_01_0005">Program Settings</LanguageEntry>
-	<LanguageEntry id="ID_01_0006">Language Settings</LanguageEntry>
-	<LanguageEntry id="ID_01_0007">About</LanguageEntry>
-	<LanguageEntry id="ID_01_0008"></LanguageEntry>
-	<LanguageEntry id="ID_01_0009"></LanguageEntry>
-	<LanguageEntry id="ID_01_0010"></LanguageEntry>
-	<LanguageEntry id="ID_01_0011"></LanguageEntry>
-	<LanguageEntry id="ID_01_0012"></LanguageEntry>
-	<LanguageEntry id="ID_01_0013"></LanguageEntry>
-	<LanguageEntry id="ID_01_0014"></LanguageEntry>
-	<LanguageEntry id="ID_01_0015"></LanguageEntry>
-	<LanguageEntry id="ID_01_0016"></LanguageEntry>
-	<LanguageEntry id="ID_01_0017"></LanguageEntry>
-	<LanguageEntry id="ID_01_0018"></LanguageEntry>
-	<LanguageEntry id="ID_01_0019"></LanguageEntry>
-	<LanguageEntry id="ID_01_0020"></LanguageEntry>
-	<LanguageEntry id="ID_01_0021"></LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Program Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Language Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">About</LanguageEntry>
+	
+	<!-- Phoenix Switcher Logic -->
+	<LanguageEntry id="ID_02_0001">Invalid bundle selected</LanguageEntry>
+	<LanguageEntry id="ID_02_0002">Program is busy updating bundles, Please wait until this is finished.</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Failed to setup 'PhoenixFile' from selected bundle</LanguageEntry>
+	<LanguageEntry id="ID_02_0004">Deleting old files got interupted. Check logs for details.</LanguageEntry>
+	<LanguageEntry id="ID_02_0005">Downloading new files got interupted. Check logs for details.</LanguageEntry>
+
+	<!-- Machine List -->
+	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
+	<LanguageEntry id="ID_03_0002">-- Select to Scan --</LanguageEntry>
+	<LanguageEntry id="ID_03_0003">Failed to get pcm app settings, returning without loading machine list.</LanguageEntry>
+	
+	<!-- MachineInfoWindow -->
+	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
+	<LanguageEntry id="ID_04_0002">Finish</LanguageEntry>
+	
+	<!-- StatusInstructionBar -->
+	<!-- Empty for now but will use ID_05_.... -->
+	
+	<!-- Settings Window -->
+	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Settings Window</LanguageEntry>
+	<LanguageEntry id="ID_06_0002">Save</LanguageEntry>
+	<LanguageEntry id="ID_06_0003">Do you want to save any changes?</LanguageEntry>
+	
+	<!-- About Window -->
+	<LanguageEntry id="ID_07_0001">Phoenix Switcher - About</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Version:</LanguageEntry>
+	<LanguageEntry id="ID_07_0003">Designed by:</LanguageEntry>
+	
+	<!-- Generic -->
+	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
+	<LanguageEntry id="ID_08_0002">Yes</LanguageEntry>
+	<LanguageEntry id="ID_08_0003">No</LanguageEntry>
+	
 </Language>

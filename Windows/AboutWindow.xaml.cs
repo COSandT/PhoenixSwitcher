@@ -32,12 +32,12 @@ namespace PhoenixSwitcher.Windows
         }
         private void OnLanguageChanged()
         {
-            _viewModel.WindowName = Helpers.TryGetLocalizedText("TODO: LOCA", "Phoenix Switcher - About");
-            _viewModel.VersionText = $"{Helpers.TryGetLocalizedText("TODO: LOCA", "Version:")} {Version.VersionNum}";
+            _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_07_0001", "Phoenix Switcher - About");
+            _viewModel.VersionText = $"{Helpers.TryGetLocalizedText("ID_07_0002", "Version:")} {Version.VersionNum}";
 
             DateTime now = DateTime.Now;
             _viewModel.CopyrightText = $"Copyright 2025-{now.Year} COS&T";
-            _viewModel.CreatorText = $"{Helpers.TryGetLocalizedText("TODO: LOCA", "Designed by:")} Miel Vandewal";
+            _viewModel.CreatorText = $"{Helpers.TryGetLocalizedText("ID_07_0003", "Designed by:")} Miel Vandewal";
         }
     }
 }
