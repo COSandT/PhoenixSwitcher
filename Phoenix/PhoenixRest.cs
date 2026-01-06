@@ -1,11 +1,10 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
-using System.Security.Policy;
-using CosntCommonLibrary.Json;
+
 using CosntCommonLibrary.Rest;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+
 using RestSharp;
 
 namespace PhoenixSwitcher
@@ -75,6 +74,11 @@ namespace PhoenixSwitcher
                 return new List<FileDetail>();
             }
         }
+
+        //public Task<List<string>>? GetPCMMachineInfoList()
+        //{
+
+        //}
 
         // Download methods
         public async Task<string> DownloadBundleFiles(FileDetail detail, string drive)

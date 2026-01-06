@@ -1,14 +1,13 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.ControlTemplates;
-using PhoenixSwitcher.ViewModels;
+
 using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher
 {
@@ -24,7 +23,6 @@ namespace PhoenixSwitcher
 
         public MainWindow()
         {
-
             InitializeComponent();
             this.DataContext = _viewModel;
 
@@ -36,7 +34,7 @@ namespace PhoenixSwitcher
             InitPhoenixSwitcherLogic();
             InitLanguageSettings();
 
-            StatusInstructionBarControl.Init(_logger);
+            StatusBarControl.Init(_logger);
             MachineInfoWindowControl.Init(_logger);
             MachineListControl.Init(_logger);
 

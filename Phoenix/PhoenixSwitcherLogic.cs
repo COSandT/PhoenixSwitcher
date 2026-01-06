@@ -1,11 +1,12 @@
 ﻿using System.IO;
-using AdonisUI.Controls;
 using CosntCommonLibrary.Esp32;
 using CosntCommonLibrary.Rest;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Tools.Usb;
 using PhoenixSwitcher.ControlTemplates;
+using PhoenixSwitcher.Delegates;
+using static PhoenixSwitcher.ControlTemplates.StatusBar;
 
 namespace PhoenixSwitcher
 {
@@ -47,22 +48,28 @@ namespace PhoenixSwitcher
 
         public async Task UpdateBundleFiles()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Updating bundle files");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files");
             _bIsUpdatingBundles = true;
-            _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Get list of bundle files from rest api");
-            List<string> driveFiles = Directory.GetDirectories(_drive).ToList();
-            List<FileDetail>? bundleFiles = await _phoenixRest.GetBundleFiles();
             ResetPhoenixFileToBundleFile();
+            _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Get list of bundle files from rest api");
+            List<FileDetail>? bundleFiles = await _phoenixRest.GetBundleFiles();
+            List<string> driveDirectories = Directory.GetDirectories(_drive).ToList();
 
-            Task downloadTask = DownloadNewBundles(bundleFiles, driveFiles);
-            Task deleteTask = DeleteOldBundles(bundleFiles, driveFiles);
+            Task downloadTask = DownloadNewBundles(bundleFiles, driveDirectories);
+            Task deleteTask = DeleteOldBundles(bundleFiles, driveDirectories);
             await downloadTask;
             await deleteTask;
             _bIsUpdatingBundles = false;
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle files");
+
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Finished updating bundle files.");
         }
         private async void StartProcess(BundleSelection? bundleSelection)
         {
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Process started getting ready to do stuff");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
             if (bundleSelection == null)
             {
@@ -100,22 +107,26 @@ namespace PhoenixSwitcher
             {
                 await Task.Delay(500);
             }
-            await SwitchPowerToPhoenix();
+            SwitchPowerToPhoenix(true);
             OnProcessStarted?.Invoke();
+
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Complete setup on Phoenix pc and press finish once done.");
         }
         private async void FinishProcess()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Process finished, resetting to start");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
-            Task connectTask = ConnectDriveToPC();
-            Task powerTask = SwitchPowerToPhoenix();
-            await connectTask;
-            await powerTask;
+            SwitchPowerToPhoenix(false);
+            await ConnectDriveToPC();
 
             // Switch filename back to proper bundle name.
             ResetPhoenixFileToBundleFile();
 
             // Check for any noew bundle updates.
             await UpdateBundleFiles();
+
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Awaiting new process");
         }
 
 
@@ -131,6 +142,8 @@ namespace PhoenixSwitcher
         }
         private async Task ConnectDriveToPC()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Connect drive to pc");
+
             int waitTimeMs = 5000;
             _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> attempting to connect the drive to this pc.");
             while (!IsDriveConnectedToPC())
@@ -142,6 +155,8 @@ namespace PhoenixSwitcher
         }
         private async Task SwitchDriveConnection()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Switching drive connection");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Use relais to switch what device the drive is connected to.");
             if (_espController != null)
             {
@@ -152,25 +167,29 @@ namespace PhoenixSwitcher
         }
         private bool IsDriveConnectedToPC()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Checking if drive is connected to pc");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::IsDriveConnectedToPC -> Checking if drive is connected to pc.");
             _drive = _usbTool.GetDrive("PHOENIXD").DriveLetter;
             _phoenixFilePath = _drive + _phoenixFileName;
             return !string.IsNullOrEmpty(_drive);
         }
-        private async Task SwitchPowerToPhoenix()
+        private void SwitchPowerToPhoenix(bool result)
         {
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Switching power to phoenix device");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Use relais to switch power of phoenix on/off");
             if (_espController != null)
             {
-                _espController.SetRelay2(true);
-                await Task.Delay(500);
-                _espController.SetRelay2(false);
+                _espController.SetRelay2(result);
             }
         }
 
 
         private void ResetPhoenixFileToBundleFile()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Resetting phoenix file to bundle file.");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> resetting potential phoenix file back to its bundle file name.");
             // if there is none do not care.
             if (!Directory.Exists(_phoenixFilePath))
@@ -191,15 +210,21 @@ namespace PhoenixSwitcher
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 int startidx = fileName.LastIndexOf("_") + 1;
                 fileName = fileName.Substring(startidx);
-                // Rename file directory to bundle version.
-                _logger?.LogInfo($"PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Change name to original bundle name.");
-                fileName = Helpers.RemoveExtraZeroFromVersionName(fileName);
-                Directory.Move(_phoenixFilePath, _drive + fileName);
+                try
+                {
+                    // Rename file directory to bundle version.
+                    _logger?.LogInfo($"PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Change name to original bundle name.");
+                    fileName = Helpers.RemoveExtraZeroFromVersionName(fileName);
+                    Directory.Move(_phoenixFilePath, _drive + fileName);
+                }
+                catch { }
                 break;
             }
         }
         private async Task<bool> SetPhoenixFileFromBundleFile(string bundleFileName)
         {
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Setting bundle file to phoenix file.");
+
             _logger?.LogInfo($"PhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Try change selected bundle filename to Phoenix filename");
             if (!IsDriveConnectedToPC())
             {
@@ -218,14 +243,16 @@ namespace PhoenixSwitcher
             _logger?.LogInfo($"PhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Changing bundle: {bundleFileName} to Phoenix filename.");
             return true;
         }
-        private Task<bool> DeleteOldBundles(List<FileDetail>? bundleFiles, List<string> driveFiles)
+        private Task<bool> DeleteOldBundles(List<FileDetail>? bundleFiles, List<string> driveDirectories)
         {
             try
             {
-                _logger?.LogInfo($"PhoenixSwitcherLogic::DeleteOldBundles -> Attempt to delete old bundles still on drive.");
-                if (bundleFiles == null || driveFiles == null) return Task.FromResult(false);
+                StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Deleting old bundle files");
 
-                foreach (string directory in driveFiles)
+                _logger?.LogInfo($"PhoenixSwitcherLogic::DeleteOldBundles -> Attempt to delete old bundles still on drive.");
+                if (bundleFiles == null || driveDirectories == null) return Task.FromResult(false);
+
+                foreach (string directory in driveDirectories)
                 {
                     bool bFoundBundleDir = false;
                     foreach (FileDetail fileDetail in bundleFiles)
@@ -251,17 +278,19 @@ namespace PhoenixSwitcher
                 return Task.FromResult(false);
             }
         }
-        private async Task<bool> DownloadNewBundles(List<FileDetail>? bundleFiles, List<string> driveFiles)
+        private async Task<bool> DownloadNewBundles(List<FileDetail>? bundleFiles, List<string> driveDirectories)
         {
             try
             {
+                StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Downloading new bundle files");
+
                 _logger?.LogInfo($"PhoenixSwitcherLogic::DownloadNewBundles -> Attempt to download new bundles not on drive yet.");
-                if (bundleFiles == null || driveFiles == null) return false;
+                if (bundleFiles == null || driveDirectories == null) return false;
 
                 foreach (FileDetail fileDetail in bundleFiles)
                 {
                     bool bFoundBundleDir = false;
-                    foreach (string directory in driveFiles)
+                    foreach (string directory in driveDirectories)
                     {
                         if (directory.Contains(Path.GetFileNameWithoutExtension(fileDetail.FileName)))
                         {
@@ -282,6 +311,12 @@ namespace PhoenixSwitcher
                         File.Delete(_drive + fileDetail.FileName);
                     }
                 }
+                // Delete leftover zip files.
+                List<string> driveFiles = Directory.GetFiles(_drive).ToList();
+                foreach (string driveFile in driveFiles)
+                {
+                    File.Delete(driveFile);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -290,6 +325,7 @@ namespace PhoenixSwitcher
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0005", "Download got interuppted, check logs for exception.");
                 return false;
             }
+
         }
     }
 }

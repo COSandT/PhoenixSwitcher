@@ -58,11 +58,11 @@
                     x:Name="MachineInfoWindowControl">
                     
                 </controltemplates:MachineInfoWindow>
-                <controltemplates:StatusInstructionBar
+                <controltemplates:StatusBar
                     Grid.Row="1"
-                    x:Name="StatusInstructionBarControl">
+                    x:Name="StatusBarControl">
                     
-                </controltemplates:StatusInstructionBar>
+                </controltemplates:StatusBar>
             </Grid>
         </Grid>
     </Grid>

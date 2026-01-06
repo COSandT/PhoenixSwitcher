@@ -1,7 +1,9 @@
 ﻿using System.Windows;
-using AdonisUI.Controls;
-using CosntCommonLibrary.Settings;
+
 using PhoenixSwitcher.ViewModels;
+
+using CosntCommonLibrary.Settings;
+
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace PhoenixSwitcher.Windows
