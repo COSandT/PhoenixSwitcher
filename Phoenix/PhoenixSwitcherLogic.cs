@@ -77,7 +77,7 @@ namespace PhoenixSwitcher
             if (machine == null)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected bundle was invalid.");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid selected bundle.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid machine selected");
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace PhoenixSwitcher
             else if(!await RenameBundleFileToGMHIFile(bundle.Bundle))
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to setup phoenix file from selected bundle.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to find matching bundle files for selected vehicle. Try updating bundle files.");
                 return;
             }
 

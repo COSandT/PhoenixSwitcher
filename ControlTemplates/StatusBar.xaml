@@ -11,36 +11,52 @@
     <Border
         Height="100"
         MaxHeight="100"
+        BorderThickness="2"
         Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
-        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer2BorderBrush}}"
-        BorderThickness="2">
+        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="60*"/>
                 <RowDefinition Height="40*"/>
             </Grid.RowDefinitions>
-            <Border>
-                <ProgressBar 
-                    adonisExtensions:ProgressBarExtension.Content="{Binding MainStatusText}"
-                    Minimum="0"
-                    Value="{Binding MainStatusPercentage}"
-                    Maximum="100"
-                    Padding="0, 2">
-                </ProgressBar>
+            <!-- Main Status -->
+            <Border
+                Grid.Row="0"
+                BorderThickness="2"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                <Grid>
+                    <ProgressBar 
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding MainStatusPercentage}"
+                        Padding="0,2">
+                    </ProgressBar>
+                    <Viewbox 
+                        Margin="0,0,0,5">
+                        <TextBlock Text="{Binding MainStatusText}"/>
+                    </Viewbox>
+                </Grid>
             </Border>
+            <!-- Sub status -->
             <Border
                 Grid.Row="1"
-                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}"
-                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer3BorderBrush}}"
                 BorderThickness="2"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
                 Visibility="{Binding L1StatusVisibility}">
-                <ProgressBar 
-                    adonisExtensions:ProgressBarExtension.Content="{Binding L1StatusText}"
-                    Minimum="0"
-                    Value="{Binding L1StatusPercentage}"
-                    Maximum="100"
-                    Padding="0, 2">
-                </ProgressBar>
+                <Grid>
+                    <ProgressBar 
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding L1StatusPercentage}"
+                        Padding="0,2">
+                    </ProgressBar>
+                    <Viewbox 
+                        Margin="0,0,0,5">
+                        <TextBlock Text="{Binding L1StatusText}"/>
+                    </Viewbox>
+                </Grid>
             </Border>
         </Grid>
     </Border>

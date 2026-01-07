@@ -2,40 +2,55 @@
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
 	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
-	<LanguageEntry id="ID_01_0002">Programma-instellingen</LanguageEntry>
-	<LanguageEntry id="ID_01_0003">Taalinstellingen</LanguageEntry>
-	<LanguageEntry id="ID_01_0004">Over</LanguageEntry>
-
+	<LanguageEntry id="ID_01_0002">Instellingen</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Programma-instellingen</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">Taalinstellingen</LanguageEntry>
+	<LanguageEntry id="ID_01_0005">Help</LanguageEntry>
+	<LanguageEntry id="ID_01_0006">Over</LanguageEntry>
+	<LanguageEntry id="ID_01_0007">Bijwerken</LanguageEntry>
+	<LanguageEntry id="ID_01_0008">Bundelbestanden bijwerken</LanguageEntry>
+	<LanguageEntry id="ID_01_0009">Machinelijst bijwerken</LanguageEntry>
+	
 	<!-- Phoenix Switcher Logic -->
-	<LanguageEntry id="ID_02_0001">Ongeldige bundel geselecteerd</LanguageEntry>
+	<LanguageEntry id="ID_02_0001">Ongeldige machine geselecteerd</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Het programma is bezig met het bijwerken van bundels. Wacht tot dit is voltooid.</LanguageEntry>
-	<LanguageEntry id="ID_02_0003">Instellen van 'PhoenixFile' vanuit de geselecteerde bundel is mislukt</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Geen overeenkomende bundelbestanden gevonden voor het geselecteerde voertuig. Probeer de bundelbestanden bij te werken.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004">Het verwijderen van oude bestanden is onderbroken. Controleer de logboeken voor details.</LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Het downloaden van nieuwe bestanden is onderbroken. Controleer de logboeken voor details.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Geen bundelbestand gevonden voor de geselecteerde machine. Wijzig handmatig de naam van het juiste bundelbestand naar 'GMHIFiles' voordat u doorgaat!</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machinelijst</LanguageEntry>
-	<LanguageEntry id="ID_03_0002">Vernieuwen</LanguageEntry>
-	<LanguageEntry id="ID_03_0003">Selecteer machine</LanguageEntry>
-	<LanguageEntry id="ID_03_0004">Geselecteerde machine is ongeldig</LanguageEntry>
-
-	<!-- Bundle List -->
-	<LanguageEntry id="ID_04_0001">Bundellijst</LanguageEntry>
-	<LanguageEntry id="ID_04_0002">Selecteer bundel</LanguageEntry>
-
+	<LanguageEntry id="ID_03_0002">-- Selecteer om te scannen --</LanguageEntry>
+	<LanguageEntry id="ID_03_0003">Kan PCM-app-instellingen niet ophalen, terugkeren zonder de machinelijst te laden.</LanguageEntry>
+	
+	<!-- MachineInfoWindow -->
+	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
+	<LanguageEntry id="ID_04_0002">Voltooien</LanguageEntry>
+	<LanguageEntry id="ID_04_0003">Geselecteerde machine-informatie</LanguageEntry>
+	<LanguageEntry id="ID_04_0004">Machinetype: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">PCM-type: </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">PCM-generatie: </LanguageEntry>
+	<LanguageEntry id="ID_04_0007">Weergavetype: </LanguageEntry>
+	<LanguageEntry id="ID_04_0008">Bundel: </LanguageEntry>
+	
+	<!-- StatusInstructionBar -->
+	<!-- Empty for now but will use ID_05_.... -->
+	
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Instellingen</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Opslaan</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Wilt u de wijzigingen opslaan?</LanguageEntry>
-
+	
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Over</LanguageEntry>
 	<LanguageEntry id="ID_07_0002">Versie:</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Ontworpen door:</LanguageEntry>
-
+	
 	<!-- Generic -->
 	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
 	<LanguageEntry id="ID_08_0002">Ja</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">Nee</LanguageEntry>
-
+	<LanguageEntry id="ID_08_0004">Annuleren</LanguageEntry>
+	
 </Language>

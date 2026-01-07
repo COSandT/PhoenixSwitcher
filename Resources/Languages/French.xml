@@ -2,27 +2,41 @@
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
 	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
-	<LanguageEntry id="ID_01_0002">Paramètres du programme</LanguageEntry>
-	<LanguageEntry id="ID_01_0003">Paramètres de langue</LanguageEntry>
-	<LanguageEntry id="ID_01_0004">À propos</LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Paramètres</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Paramètres du programme</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">Paramètres de langue</LanguageEntry>
+	<LanguageEntry id="ID_01_0005">Aide</LanguageEntry>
+	<LanguageEntry id="ID_01_0006">À propos</LanguageEntry>
+	<LanguageEntry id="ID_01_0007">Mettre à jour</LanguageEntry>
+	<LanguageEntry id="ID_01_0008">Mettre à jour les fichiers de bundle</LanguageEntry>
+	<LanguageEntry id="ID_01_0009">Mettre à jour la liste des machines</LanguageEntry>
 	
 	<!-- Phoenix Switcher Logic -->
-	<LanguageEntry id="ID_02_0001">Bundle sélectionné invalide</LanguageEntry>
-	<LanguageEntry id="ID_02_0002">Le programme est en cours de mise à jour des bundles. Veuillez patienter jusqu’à la fin.</LanguageEntry>
-	<LanguageEntry id="ID_02_0003">Échec de la configuration de 'PhoenixFile' à partir du bundle sélectionné</LanguageEntry>
+	<LanguageEntry id="ID_02_0001">Machine sélectionnée invalide</LanguageEntry>
+	<LanguageEntry id="ID_02_0002">Le programme met à jour les bundles. Veuillez patienter jusqu’à la fin.</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Impossible de trouver des fichiers de bundle correspondants pour le véhicule sélectionné. Essayez de mettre à jour les fichiers de bundle.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004">La suppression des anciens fichiers a été interrompue. Consultez les journaux pour plus de détails.</LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Le téléchargement des nouveaux fichiers a été interrompu. Consultez les journaux pour plus de détails.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Aucun fichier de bundle trouvé pour la machine sélectionnée. Renommez manuellement le bon fichier de bundle en 'GMHIFiles' avant de continuer !</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Liste des machines</LanguageEntry>
-	<LanguageEntry id="ID_03_0002">Actualiser</LanguageEntry>
-	<LanguageEntry id="ID_03_0003">Sélectionner une machine</LanguageEntry>
-	<LanguageEntry id="ID_03_0004">La machine sélectionnée est invalide</LanguageEntry>
-
-	<!-- Bundle List -->
-	<LanguageEntry id="ID_04_0001">Liste des bundles</LanguageEntry>
-	<LanguageEntry id="ID_04_0002">Sélectionner un bundle</LanguageEntry>
-
+	<LanguageEntry id="ID_03_0002">-- Sélectionner pour analyser --</LanguageEntry>
+	<LanguageEntry id="ID_03_0003">Impossible d’obtenir les paramètres de l’application PCM, retour sans charger la liste des machines.</LanguageEntry>
+	
+	<!-- MachineInfoWindow -->
+	<LanguageEntry id="ID_04_0001">Début</LanguageEntry>
+	<LanguageEntry id="ID_04_0002">Fin</LanguageEntry>
+	<LanguageEntry id="ID_04_0003">Informations sur la machine sélectionnée</LanguageEntry>
+	<LanguageEntry id="ID_04_0004">Type de machine : </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">Type PCM : </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">Génération PCM : </LanguageEntry>
+	<LanguageEntry id="ID_04_0007">Type d’affichage : </LanguageEntry>
+	<LanguageEntry id="ID_04_0008">Bundle : </LanguageEntry>
+	
+	<!-- StatusInstructionBar -->
+	<!-- Empty for now but will use ID_05_.... -->
+	
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Fenêtre des paramètres</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Enregistrer</LanguageEntry>
@@ -37,5 +51,6 @@
 	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
 	<LanguageEntry id="ID_08_0002">Oui</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">Non</LanguageEntry>
+	<LanguageEntry id="ID_08_0004">Annuler</LanguageEntry>
 	
 </Language>

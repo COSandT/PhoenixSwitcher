@@ -7,164 +7,134 @@
              xmlns:viewmodels="clr-namespace:PhoenixSwitcher.ViewModels"
              xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-             mc:Ignorable="d" >
+             mc:Ignorable="d" d:DesignWidth="385" d:DesignHeight="229.425" >
 
     <Border
         Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
-        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer2BorderBrush}}"
+        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
         BorderThickness="2">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="85*"/>
-                <RowDefinition Height="15*"/>
+                <RowDefinition Height="90*"/>
+                <RowDefinition Height="10*"/>
             </Grid.RowDefinitions>
             <!-- Bundle Info Display-->
-            <Grid>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="10*"/>
-                        <RowDefinition Height="90*"/>
-                    </Grid.RowDefinitions>
-                    <Border
-                        Grid.Row="0"
-                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}">
-                        <Viewbox
-                             Margin="5,5,10,5">
-                            <TextBlock Text="{Binding SelectedMachineHeaderText}" />
-                        </Viewbox>
-                    </Border>
-                    <StackPanel
-                        Grid.Row="1">
+            <Grid
+                Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="90*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" BorderThickness="2"
+                    Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                    <Viewbox Margin="5,5,10,5">
+                        <TextBlock Text="{Binding SelectedMachineHeaderText}" />
+                    </Viewbox>
+                </Border>
+                <Border Grid.Row="1" BorderThickness="2"
+                    Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                    <Grid HorizontalAlignment="Left" Margin="5,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
                         <!-- Machine Type-->
-                        <Grid
-                            Grid.Row="0"
-                            HorizontalAlignment="Left"
-                            MaxHeight="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Viewbox
-                                Grid.Column="0"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding MachineTypeDescriptionText}" />
-                            </Viewbox>
-                            <Viewbox
-                                Grid.Column="1"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding MachineTypeValueText}" />
-                            </Viewbox>
-                        </Grid>
+                        <Viewbox Grid.Row="0" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding MachineTypeDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding MachineTypeValueText}" />
+                            </Grid>
+                        </Viewbox>
                         <!-- PCM Type-->
-                        <Grid
-                            Grid.Row="1"
-                            HorizontalAlignment="Left"
-                            MaxHeight="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Viewbox
-                                Grid.Column="0"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding PCMTypeDescriptionText}" />
-                            </Viewbox>
-                            <Viewbox
-                                Grid.Column="1"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding PCMTypeValueText}" />
-                            </Viewbox>
-                        </Grid>
+                        <Viewbox Grid.Row="1" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding PCMTypeDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding PCMTypeValueText}" />
+                            </Grid>
+                        </Viewbox>
                         <!-- PCM Gen-->
-                        <Grid
-                            Grid.Row="2"
-                            HorizontalAlignment="Left"
-                            MaxHeight="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Viewbox
-                                Grid.Column="0"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding PCMGenDescriptionText}" />
-                            </Viewbox>
-                            <Viewbox
-                                Grid.Column="1"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding PCMGenValueText}" />
-                            </Viewbox>
-                        </Grid>
-
+                        <Viewbox Grid.Row="2" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding PCMGenDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding PCMGenValueText}" />
+                            </Grid>
+                        </Viewbox>
                         <!-- Display Type-->
-                        <Grid
-                            Grid.Row="3"
-                            HorizontalAlignment="Left"
-                            MaxHeight="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Viewbox
-                                Grid.Column="0"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding DisplayTypeDescriptionText}" />
-                            </Viewbox>
-                            <Viewbox
-                                Grid.Column="1"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding DisplayTypeValueText}" />
-                            </Viewbox>
-                        </Grid>
+                        <Viewbox Grid.Row="3" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding DisplayTypeDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding DisplayTypeValueText}" />
+                            </Grid>
+                        </Viewbox>
                         <!-- Bundle -->
-                        <Grid
-                            Grid.Row="4"
-                            HorizontalAlignment="Left"
-                            MaxHeight="50">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Viewbox
-                                Grid.Column="0"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding BundleDescriptionText}" />
-                            </Viewbox>
-                            <Viewbox
-                                Grid.Column="1"
-                                Margin="5,5,10,5">
-                                <TextBlock Text="{Binding BundleValueText}" />
-                            </Viewbox>
-                        </Grid>
-                    </StackPanel>
-                </Grid>
+                        <Viewbox Grid.Row="4" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding BundleDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding BundleValueText}" />
+                            </Grid>
+                        </Viewbox>
+                    </Grid>
+                </Border>
+                
             </Grid>
             <!-- Buttons -->
-            <Grid
-                Grid.Row="1"
-                MaxHeight="50"
-                VerticalAlignment="Bottom">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <!-- Start Process Button-->
-                <Button
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding StartButtonVisibility}"
-                    Content="{Binding StartButtonText}"
-                    Click="StartProcess_Click">
-                </Button>
-                <!-- Finish Process Button-->
-                <Button
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    Visibility="{Binding FinishButtonVisibility}"
-                    Content="{Binding FinishButtonText}"
-                    Click="FinishProcess_Click">
-                </Button>
-            </Grid>
+            <Border Grid.Row="1" BorderThickness="2"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Start Process Button-->
+                    <Button Grid.Column="0" Click="StartProcess_Click"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                        Visibility="{Binding StartButtonVisibility}">
+                        <Viewbox>
+                            <TextBlock Text="{Binding StartButtonText}" />
+                        </Viewbox>
+                    </Button>
+                    <!-- Finish Process Button-->
+                    <Button Grid.Column="1" Click="FinishProcess_Click"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                        Visibility="{Binding FinishButtonVisibility}">
+                        <Viewbox>
+                            <TextBlock Text="{Binding FinishButtonText}" />
+                        </Viewbox>
+                    </Button>
+                </Grid>
+
+            </Border>
         </Grid>
     </Border>
 </UserControl>

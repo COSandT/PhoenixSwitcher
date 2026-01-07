@@ -12,78 +12,74 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </UserControl.Resources>
     <Border
-        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer2BorderBrush}}"
+        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
         BorderThickness="2">
         <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="7*"/>
+                <RowDefinition Height="5*"/>
+                <RowDefinition Height="88*"/>
             </Grid.RowDefinitions>
 
             <!--Machine List Header-->
-            <Grid 
+            <Border
                 Grid.Row="0"
-                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <ToggleButton
-                    Grid.Column="0"
-                    Width="25"
-                    Height="25"
-                    Margin="5"
-                    VerticalAlignment="Center"
-                    IsChecked="{Binding MachineListExpander, Mode=TwoWay}">
-                    <ToggleButton.Style>
-                        <Style TargetType="ToggleButton">
-                            <Setter Property="Content" Value="▷"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Content" Value="◁"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ToggleButton.Style>
-                </ToggleButton>
+                BorderThickness="2"
+                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
                 <Viewbox
-                    Grid.Column="1"
-                    Margin="5,5,10,5"
-                    Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                    Margin="10,0"
+                    Grid.Column="1">
                     <TextBlock Text="{Binding MachineListHeaderText}" />
                 </Viewbox>
-            </Grid>
+            </Border>
             <!-- Scan Machine Box -->
-            <Grid Grid.Row="1"
-                Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
-                <TextBox
-                    x:Name="ScannedMachineText"
-                    KeyUp="ScannedMachineText_KeyUp">
-                </TextBox>
-                <TextBlock
-                    Text="{Binding SelectToScanText}"
-                    Foreground="Gray"
-                    FontStyle="Oblique"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    IsHitTestVisible="False"
-                    Visibility="{Binding ElementName=ScannedMachineText, Path=IsFocused, Converter={StaticResource BoolToVisibility}, ConverterParameter=0}">
-                </TextBlock>
-            </Grid>
+            <Border
+                Grid.Row="1"
+                BorderThickness="2"
+                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
+                <Grid>
+                    <TextBox
+                        x:Name="ScannedMachineText"
+                        KeyUp="ScannedMachineText_KeyUp">
+                    </TextBox>
+                    <TextBlock
+                        Text="{Binding SelectToScanText}"
+                        Foreground="Gray"
+                        FontStyle="Oblique"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsFocused, ElementName=ScannedMachineText}">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
             <!--Machine List-->
-            <Grid 
-                Grid.Row="2" 
-                Visibility="{Binding MachineListExpander, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+            <Border 
+                Grid.Row="2"
+                BorderThickness="2"
+                BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
                 <ScrollViewer 
                     Margin="0,1.5,1.5,0" 
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch" 
                     HorizontalScrollBarVisibility="Auto" 
-                    VerticalScrollBarVisibility="Auto" >
+                    VerticalScrollBarVisibility="Auto" 
+                    adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="AlwaysExpand">
                     <StackPanel x:Name="List" />
                 </ScrollViewer>
-            </Grid>
+            </Border>
         </Grid>
     </Border>
     

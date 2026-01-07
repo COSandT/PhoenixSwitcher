@@ -2,27 +2,41 @@
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
 	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
-	<LanguageEntry id="ID_01_0002">Ustawienia programu</LanguageEntry>
-	<LanguageEntry id="ID_01_0003">Ustawienia języka</LanguageEntry>
-	<LanguageEntry id="ID_01_0004">Informacje</LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Ustawienia</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Ustawienia programu</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">Ustawienia języka</LanguageEntry>
+	<LanguageEntry id="ID_01_0005">Pomoc</LanguageEntry>
+	<LanguageEntry id="ID_01_0006">Informacje</LanguageEntry>
+	<LanguageEntry id="ID_01_0007">Aktualizuj</LanguageEntry>
+	<LanguageEntry id="ID_01_0008">Aktualizuj pliki pakietów</LanguageEntry>
+	<LanguageEntry id="ID_01_0009">Aktualizuj listę maszyn</LanguageEntry>
 	
 	<!-- Phoenix Switcher Logic -->
-	<LanguageEntry id="ID_02_0001">Wybrano nieprawidłowy pakiet</LanguageEntry>
+	<LanguageEntry id="ID_02_0001">Wybrano nieprawidłową maszynę</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Program aktualizuje pakiety. Proszę czekać do zakończenia.</LanguageEntry>
-	<LanguageEntry id="ID_02_0003">Nie udało się skonfigurować 'PhoenixFile' z wybranego pakietu</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Nie znaleziono pasujących plików pakietu dla wybranego pojazdu. Spróbuj zaktualizować pliki pakietu.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004">Usuwanie starych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Pobieranie nowych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Nie znaleziono pliku pakietu dla wybranej maszyny. Ręcznie zmień nazwę właściwego pliku pakietu na 'GMHIFiles' przed kontynuowaniem!</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Lista maszyn</LanguageEntry>
-	<LanguageEntry id="ID_03_0002">Odśwież</LanguageEntry>
-	<LanguageEntry id="ID_03_0003">Wybierz maszynę</LanguageEntry>
-	<LanguageEntry id="ID_03_0004">Wybrana maszyna jest nieprawidłowa</LanguageEntry>
-
-	<!-- Bundle List -->
-	<LanguageEntry id="ID_04_0001">Lista pakietów</LanguageEntry>
-	<LanguageEntry id="ID_04_0002">Wybierz pakiet</LanguageEntry>
-
+	<LanguageEntry id="ID_03_0002">-- Wybierz, aby skanować --</LanguageEntry>
+	<LanguageEntry id="ID_03_0003">Nie udało się pobrać ustawień aplikacji PCM, powrót bez ładowania listy maszyn.</LanguageEntry>
+	
+	<!-- MachineInfoWindow -->
+	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
+	<LanguageEntry id="ID_04_0002">Zakończenie</LanguageEntry>
+	<LanguageEntry id="ID_04_0003">Informacje o wybranej maszynie</LanguageEntry>
+	<LanguageEntry id="ID_04_0004">Typ maszyny: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">Typ PCM: </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">Generacja PCM: </LanguageEntry>
+	<LanguageEntry id="ID_04_0007">Typ wyświetlacza: </LanguageEntry>
+	<LanguageEntry id="ID_04_0008">Pakiet: </LanguageEntry>
+	
+	<!-- StatusInstructionBar -->
+	<!-- Empty for now but will use ID_05_.... -->
+	
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Okno ustawień</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Zapisz</LanguageEntry>
@@ -37,5 +51,6 @@
 	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
 	<LanguageEntry id="ID_08_0002">Tak</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">Nie</LanguageEntry>
+	<LanguageEntry id="ID_08_0004">Anuluj</LanguageEntry>
 	
 </Language>
