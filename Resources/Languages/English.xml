@@ -2,9 +2,14 @@
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
 	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
-	<LanguageEntry id="ID_01_0002">Program Settings</LanguageEntry>
-	<LanguageEntry id="ID_01_0003">Language Settings</LanguageEntry>
-	<LanguageEntry id="ID_01_0004">About</LanguageEntry>
+	<LanguageEntry id="ID_01_0002">Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0003">Program Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0004">Language Settings</LanguageEntry>
+	<LanguageEntry id="ID_01_0005">Help</LanguageEntry>
+	<LanguageEntry id="ID_01_0006">About</LanguageEntry>
+	<LanguageEntry id="ID_01_0007">Update</LanguageEntry>
+	<LanguageEntry id="ID_01_0008">Update Bundle Files</LanguageEntry>
+	<LanguageEntry id="ID_01_0009">Update Machine List</LanguageEntry>
 	
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Invalid bundle selected</LanguageEntry>
@@ -12,6 +17,7 @@
 	<LanguageEntry id="ID_02_0003">Failed to setup 'PhoenixFile' from selected bundle</LanguageEntry>
 	<LanguageEntry id="ID_02_0004">Deleting old files got interupted. Check logs for details.</LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Downloading new files got interupted. Check logs for details.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">No bundle file found for selected machine. Manually change rename the correct bundle file to 'GMHIFiles' before continueing!</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
@@ -21,6 +27,12 @@
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
 	<LanguageEntry id="ID_04_0002">Finish</LanguageEntry>
+	<LanguageEntry id="ID_04_0003">Selected Machine Info</LanguageEntry>
+	<LanguageEntry id="ID_04_0004">Machine Type: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">PCM Type:</LanguageEntry>
+	<LanguageEntry id="ID_04_0006">PCM Gen: </LanguageEntry>
+	<LanguageEntry id="ID_04_0007">Display Type: </LanguageEntry>
+	<LanguageEntry id="ID_04_0008">Bundle: </LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->
@@ -39,5 +51,6 @@
 	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
 	<LanguageEntry id="ID_08_0002">Yes</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">No</LanguageEntry>
+	<LanguageEntry id="ID_08_0003">Cancel</LanguageEntry>
 	
 </Language>

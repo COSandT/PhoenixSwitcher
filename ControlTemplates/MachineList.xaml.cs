@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Controls;
 
+using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
@@ -9,6 +10,7 @@ using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using PhoenixSwitcher.ViewModels;
 
 using MessageBox = AdonisUI.Controls.MessageBox;
+using System.Threading.Tasks;
 
 
 
@@ -18,13 +20,10 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class MachineList : UserControl
     {
         private MachineListViewModel _viewModel = new MachineListViewModel();
+        private XmlProductionDataPCM? _pcmMachineList;
         private Logger? _logger;
 
-        private const string _defaultFailedPCMAppSettingsText = "Failed to find pcm.";
-        private const string _defaultMachineListHeaderText = "Mach Li";
-        private const string _defaultSelectToScanText = "-- Scan --";
-
-        public delegate void MachineSelectedHandler(BundleSelection bundle);
+        public delegate void MachineSelectedHandler(XmlMachinePCM selectedMachinePCMProductionData);
         public static event MachineSelectedHandler? OnMachineSelected;
 
         public MachineList()
@@ -45,56 +44,57 @@ namespace PhoenixSwitcher.ControlTemplates
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
 
-            LoadMachineList();
+            UpdatePcmMachineList();
 
             _logger?.LogInfo($"MachineList::Init -> Finished initializing MachineList.");
         }
-
         private void OnLanguageChanged()
         {
             _logger?.LogInfo($"MachineList::OnLanguageChanged -> Updating text to match newly selected language.");
-            _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", _defaultMachineListHeaderText);
-            _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", _defaultSelectToScanText);
+            _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
+            _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
         }
-        private async void LoadMachineList()
+        public async void UpdatePcmMachineList()
         {
-            _logger?.LogInfo($"MachineList::LoadMachineList -> Getting all pcm app settings to generate machine list from.");
-            PhoenixRest phoenixRest = PhoenixRest.GetInstance();
-            List<AppSettingPcm>? pcmAppSettings = await phoenixRest.GetPcmAppSettings();
-            if (pcmAppSettings == null)
-            {
-                _logger?.LogWarning($"MachineList::LoadMachineList -> Failed to get pcm app settings returning without loading machine list.");
-                Helpers.ShowLocalizedOkMessageBox("ID_03_0003", _defaultFailedPCMAppSettingsText);
-                return;
-            }
+            _pcmMachineList = await PhoenixRest.GetInstance().GetPCMMachineFile();
+            if (_pcmMachineList == null) return;
 
-            _logger?.LogInfo($"MachineList::LoadMachineList -> Looping over found pcm app settings and adding each bundle as a machinebutton");
-            foreach (AppSettingPcm pcmSetting in pcmAppSettings)
+            List.Children.Clear();
+            foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
             {
-                if (pcmSetting.BundleSelections == null) continue;
-
-                foreach (BundleSelection bundleSelection in pcmSetting.BundleSelections)
-                {
-                    Button machineButton = new Button();
-                    machineButton.Click += MachineSelected_Click;
-                    machineButton.Content = bundleSelection;
-                    machineButton.Tag = bundleSelection;
-                    List.Children.Add(machineButton);
-                }
+                Button machineButton = new Button();
+                machineButton.Click += MachineSelected_Click;
+                machineButton.Content = pcmMachine.N17;
+                machineButton.Tag = pcmMachine;
+                List.Children.Add(machineButton);
             }
         }
+
         private void MachineSelected_Click(object sender, RoutedEventArgs e)
         {
             // Invoke OnMachineSelected delegate to let others know which machine was selected.
             _logger?.LogInfo($"MachineList::MachineSelected_Click -> A machine was selected. Let any listeners know which one.");
             Button button = (Button)sender;
-            BundleSelection bundleSelection = (BundleSelection)button.Tag;
-            OnMachineSelected?.Invoke(bundleSelection);
+            XmlMachinePCM selectedMachinePCMProductionData = (XmlMachinePCM)button.Tag;
+            OnMachineSelected?.Invoke(selectedMachinePCMProductionData);
         }
 
-        private void ScannedMachineText_KeyUp(object sender, KeyEventArgs e)
+        private async void ScannedMachineText_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.Key != Key.Enter) return;
+            string barcode = ScannedMachineText.Text.Trim();
 
+            if (string.IsNullOrEmpty(barcode)) return;
+            if (_pcmMachineList == null) await PhoenixRest.GetInstance().GetPCMMachineFile();
+            XmlMachinePCM? foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == barcode || mach.VAN == barcode);
+
+            if (foundMachine == null) return;
+            OnMachineSelected?.Invoke(foundMachine);
+
+            ScannedMachineText.Clear();
+            ScannedMachineText.Focus();
+
+            e.Handled = true;
         }
     }
 }

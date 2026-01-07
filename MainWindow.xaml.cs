@@ -81,6 +81,14 @@ namespace PhoenixSwitcher
 
             LocalizationManager.GetInstance().SetActiveLanguage(newLanguage);
         }
+        private void UpdateBundleFiles_Click(object sender, RoutedEventArgs e)
+        {
+            _ = _phoenixSwitcher.UpdateBundleFiles();
+        }
+        private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
+        {
+            MachineListControl.UpdatePcmMachineList();
+        }
         private void About_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo("MainWindow::About_Click -> About button clicked, opening the about window.");
@@ -94,8 +102,13 @@ namespace PhoenixSwitcher
             _logger?.LogInfo("MainWindow::OnLanguageChanged -> Updating localized text to newly selected language.");
             _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoenix Switcher");
             _viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0002", "Settings");
-            _viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0003", "Languages");
-            _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0004", "About");
+            _viewModel.ProgramSettingsText = Helpers.TryGetLocalizedText("ID_01_0003", "Program Settings");
+            _viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0004", "Languages");
+            _viewModel.HelpText = Helpers.TryGetLocalizedText("ID_01_0005", "UpdateBundleFiles");
+            _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0006", "UpdateMachineList");
+            _viewModel.UpdateText = Helpers.TryGetLocalizedText("ID_01_0007", "UpdateBundleFiles");
+            _viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateMachineList");
+            _viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateBundleFiles");
 
             foreach (MenuItem item in LanguageSettings.Items)
             {

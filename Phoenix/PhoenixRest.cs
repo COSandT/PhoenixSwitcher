@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Net.Http;
-
 using CosntCommonLibrary.Rest;
-using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using RestSharp;
 
 namespace PhoenixSwitcher
@@ -51,15 +50,20 @@ namespace PhoenixSwitcher
             }
         }
 
-        public async Task<List<AppSettingPcm>?> GetPcmAppSettings()
+        public async Task<BundleSelection?> GetPcmAppSettings(string machineType, string pcmType, string pcmGen, string displayType, string department = "croix")
         {
             try
             {
-                return await _restClient.GetAsync<List<AppSettingPcm>>(_baseServerURL + "PcmSettings");
+                return await _restClient.GetAsync<BundleSelection>($"{_baseServerURL}PcmSettings/" +
+                    $"Department={department}" +
+                    $"&MachineType={machineType}" +
+                    $"&PcmType={pcmType}" +
+                    $"&PcmGen={pcmGen}" +
+                    $"&DisplayType={displayType}");
             }
             catch
             {
-                return new List<AppSettingPcm>();
+                return new BundleSelection();
             }
         }
 
@@ -75,10 +79,17 @@ namespace PhoenixSwitcher
             }
         }
 
-        //public Task<List<string>>? GetPCMMachineInfoList()
-        //{
-
-        //}
+        public Task<XmlProductionDataPCM?> GetPCMMachineFile(string department = "croix")
+        {
+            try
+            {
+                return  _restClient.GetAsync<XmlProductionDataPCM>($"{_baseServerURL}pcmmachines/Department={department}");
+            }
+            catch
+            {
+                return Task.FromResult<XmlProductionDataPCM?>(new XmlProductionDataPCM());
+            }
+        }
 
         // Download methods
         public async Task<string> DownloadBundleFiles(FileDetail detail, string drive)
@@ -141,8 +152,6 @@ namespace PhoenixSwitcher
 
                 fileStream.Close();
 
-                // TODO: Localization.
-                Console.WriteLine("Download voltooid!");
                 return true;
             }
             catch

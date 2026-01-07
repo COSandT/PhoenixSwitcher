@@ -1,9 +1,11 @@
 ﻿using System.IO;
+using AdonisUI.Controls;
 using CosntCommonLibrary.Esp32;
 using CosntCommonLibrary.Rest;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Tools.Usb;
+using CosntCommonLibrary.Xml;
 using PhoenixSwitcher.ControlTemplates;
 using PhoenixSwitcher.Delegates;
 using static PhoenixSwitcher.ControlTemplates.StatusBar;
@@ -52,8 +54,9 @@ namespace PhoenixSwitcher
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files");
             _bIsUpdatingBundles = true;
-            ResetPhoenixFileToBundleFile();
+            RenameGMHIFileToBundleFile();
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Get list of bundle files from rest api");
+            if (!Directory.Exists(_drive)) await ConnectDriveToPC();
             List<FileDetail>? bundleFiles = await _phoenixRest.GetBundleFiles();
             List<string> driveDirectories = Directory.GetDirectories(_drive).ToList();
 
@@ -66,12 +69,12 @@ namespace PhoenixSwitcher
 
             StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Finished updating bundle files.");
         }
-        private async void StartProcess(BundleSelection? bundleSelection)
+        private async void StartProcess(XmlMachinePCM? machine)
         {
             StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Process started getting ready to do stuff");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
-            if (bundleSelection == null)
+            if (machine == null)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected bundle was invalid.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid selected bundle.");
@@ -88,9 +91,17 @@ namespace PhoenixSwitcher
             // Check if a PhoenixFile already exists.
             // If it does make sure it gets set to old name as we do not want to overwrite.
             // Normally should only happen if program was shut down or crashed in the middle of the process.
-            if (Directory.Exists(_phoenixFilePath)) ResetPhoenixFileToBundleFile();
+            if (Directory.Exists(_phoenixFilePath)) RenameGMHIFileToBundleFile();
 
-            if (!await SetPhoenixFileFromBundleFile(bundleSelection.Bundle))
+            XmlModulePCM pcmModule = machine.Ops.Modules.First();
+            BundleSelection? bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(machine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, machine.DT);
+
+            if (bundle == null || bundle.Bundle == null)
+            {
+                string fallbackText = "No bundle file found for selected machine. Manually change rename the correct bundle file to 'GMHIFiles' before continueing!";
+                if (MessageBoxResult.OK != Helpers.ShowLocalizedOkCancelMessageBox("ID_02_0006", fallbackText)) return;
+            }
+            else if(!await RenameBundleFileToGMHIFile(bundle.Bundle))
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to setup phoenix file from selected bundle.");
@@ -121,7 +132,7 @@ namespace PhoenixSwitcher
             await ConnectDriveToPC();
 
             // Switch filename back to proper bundle name.
-            ResetPhoenixFileToBundleFile();
+            RenameGMHIFileToBundleFile();
 
             // Check for any noew bundle updates.
             await UpdateBundleFiles();
@@ -186,7 +197,7 @@ namespace PhoenixSwitcher
         }
 
 
-        private void ResetPhoenixFileToBundleFile()
+        private void RenameGMHIFileToBundleFile()
         {
             StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Resetting phoenix file to bundle file.");
 
@@ -221,7 +232,7 @@ namespace PhoenixSwitcher
                 break;
             }
         }
-        private async Task<bool> SetPhoenixFileFromBundleFile(string bundleFileName)
+        private async Task<bool> RenameBundleFileToGMHIFile(string bundleFileName)
         {
             StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Setting bundle file to phoenix file.");
 

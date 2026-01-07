@@ -25,14 +25,32 @@
             <Menu
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}">
                 <MenuItem 
-                    Header="{Binding SettingsText}" 
-                    Click="ChangeSettings_Click" />
-                <MenuItem 
-                    x:Name="LanguageSettings"
-                    Header="{Binding LanguageSettingsText}" />
-                <MenuItem 
-                    Header="{Binding AboutText}" 
-                    Click="About_Click" />
+                    Margin="2,0"
+                    Header="{Binding SettingsText}">
+                    <MenuItem 
+                        Header="{Binding ProgramSettingsText}"
+                        Click="ChangeSettings_Click" />
+                    <MenuItem 
+                        x:Name="LanguageSettings"
+                        Header="{Binding LanguageSettingsText}" />
+                </MenuItem>
+                <MenuItem
+                    Margin="2,0"
+                    Header="{Binding UpdateText}">
+                    <MenuItem 
+                        Header="{Binding UpdateBundleFilesText}"  
+                        Click="UpdateBundleFiles_Click" />
+                    <MenuItem 
+                        Header="{Binding UpdateMachineListText}"  
+                        Click="UpdateMachineList_Click" />
+                </MenuItem>
+                <MenuItem
+                    Margin="2,0"
+                    Header="{Binding HelpText}">
+                    <MenuItem 
+                        Header="{Binding AboutText}" 
+                        Click="About_Click" />
+                </MenuItem>
             </Menu>
         </Border>
         <Grid 

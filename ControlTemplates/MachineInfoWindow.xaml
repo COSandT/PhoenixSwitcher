@@ -15,26 +15,143 @@
         BorderThickness="2">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="85*"/>
+                <RowDefinition Height="15*"/>
             </Grid.RowDefinitions>
-
             <!-- Bundle Info Display-->
-            <Grid
-                Grid.Row="0">
-                
+            <Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="90*"/>
+                    </Grid.RowDefinitions>
+                    <Border
+                        Grid.Row="0"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}">
+                        <Viewbox
+                             Margin="5,5,10,5">
+                            <TextBlock Text="{Binding SelectedMachineHeaderText}" />
+                        </Viewbox>
+                    </Border>
+                    <StackPanel
+                        Grid.Row="1">
+                        <!-- Machine Type-->
+                        <Grid
+                            Grid.Row="0"
+                            HorizontalAlignment="Left"
+                            MaxHeight="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox
+                                Grid.Column="0"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding MachineTypeDescriptionText}" />
+                            </Viewbox>
+                            <Viewbox
+                                Grid.Column="1"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding MachineTypeValueText}" />
+                            </Viewbox>
+                        </Grid>
+                        <!-- PCM Type-->
+                        <Grid
+                            Grid.Row="1"
+                            HorizontalAlignment="Left"
+                            MaxHeight="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox
+                                Grid.Column="0"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding PCMTypeDescriptionText}" />
+                            </Viewbox>
+                            <Viewbox
+                                Grid.Column="1"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding PCMTypeValueText}" />
+                            </Viewbox>
+                        </Grid>
+                        <!-- PCM Gen-->
+                        <Grid
+                            Grid.Row="2"
+                            HorizontalAlignment="Left"
+                            MaxHeight="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox
+                                Grid.Column="0"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding PCMGenDescriptionText}" />
+                            </Viewbox>
+                            <Viewbox
+                                Grid.Column="1"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding PCMGenValueText}" />
+                            </Viewbox>
+                        </Grid>
+
+                        <!-- Display Type-->
+                        <Grid
+                            Grid.Row="3"
+                            HorizontalAlignment="Left"
+                            MaxHeight="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox
+                                Grid.Column="0"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding DisplayTypeDescriptionText}" />
+                            </Viewbox>
+                            <Viewbox
+                                Grid.Column="1"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding DisplayTypeValueText}" />
+                            </Viewbox>
+                        </Grid>
+                        <!-- Bundle -->
+                        <Grid
+                            Grid.Row="4"
+                            HorizontalAlignment="Left"
+                            MaxHeight="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox
+                                Grid.Column="0"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding BundleDescriptionText}" />
+                            </Viewbox>
+                            <Viewbox
+                                Grid.Column="1"
+                                Margin="5,5,10,5">
+                                <TextBlock Text="{Binding BundleValueText}" />
+                            </Viewbox>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
             </Grid>
             <!-- Buttons -->
             <Grid
-                Grid.Row="1">
+                Grid.Row="1"
+                MaxHeight="50"
+                VerticalAlignment="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <!-- Start Process Button-->
                 <Button
                     Grid.Column="0"
-                    Height="50"
+                    VerticalAlignment="Center"
                     Visibility="{Binding StartButtonVisibility}"
                     Content="{Binding StartButtonText}"
                     Click="StartProcess_Click">
@@ -42,7 +159,7 @@
                 <!-- Finish Process Button-->
                 <Button
                     Grid.Column="1"
-                    Height="50"
+                    VerticalAlignment="Center"
                     Visibility="{Binding FinishButtonVisibility}"
                     Content="{Binding FinishButtonText}"
                     Click="FinishProcess_Click">

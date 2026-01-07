@@ -1,10 +1,10 @@
-﻿using System.Windows;
+﻿using System.Reflection.PortableExecutable;
+using System.Windows;
 using System.Windows.Controls;
-
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Xml;
 using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher.ControlTemplates
@@ -15,11 +15,11 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class MachineInfoWindow : UserControl
     {
         private MachineInfoWindowViewModel _viewModel = new MachineInfoWindowViewModel();
-        private BundleSelection? _selectedBundle;
+        private XmlMachinePCM? _selectedMachine;
         private Logger? _logger;
 
 
-        public delegate void StartBundleProcessHandler(BundleSelection? bundleSelection);
+        public delegate void StartBundleProcessHandler(XmlMachinePCM? selectedMachine);
         public static event StartBundleProcessHandler? OnStartBundleProcess;
 
         public delegate void FinishedProcessHandler();
@@ -42,7 +42,7 @@ namespace PhoenixSwitcher.ControlTemplates
             // Call once to setup initial language.
             OnLanguageChanged();
 
-            MachineList.OnMachineSelected += SetMachineInfoFromBundle;
+            MachineList.OnMachineSelected += UpdateSelectedMachine;
 
             _logger?.LogInfo($"MachineInfoWindow::Init -> Finished initializing MachineInfoWindow.");
         }
@@ -51,19 +51,45 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogInfo($"MachineInfoWindow::OnLanguageChanged -> Updating text to match newly selected language.");
             _viewModel.StartButtonText = Helpers.TryGetLocalizedText("ID_04_0001", "Start");
             _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("ID_04_0002", "Finish");
+            _viewModel.SelectedMachineHeaderText = Helpers.TryGetLocalizedText("ID_04_0003", "SelectedMachineInfo");
+            _viewModel.MachineTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0004", "MachineType: ");
+            _viewModel.PCMTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0005", "PCMType: ");
+            _viewModel.PCMGenDescriptionText = Helpers.TryGetLocalizedText("ID_04_0006", "PCMGen: ");
+            _viewModel.DisplayTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0007", "DisplayType: ");
+            _viewModel.BundleDescriptionText = Helpers.TryGetLocalizedText("ID_04_0008", "Bundle: ");
         }
 
-        public void SetMachineInfoFromBundle(BundleSelection bundle)
+        public async void UpdateSelectedMachine(XmlMachinePCM? machine)
         {
             _logger?.LogInfo($"MachineInfoWindow::SetMachineInfoFromBundle -> Set selected bundle.");
-            _selectedBundle = bundle;
+            _selectedMachine = machine;
             _viewModel.StartButtonVisibility = Visibility.Visible;
+            if (_selectedMachine == null)
+            {
+                _viewModel.MachineTypeValueText = "";
+                _viewModel.PCMTypeValueText = "";
+                _viewModel.PCMGenValueText = "";
+                _viewModel.DisplayTypeValueText = "";
+                _viewModel.BundleValueText = "";
+            }
+            else
+            {
+                _viewModel.MachineTypeValueText = machine.N17.Substring(0, 4);
+                _viewModel.DisplayTypeValueText = machine.DT;
+
+                XmlModulePCM pcmModule = machine.Ops.Modules.First();
+                _viewModel.PCMTypeValueText = pcmModule.PCMT;
+                _viewModel.PCMGenValueText = pcmModule.PCMG;
+
+                BundleSelection bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(machine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, machine.DT);
+                _viewModel.BundleValueText = bundle.Bundle != null ? bundle.Bundle : "'not found'";
+            }
         }
 
         private void StartProcess_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke start bundle process event.");
-            OnStartBundleProcess?.Invoke(_selectedBundle);
+            OnStartBundleProcess?.Invoke(_selectedMachine);
         }
         private void FinishProcess_Click(object sender, RoutedEventArgs e)
         {

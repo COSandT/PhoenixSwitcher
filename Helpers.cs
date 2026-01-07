@@ -62,5 +62,13 @@ namespace PhoenixSwitcher
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
             return MessageBox.Show(model);
         }
+        public static MessageBoxResult ShowLocalizedOkCancelMessageBox(string localizedTextId, string fallbackText)
+        {
+            MessageBoxModel model = new MessageBoxModel();
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0001", "ok"), MessageBoxResult.OK));
+            model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0004", "cancel"), MessageBoxResult.Cancel));
+            model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
+            return MessageBox.Show(model);
+        }
     }
 }
