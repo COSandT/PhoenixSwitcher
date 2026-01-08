@@ -1,10 +1,11 @@
-﻿using System.Reflection.PortableExecutable;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools;
-using CosntCommonLibrary.Xml;
+
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 
@@ -59,16 +60,16 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.DisplayTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0007", "DisplayType: ");
             _viewModel.BundleDescriptionText = Helpers.TryGetLocalizedText("ID_04_0008", "Bundle: ");
             _viewModel.VANDescriptionText = Helpers.TryGetLocalizedText("ID_04_0009", "VAN: ");
-            _viewModel.VANDescriptionText = Helpers.TryGetLocalizedText("ID_04_00010", "Machine Num: ");
+            _viewModel.MachineNumberDescriptionText = Helpers.TryGetLocalizedText("ID_04_00010", "Machine Num: ");
         }
 
         public async void UpdateSelectedMachine(XmlMachinePCM? machine)
         {
             _logger?.LogInfo($"MachineInfoWindow::SetMachineInfoFromBundle -> Set selected bundle.");
             _selectedMachine = machine;
-            _viewModel.StartButtonVisibility = Visibility.Visible;
             if (_selectedMachine == null)
             {
+                _viewModel.StartButtonVisibility = Visibility.Hidden;
                 _viewModel.MachineNumberValueText = "";
                 _viewModel.MachineTypeValueText = "";
                 _viewModel.VANValueText = "";
@@ -80,14 +81,12 @@ namespace PhoenixSwitcher.ControlTemplates
             }
             else
             {
+                _viewModel.StartButtonVisibility = Visibility.Visible;
                 _viewModel.MachineNumberValueText = _selectedMachine.N17;
                 _viewModel.MachineTypeValueText = _selectedMachine.N17.Substring(0, 4);
                 _viewModel.DisplayTypeValueText = _selectedMachine.DT;
                 _viewModel.VANValueText = _selectedMachine.VAN;
 
-                _viewModel.PCMTypeValueText = "'not found'";
-                _viewModel.PCMGenValueText = "'not found'";
-                _viewModel.BundleValueText = "'not found'";
                 if (_selectedMachine.Ops != null && _selectedMachine.Ops.Modules != null)
                 {
                     XmlModulePCM pcmModule = _selectedMachine.Ops.Modules.First();
@@ -95,6 +94,12 @@ namespace PhoenixSwitcher.ControlTemplates
                     _viewModel.PCMGenValueText = pcmModule.PCMG;
                     BundleSelection? bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(_selectedMachine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, _selectedMachine.DT);
                     _viewModel.BundleValueText = (bundle != null && bundle.Bundle != null) ? bundle.Bundle : "'not found'";
+                }
+                else
+                {
+                    _viewModel.PCMTypeValueText = "'not found'";
+                    _viewModel.PCMGenValueText = "'not found'";
+                    _viewModel.BundleValueText = "'not found'";
                 }
                 StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
             }

@@ -36,6 +36,8 @@
 	<LanguageEntry id="ID_03_0001">Machinelijst</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Selecteer om te scannen --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Kan PCM-app-instellingen niet ophalen, terugkeren zonder de machinelijst te laden.</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Bezig met het bijwerken van de PCM-machinelijst.</LanguageEntry>
+	<LanguageEntry id="ID_03_0005">Bijwerken van de PCM-machinelijst voltooid. Selecteer of scan een machine.</LanguageEntry>
 
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>

@@ -5,14 +5,9 @@ using System.Windows.Controls;
 using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 
+using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
-
-using MessageBox = AdonisUI.Controls.MessageBox;
-using System.Threading.Tasks;
-
-
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -23,7 +18,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private XmlProductionDataPCM? _pcmMachineList;
         private Logger? _logger;
 
-        public delegate void MachineSelectedHandler(XmlMachinePCM selectedMachinePCMProductionData);
+        public delegate void MachineSelectedHandler(XmlMachinePCM? selectedMachinePCMProductionData);
         public static event MachineSelectedHandler? OnMachineSelected;
 
         public MachineList()
@@ -41,6 +36,7 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger = logger;
             _logger?.LogInfo($"MachineList::Init -> Start initializing MachineList.");
 
+            PhoenixSwitcherLogic.OnProcessFinished += OnProcessFinished;
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
 
@@ -54,8 +50,13 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
             _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
         }
+        private void OnProcessFinished()
+        {
+            OnMachineSelected?.Invoke(null);
+        }
         public async void UpdatePcmMachineList()
         {
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_03_0004", "Updating pcm machine list.");
             _pcmMachineList = await PhoenixRest.GetInstance().GetPCMMachineFile();
             if (_pcmMachineList == null) return;
 
@@ -63,11 +64,18 @@ namespace PhoenixSwitcher.ControlTemplates
             foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
             {
                 Button machineButton = new Button();
+                machineButton.Height = 50;
                 machineButton.Click += MachineSelected_Click;
-                machineButton.Content = pcmMachine.N17;
+                Viewbox viewBox = new Viewbox();
+                TextBlock textBlock = new TextBlock();
+                textBlock.Text = pcmMachine.N17;
+                viewBox.Child = textBlock;
+                machineButton.HorizontalContentAlignment = HorizontalAlignment.Left;
+                machineButton.Content = viewBox;
                 machineButton.Tag = pcmMachine;
                 List.Children.Add(machineButton);
             }
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_03_0005", "Finished updating pcm machine list. Please select or scan a machine.");
         }
 
         private void MachineSelected_Click(object sender, RoutedEventArgs e)

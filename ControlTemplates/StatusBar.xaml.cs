@@ -50,8 +50,6 @@ namespace PhoenixSwitcher.ControlTemplates
             // Setup localization for window.
             LocalizationManager.GetInstance().OnActiveLanguageChanged += UpdateStatusText;
             _logger?.LogInfo($"StatusInstructionBar::Init -> Finished initializing StatusInstructionBar.");
-
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "", "TODO: add instructions");
         }
 
         public void UpdateStatus(StatusLevel level, string locaStatusId, string fallbackStatusText)

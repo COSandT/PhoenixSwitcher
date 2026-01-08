@@ -27,6 +27,8 @@ namespace PhoenixSwitcher
 
         public delegate void ProcessStartedHandler();
         public static event ProcessStartedHandler? OnProcessStarted;
+        public delegate void ProcessFinishedHandler();
+        public static event ProcessFinishedHandler? OnProcessFinished;
 
         public PhoenixSwitcherLogic(Logger logger)
         {
@@ -137,6 +139,7 @@ namespace PhoenixSwitcher
             // Check for any noew bundle updates.
             await UpdateBundleFiles();
 
+            OnProcessFinished?.Invoke();
             StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0008", "Select machine from list or use scanner.");
         }
 

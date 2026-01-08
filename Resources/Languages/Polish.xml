@@ -36,6 +36,8 @@
 	<LanguageEntry id="ID_03_0001">Lista maszyn</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Wybierz, aby skanować --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Nie udało się pobrać ustawień aplikacji PCM, powrót bez ładowania listy maszyn.</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Aktualizowanie listy maszyn PCM.</LanguageEntry>
+	<LanguageEntry id="ID_03_0005">Aktualizacja listy maszyn PCM zakończona. Wybierz lub zeskanuj maszynę.</LanguageEntry>
 
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>

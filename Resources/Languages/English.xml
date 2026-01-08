@@ -37,6 +37,8 @@
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Select to Scan --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Failed to get pcm app settings, returning without loading machine list.</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Updating pcm machine list.</LanguageEntry>
+	<LanguageEntry id="ID_03_0005">Finished updating pcm machine list. Please select or scan a machine.</LanguageEntry>
 	
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>

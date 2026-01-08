@@ -36,6 +36,8 @@
 	<LanguageEntry id="ID_03_0001">Liste des machines</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Sélectionner pour analyser --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Impossible d’obtenir les paramètres de l’application PCM, retour sans charger la liste des machines.</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Mise à jour de la liste des machines PCM.</LanguageEntry>
+	<LanguageEntry id="ID_03_0005">Mise à jour de la liste des machines PCM terminée. Veuillez sélectionner ou analyser une machine.</LanguageEntry>
 
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Début</LanguageEntry>
