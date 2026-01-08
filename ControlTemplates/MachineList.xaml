@@ -55,7 +55,7 @@
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=IsFocused, ElementName=ScannedMachineText}">
+                                    <DataTrigger Binding="{Binding IsFocused, ElementName=ScannedMachineText}" Value="true">
                                         <Setter Property="Visibility" Value="Hidden"/>
                                     </DataTrigger>
                                 </Style.Triggers>

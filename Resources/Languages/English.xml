@@ -18,6 +18,20 @@
 	<LanguageEntry id="ID_02_0004">Deleting old files got interupted. Check logs for details.</LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Downloading new files got interupted. Check logs for details.</LanguageEntry>
 	<LanguageEntry id="ID_02_0006">No bundle file found for selected machine. Manually change rename the correct bundle file to 'GMHIFiles' before continueing!</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Updating bundle files</LanguageEntry>
+	<LanguageEntry id="ID_02_0008">Select machine from list or use scanner.</LanguageEntry>
+	<LanguageEntry id="ID_02_0009">Process started setting up everything to setup 'Phoenix screeen'</LanguageEntry>
+	<LanguageEntry id="ID_02_0010">Complete setup on 'Phoenix Screen' and press finish once done.</LanguageEntry>
+	<LanguageEntry id="ID_02_0011">Process finished, resetting to start</LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Connect drive to pc</LanguageEntry>
+	<LanguageEntry id="ID_02_0013">Switching drive connection</LanguageEntry>
+	<LanguageEntry id="ID_02_0014">Checking if drive is connected to pc</LanguageEntry>
+	<LanguageEntry id="ID_02_0015">Setting bundle file to 'GHMIFile'.</LanguageEntry>
+	<LanguageEntry id="ID_02_0016">Deleting old bundle files</LanguageEntry>
+	<LanguageEntry id="ID_02_0017">Downloading new bundle files</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Switching power to 'Phoenix Screen'</LanguageEntry>
+	<LanguageEntry id="ID_02_0019">'GHMIFile' to bundle file.</LanguageEntry>
+	
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
@@ -33,6 +47,10 @@
 	<LanguageEntry id="ID_04_0006">PCM Gen: </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Display Type: </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Bundle: </LanguageEntry>
+	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
+	<LanguageEntry id="ID_04_0010">Machine Num: </LanguageEntry>
+	<LanguageEntry id="ID_04_0011">Select machine from list or use scanner.</LanguageEntry>
+	<LanguageEntry id="ID_04_0012">Press start to start the setup process on the 'Phoenix Screen'</LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->

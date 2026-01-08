@@ -42,9 +42,23 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <!-- Machine Type-->
+                        <!-- Machine Number -->
                         <Viewbox Grid.Row="0" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding MachineNumberDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding MachineNumberValueText}" />
+                            </Grid>
+                        </Viewbox>
+                        <!-- Machine Type-->
+                        <Viewbox Grid.Row="1" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -55,8 +69,20 @@
                                 <TextBlock Grid.Column="2" Text="{Binding MachineTypeValueText}" />
                             </Grid>
                         </Viewbox>
+                        <!-- VAN -->
+                        <Viewbox Grid.Row="2" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding VANDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding VANValueText}" />
+                            </Grid>
+                        </Viewbox>
                         <!-- PCM Type-->
-                        <Viewbox Grid.Row="1" MaxHeight="50" HorizontalAlignment="Left">
+                        <Viewbox Grid.Row="3" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -68,7 +94,7 @@
                             </Grid>
                         </Viewbox>
                         <!-- PCM Gen-->
-                        <Viewbox Grid.Row="2" MaxHeight="50" HorizontalAlignment="Left">
+                        <Viewbox Grid.Row="4" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -80,7 +106,7 @@
                             </Grid>
                         </Viewbox>
                         <!-- Display Type-->
-                        <Viewbox Grid.Row="3" MaxHeight="50" HorizontalAlignment="Left">
+                        <Viewbox Grid.Row="5" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -92,7 +118,7 @@
                             </Grid>
                         </Viewbox>
                         <!-- Bundle -->
-                        <Viewbox Grid.Row="4" MaxHeight="50" HorizontalAlignment="Left">
+                        <Viewbox Grid.Row="6" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>

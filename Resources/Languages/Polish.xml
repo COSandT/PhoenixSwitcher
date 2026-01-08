@@ -10,7 +10,7 @@
 	<LanguageEntry id="ID_01_0007">Aktualizuj</LanguageEntry>
 	<LanguageEntry id="ID_01_0008">Aktualizuj pliki pakietów</LanguageEntry>
 	<LanguageEntry id="ID_01_0009">Aktualizuj listę maszyn</LanguageEntry>
-	
+
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Wybrano nieprawidłową maszynę</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Program aktualizuje pakiety. Proszę czekać do zakończenia.</LanguageEntry>
@@ -18,12 +18,25 @@
 	<LanguageEntry id="ID_02_0004">Usuwanie starych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Pobieranie nowych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
 	<LanguageEntry id="ID_02_0006">Nie znaleziono pliku pakietu dla wybranej maszyny. Ręcznie zmień nazwę właściwego pliku pakietu na 'GMHIFiles' przed kontynuowaniem!</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Aktualizowanie plików pakietów</LanguageEntry>
+	<LanguageEntry id="ID_02_0008">Wybierz maszynę z listy lub użyj skanera.</LanguageEntry>
+	<LanguageEntry id="ID_02_0009">Proces rozpoczęty, przygotowywanie wszystkiego do konfiguracji 'Phoenix Screen'</LanguageEntry>
+	<LanguageEntry id="ID_02_0010">Zakończ konfigurację na 'Phoenix Screen' i naciśnij zakończ po ukończeniu.</LanguageEntry>
+	<LanguageEntry id="ID_02_0011">"Proces zakończony, resetowanie do startu</LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Podłącz dysk do komputera</LanguageEntry>
+	<LanguageEntry id="ID_02_0013">Przełączanie połączenia dysku</LanguageEntry>
+	<LanguageEntry id="ID_02_0014">Sprawdzanie, czy dysk jest podłączony do komputera</LanguageEntry>
+	<LanguageEntry id="ID_02_0015">Ustawianie pliku pakietu na 'GHMIFile'.</LanguageEntry>
+	<LanguageEntry id="ID_02_0016">Usuwanie starych plików pakietów</LanguageEntry>
+	<LanguageEntry id="ID_02_0017">Pobieranie nowych plików pakietów</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Przełączanie zasilania na 'Phoenix Screen'</LanguageEntry>
+	<LanguageEntry id="ID_02_0019">'GHMIFile' do pliku pakietu.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Lista maszyn</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Wybierz, aby skanować --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Nie udało się pobrać ustawień aplikacji PCM, powrót bez ładowania listy maszyn.</LanguageEntry>
-	
+
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
 	<LanguageEntry id="ID_04_0002">Zakończenie</LanguageEntry>
@@ -33,24 +46,25 @@
 	<LanguageEntry id="ID_04_0006">Generacja PCM: </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Typ wyświetlacza: </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Pakiet: </LanguageEntry>
-	
-	<!-- StatusInstructionBar -->
-	<!-- Empty for now but will use ID_05_.... -->
-	
+	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
+	<LanguageEntry id="ID_04_0010">Numer maszyny: </LanguageEntry>
+	<LanguageEntry id="ID_04_0011">Wybierz maszynę z listy lub użyj skanera.</LanguageEntry>
+	<LanguageEntry id="ID_04_0012">Naciśnij start, aby rozpocząć proces konfiguracji na 'Phoenix Screen'</LanguageEntry>
+
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Okno ustawień</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Zapisz</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Czy chcesz zapisać zmiany?</LanguageEntry>
-	
+
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Informacje</LanguageEntry>
 	<LanguageEntry id="ID_07_0002">Wersja:</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Projekt:</LanguageEntry>
-	
+
 	<!-- Generic -->
 	<LanguageEntry id="ID_08_0001">Ok</LanguageEntry>
 	<LanguageEntry id="ID_08_0002">Tak</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">Nie</LanguageEntry>
 	<LanguageEntry id="ID_08_0004">Anuluj</LanguageEntry>
-	
+
 </Language>

@@ -50,7 +50,7 @@ namespace PhoenixSwitcher
 
         public async Task UpdateBundleFiles()
         {
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Updating bundle files");
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0007", "Updating bundle files");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files");
             _bIsUpdatingBundles = true;
@@ -67,11 +67,11 @@ namespace PhoenixSwitcher
             _bIsUpdatingBundles = false;
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle files");
 
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Finished updating bundle files.");
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0008", "Select machine from list or use scanner.");
         }
         private async void StartProcess(XmlMachinePCM? machine)
         {
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Process started getting ready to do stuff");
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0009", "Process started setting up everything to setup 'Phoenix screeen'");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
             if (machine == null)
@@ -121,11 +121,11 @@ namespace PhoenixSwitcher
             SwitchPowerToPhoenix(true);
             OnProcessStarted?.Invoke();
 
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Complete setup on Phoenix pc and press finish once done.");
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0010", "Complete setup on 'Phoenix Screen' and press finish once done.");
         }
         private async void FinishProcess()
         {
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Process finished, resetting to start");
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0011", "Process finished, resetting to start");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
             SwitchPowerToPhoenix(false);
@@ -137,7 +137,7 @@ namespace PhoenixSwitcher
             // Check for any noew bundle updates.
             await UpdateBundleFiles();
 
-            StatusDelegates.UpdateStatus(StatusLevel.Main, "TODO: LOCA", "Awaiting new process");
+            StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_02_0008", "Select machine from list or use scanner.");
         }
 
 
@@ -153,7 +153,7 @@ namespace PhoenixSwitcher
         }
         private async Task ConnectDriveToPC()
         {
-            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Connect drive to pc");
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0012", "Connect drive to pc");
 
             int waitTimeMs = 5000;
             _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> attempting to connect the drive to this pc.");
@@ -166,7 +166,7 @@ namespace PhoenixSwitcher
         }
         private async Task SwitchDriveConnection()
         {
-            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Switching drive connection");
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0013", "Switching drive connection");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Use relais to switch what device the drive is connected to.");
             if (_espController != null)
@@ -178,7 +178,7 @@ namespace PhoenixSwitcher
         }
         private bool IsDriveConnectedToPC()
         {
-            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Checking if drive is connected to pc");
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0014", "Checking if drive is connected to pc");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::IsDriveConnectedToPC -> Checking if drive is connected to pc.");
             _drive = _usbTool.GetDrive("PHOENIXD").DriveLetter;
@@ -187,7 +187,7 @@ namespace PhoenixSwitcher
         }
         private void SwitchPowerToPhoenix(bool result)
         {
-            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Switching power to phoenix device");
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0018", "Switching power to phoenix device");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Use relais to switch power of phoenix on/off");
             if (_espController != null)
@@ -199,7 +199,7 @@ namespace PhoenixSwitcher
 
         private void RenameGMHIFileToBundleFile()
         {
-            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Resetting phoenix file to bundle file.");
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0019", "'GHMIFile' to bundle file.");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> resetting potential phoenix file back to its bundle file name.");
             // if there is none do not care.
@@ -234,7 +234,7 @@ namespace PhoenixSwitcher
         }
         private async Task<bool> RenameBundleFileToGMHIFile(string bundleFileName)
         {
-            StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Setting bundle file to phoenix file.");
+            StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0015", "Setting bundle file to phoenix file.");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Try change selected bundle filename to Phoenix filename");
             if (!IsDriveConnectedToPC())
@@ -243,7 +243,6 @@ namespace PhoenixSwitcher
             }
             string filePath = _drive + bundleFileName;
 
-            // TODO: report error
             if (!Directory.Exists(filePath))
             {
                 _logger?.LogError($"PhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Bundle with name: {bundleFileName} does not exist.");
@@ -258,7 +257,7 @@ namespace PhoenixSwitcher
         {
             try
             {
-                StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Deleting old bundle files");
+                StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0016", "Deleting old bundle files");
 
                 _logger?.LogInfo($"PhoenixSwitcherLogic::DeleteOldBundles -> Attempt to delete old bundles still on drive.");
                 if (bundleFiles == null || driveDirectories == null) return Task.FromResult(false);
@@ -293,7 +292,7 @@ namespace PhoenixSwitcher
         {
             try
             {
-                StatusDelegates.UpdateStatus(StatusLevel.L1, "TODO: LOCA", "Downloading new bundle files");
+                StatusDelegates.UpdateStatus(StatusLevel.L1, "ID_02_0017", "Downloading new bundle files");
 
                 _logger?.LogInfo($"PhoenixSwitcherLogic::DownloadNewBundles -> Attempt to download new bundles not on drive yet.");
                 if (bundleFiles == null || driveDirectories == null) return false;
