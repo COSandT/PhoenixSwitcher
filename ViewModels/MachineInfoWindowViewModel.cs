@@ -14,18 +14,18 @@ namespace PhoenixSwitcher.ViewModels
 
         // Selected Machine Info
         public string SelectedMachineHeaderText { get; set; } = "";
-        // Machine Type
-        public string MachineNumberDescriptionText { get; set; } = "";
-        public string MachineNumberValueText { get; set; } = "";
+        // Machine Number Long
+        public string MachineN17DescriptionText { get; set; } = "";
+        public string MachineN17ValueText { get; set; } = "";
+        // Machine Number Short
+        public string MachineN9DescriptionText { get; set; } = "";
+        public string MachineN9ValueText { get; set; } = "";
         // Machine Type
         public string MachineTypeDescriptionText { get; set; } = "";
         public string MachineTypeValueText { get; set; } = "";
-        // PCM Type
-        public string PCMTypeDescriptionText { get; set; } = "";
-        public string PCMTypeValueText { get; set; } = "";
-        // PCM Gen
-        public string PCMGenDescriptionText { get; set; } = "";
-        public string PCMGenValueText { get; set; } = "";
+        // Series Type
+        public string SeriesDescriptionText { get; set; } = "";
+        public string SeriesValueText { get; set; } = "";
         // Display Type
         public string DisplayTypeDescriptionText { get; set; } = "";
         public string DisplayTypeValueText { get; set; } = "";

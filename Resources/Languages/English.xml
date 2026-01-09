@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
-	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0001">Phoenix Software Updater</LanguageEntry>
 	<LanguageEntry id="ID_01_0002">Settings</LanguageEntry>
 	<LanguageEntry id="ID_01_0003">Program Settings</LanguageEntry>
 	<LanguageEntry id="ID_01_0004">Language Settings</LanguageEntry>
@@ -17,19 +17,19 @@
 	<LanguageEntry id="ID_02_0003">Failed to find matching bundle files for selected machine. Try updating bundle files.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004"></LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Select machine from list or select the scanner box and use scanner.</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Process started setting up everything to setup 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Complete setup on 'Phoenix PCM' and press finish once done.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Process started setting up everything to setup Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Complete setup on Phoenix and press finish once done.</LanguageEntry>
 	<LanguageEntry id="ID_02_0008">Process finished, resetting to start</LanguageEntry>
 	<LanguageEntry id="ID_02_0009">Connect drive to pc</LanguageEntry>
 	<LanguageEntry id="ID_02_0010">Switching drive connection</LanguageEntry>
 	<LanguageEntry id="ID_02_0011">Checking if drive is connected to pc</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Switching power to 'Phoenix PCM'</LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Switching power to Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0013"></LanguageEntry>
 	<LanguageEntry id="ID_02_0014"></LanguageEntry>
 	<LanguageEntry id="ID_02_0015">Failed to update the bundles. Look at logs for what went wrong.</LanguageEntry>
 	<LanguageEntry id="ID_02_0016">Phoenix setup was ongoing while bundle update was supposed to happen. Delaying update until after setup has completed.</LanguageEntry>
 	<LanguageEntry id="ID_02_0017">Bundles are being updated please wait.</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Switching power to Phoenix PCM</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Switching power to Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0019">Renaming selected 'Bundle file' to 'GHMIFile'</LanguageEntry>
 	<LanguageEntry id="ID_02_0020">Waiting for bootup to switch drive.</LanguageEntry>
 	<LanguageEntry id="ID_02_0021">Switching drive.</LanguageEntry>
@@ -46,28 +46,28 @@
 	<LanguageEntry id="ID_04_0002">Finish</LanguageEntry>
 	<LanguageEntry id="ID_04_0003">Selected Machine Info</LanguageEntry>
 	<LanguageEntry id="ID_04_0004">Machine Type: </LanguageEntry>
-	<LanguageEntry id="ID_04_0005">PCM Type: </LanguageEntry>
-	<LanguageEntry id="ID_04_0006">PCM Gen: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">Machine Number Long: </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">Machine Number Short: </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Display Type: </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Bundle: </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
-	<LanguageEntry id="ID_04_0010">Machine Num: </LanguageEntry>
+	<LanguageEntry id="ID_04_0010">Series: </LanguageEntry>
 	<LanguageEntry id="ID_04_0011">Select machine from list or select the scanner box and use scanner.</LanguageEntry>
-	<LanguageEntry id="ID_04_0012">Press start to start the setup process on the 'Phoenix PCM'</LanguageEntry>
+	<LanguageEntry id="ID_04_0012">Press start to update Phoenix</LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->
 	
 	<!-- Settings Window -->
-	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Settings Window</LanguageEntry>
+	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Settings Window</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">File</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Save</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Do you want to save any changes?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">File has saved. Restart is required to apply changes.</LanguageEntry>
 	
 	<!-- About Window -->
-	<LanguageEntry id="ID_07_0001">Phoenix Switcher - About</LanguageEntry>
-	<LanguageEntry id="ID_07_0002">Phoenix Switcher:</LanguageEntry>
+	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - About</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Phoenix Software Updater:</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Designed by:</LanguageEntry>
 
 	<!-- Generic -->
@@ -77,7 +77,7 @@
 	<LanguageEntry id="ID_08_0004">Cancel</LanguageEntry>
 	
 	<!-- Update Window -->
-	<LanguageEntry id="ID_09_0001">Phoenix Switcher - Update Message</LanguageEntry>
+	<LanguageEntry id="ID_09_0001">Phoenix Software Updater - Update Message</LanguageEntry>
 	<LanguageEntry id="ID_09_0002">Updating Bundles, please wait...</LanguageEntry>
 	
 </Language>

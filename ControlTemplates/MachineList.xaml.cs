@@ -80,6 +80,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 //machineButton.HorizontalContentAlignment = HorizontalAlignment.Left;
                 machineButton.Content = viewBox;
                 machineButton.Tag = pcmMachine;
+                //machineButton.FocusVisualStyle =;
                 List.Children.Add(machineButton);
             }
             OnMachineSelected?.Invoke(null);

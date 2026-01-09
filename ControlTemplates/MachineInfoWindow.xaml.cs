@@ -55,12 +55,12 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("ID_04_0002", "Finish");
             _viewModel.SelectedMachineHeaderText = Helpers.TryGetLocalizedText("ID_04_0003", "SelectedMachineInfo");
             _viewModel.MachineTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0004", "MachineType: ");
-            _viewModel.PCMTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0005", "PCMType: ");
-            _viewModel.PCMGenDescriptionText = Helpers.TryGetLocalizedText("ID_04_0006", "PCMGen: ");
+            _viewModel.MachineN17DescriptionText = Helpers.TryGetLocalizedText("ID_04_0005", "Machine Num Long: ");
+            _viewModel.MachineN9DescriptionText = Helpers.TryGetLocalizedText("ID_04_0006", "Machine Num Short: ");
             _viewModel.DisplayTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0007", "DisplayType: ");
             _viewModel.BundleDescriptionText = Helpers.TryGetLocalizedText("ID_04_0008", "Bundle: ");
             _viewModel.VANDescriptionText = Helpers.TryGetLocalizedText("ID_04_0009", "VAN: ");
-            _viewModel.MachineNumberDescriptionText = Helpers.TryGetLocalizedText("ID_04_00010", "Machine Num: ");
+            _viewModel.SeriesDescriptionText = Helpers.TryGetLocalizedText("ID_04_00010", "Series: ");
         }
 
         public async void UpdateSelectedMachine(XmlMachinePCM? machine)
@@ -70,11 +70,11 @@ namespace PhoenixSwitcher.ControlTemplates
             if (_selectedMachine == null)
             {
                 _viewModel.StartButtonVisibility = Visibility.Hidden;
-                _viewModel.MachineNumberValueText = "";
+                _viewModel.MachineN17ValueText = "";
+                _viewModel.MachineN9ValueText = "";
                 _viewModel.MachineTypeValueText = "";
+                _viewModel.SeriesValueText = "";
                 _viewModel.VANValueText = "";
-                _viewModel.PCMTypeValueText = "";
-                _viewModel.PCMGenValueText = "";
                 _viewModel.DisplayTypeValueText = "";
                 _viewModel.BundleValueText = "";
                 StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_04_0011", "Select machine from list or use scanner.");
@@ -82,23 +82,21 @@ namespace PhoenixSwitcher.ControlTemplates
             else
             {
                 _viewModel.StartButtonVisibility = Visibility.Visible;
-                _viewModel.MachineNumberValueText = _selectedMachine.N17;
-                _viewModel.MachineTypeValueText = _selectedMachine.N17.Substring(0, 4);
+                _viewModel.MachineN17ValueText = _selectedMachine.N17;
+                _viewModel.MachineN9ValueText = _selectedMachine.NS;
+                _viewModel.MachineTypeValueText = _selectedMachine.Ty;
                 _viewModel.DisplayTypeValueText = _selectedMachine.DT;
+                _viewModel.SeriesValueText = _selectedMachine.SE;
                 _viewModel.VANValueText = _selectedMachine.VAN;
 
                 if (_selectedMachine.Ops != null && _selectedMachine.Ops.Modules != null)
                 {
                     XmlModulePCM pcmModule = _selectedMachine.Ops.Modules.First();
-                    _viewModel.PCMTypeValueText = pcmModule.PCMT;
-                    _viewModel.PCMGenValueText = pcmModule.PCMG;
                     BundleSelection? bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(_selectedMachine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, _selectedMachine.DT);
                     _viewModel.BundleValueText = (bundle != null && bundle.Bundle != null) ? bundle.Bundle : "'not found'";
                 }
                 else
                 {
-                    _viewModel.PCMTypeValueText = "'not found'";
-                    _viewModel.PCMGenValueText = "'not found'";
                     _viewModel.BundleValueText = "'not found'";
                 }
                 StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");

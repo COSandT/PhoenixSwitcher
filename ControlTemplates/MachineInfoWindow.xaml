@@ -45,7 +45,7 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <!-- Machine Number -->
+                        <!-- Machine Number Long -->
                         <Viewbox Grid.Row="0" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -53,12 +53,24 @@
                                     <ColumnDefinition Width="5"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding MachineNumberDescriptionText}" />
-                                <TextBlock Grid.Column="2" Text="{Binding MachineNumberValueText}" />
+                                <TextBlock Grid.Column="0" Text="{Binding MachineN17DescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding MachineN17ValueText}" />
+                            </Grid>
+                        </Viewbox>
+                        <!-- Machine Number Short-->
+                        <Viewbox Grid.Row="1" MaxHeight="50" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding MachineN9DescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding MachineN9ValueText}" />
                             </Grid>
                         </Viewbox>
                         <!-- Machine Type-->
-                        <Viewbox Grid.Row="1" MaxHeight="50" HorizontalAlignment="Left">
+                        <Viewbox Grid.Row="2" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -70,7 +82,7 @@
                             </Grid>
                         </Viewbox>
                         <!-- VAN -->
-                        <Viewbox Grid.Row="2" MaxHeight="50" HorizontalAlignment="Left">
+                        <Viewbox Grid.Row="3" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
@@ -82,18 +94,6 @@
                             </Grid>
                         </Viewbox>
                         <!-- PCM Type-->
-                        <Viewbox Grid.Row="3" MaxHeight="50" HorizontalAlignment="Left">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding PCMTypeDescriptionText}" />
-                                <TextBlock Grid.Column="2" Text="{Binding PCMTypeValueText}" />
-                            </Grid>
-                        </Viewbox>
-                        <!-- PCM Gen-->
                         <Viewbox Grid.Row="4" MaxHeight="50" HorizontalAlignment="Left">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -101,8 +101,8 @@
                                     <ColumnDefinition Width="5"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding PCMGenDescriptionText}" />
-                                <TextBlock Grid.Column="2" Text="{Binding PCMGenValueText}" />
+                                <TextBlock Grid.Column="0" Text="{Binding SeriesDescriptionText}" />
+                                <TextBlock Grid.Column="2" Text="{Binding SeriesValueText}" />
                             </Grid>
                         </Viewbox>
                         <!-- Display Type-->

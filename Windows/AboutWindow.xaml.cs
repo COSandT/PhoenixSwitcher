@@ -35,7 +35,7 @@ namespace PhoenixSwitcher.Windows
         {
             _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_07_0001", "Phoenix Switcher - About");
 
-            AssemblyName ExecutingAssemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
+            AssemblyName ExecutingAssemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName ?? "");
             string Major = "0", Minor = "0", Build = "0", Revision = "0";
             if (ExecutingAssemblyName.Version != null)
             {

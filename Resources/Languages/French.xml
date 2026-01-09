@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
-	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0001">Phoenix Software Updater</LanguageEntry>
 	<LanguageEntry id="ID_01_0002">Paramètres</LanguageEntry>
 	<LanguageEntry id="ID_01_0003">Paramètres du programme</LanguageEntry>
 	<LanguageEntry id="ID_01_0004">Paramètres de langue</LanguageEntry>
@@ -56,15 +56,15 @@
 	<LanguageEntry id="ID_04_0012">Appuyez sur démarrer pour lancer le processus de configuration sur 'Phoenix PCM'</LanguageEntry>
 
 	<!-- Settings Window -->
-	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Fenêtre des paramètres</LanguageEntry>
+	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Fenêtre des paramètres</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Fichier</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Enregistrer</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Voulez-vous enregistrer les modifications ?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">Le fichier a été enregistré. Un redémarrage est nécessaire pour appliquer les modifications.</LanguageEntry>
 
 	<!-- About Window -->
-	<LanguageEntry id="ID_07_0001">Phoenix Switcher - À propos</LanguageEntry>
-	<LanguageEntry id="ID_07_0002">Version :</LanguageEntry>
+	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - À propos</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Phoenix Software Updater :</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Conçu par :</LanguageEntry>
 
 	<!-- Generic -->
@@ -74,6 +74,6 @@
 	<LanguageEntry id="ID_08_0004">Annuler</LanguageEntry>
 
 	<!-- Update Window -->
-	<LanguageEntry id="ID_09_0001">Phoenix Switcher - Message de mise à jour</LanguageEntry>
+	<LanguageEntry id="ID_09_0001">Phoenix Software Updater - Message de mise à jour</LanguageEntry>
 	<LanguageEntry id="ID_09_0002">Mise à jour des bundles, veuillez patienter...</LanguageEntry>
 </Language>

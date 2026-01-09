@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
-	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0001">Phoenix Software Updater</LanguageEntry>
 	<LanguageEntry id="ID_01_0002">Instellingen</LanguageEntry>
 	<LanguageEntry id="ID_01_0003">Programma-instellingen</LanguageEntry>
 	<LanguageEntry id="ID_01_0004">Taalinstellingen</LanguageEntry>
@@ -56,15 +56,15 @@
 	<LanguageEntry id="ID_04_0012">Druk op start om het installatieproces op 'Phoenix PCM' te starten</LanguageEntry>
 
 	<!-- Settings Window -->
-	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Instellingen</LanguageEntry>
+	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Instellingen</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Bestand</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Opslaan</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Wilt u de wijzigingen opslaan?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">Bestand is opgeslagen. Herstart is vereist om wijzigingen toe te passen.</LanguageEntry>
 
 	<!-- About Window -->
-	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Over</LanguageEntry>
-	<LanguageEntry id="ID_07_0002">Phoenix Switcher:</LanguageEntry>
+	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - Over</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Phoenix Software Updater:</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Ontworpen door:</LanguageEntry>
 
 	<!-- Generic -->
@@ -74,6 +74,6 @@
 	<LanguageEntry id="ID_08_0004">Annuleren</LanguageEntry>
 
 	<!-- Update Window -->
-	<LanguageEntry id="ID_09_0001">Phoenix Switcher - Updatebericht</LanguageEntry>
+	<LanguageEntry id="ID_09_0001">Phoenix Software Updater - Updatebericht</LanguageEntry>
 	<LanguageEntry id="ID_09_0002">Bundels worden bijgewerkt, even geduld...</LanguageEntry>
 </Language>

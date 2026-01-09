@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- Main Window -->
-	<LanguageEntry id="ID_01_0001">Phoenix Switcher</LanguageEntry>
+	<LanguageEntry id="ID_01_0001">Phoenix Software Updater</LanguageEntry>
 	<LanguageEntry id="ID_01_0002">Ustawienia</LanguageEntry>
 	<LanguageEntry id="ID_01_0003">Ustawienia programu</LanguageEntry>
 	<LanguageEntry id="ID_01_0004">Ustawienia języka</LanguageEntry>
@@ -56,15 +56,15 @@
 	<LanguageEntry id="ID_04_0012">Naciśnij start, aby rozpocząć proces konfiguracji na 'Phoenix PCM'</LanguageEntry>
 
 	<!-- Settings Window -->
-	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Okno ustawień</LanguageEntry>
+	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Okno ustawień</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Plik</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Zapisz</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Czy chcesz zapisać zmiany?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">Plik został zapisany. Aby zastosować zmiany, wymagany jest restart.</LanguageEntry>
 
 	<!-- About Window -->
-	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Informacje</LanguageEntry>
-	<LanguageEntry id="ID_07_0002">Wersja:</LanguageEntry>
+	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - Informacje</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Phoenix Software Updater:</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Projekt:</LanguageEntry>
 
 	<!-- Generic -->
@@ -74,6 +74,6 @@
 	<LanguageEntry id="ID_08_0004">Anuluj</LanguageEntry>
 
 	<!-- Update Window -->
-	<LanguageEntry id="ID_09_0001">Phoenix Switcher - Komunikat aktualizacji</LanguageEntry>
+	<LanguageEntry id="ID_09_0001">Phoenix Software Updater - Komunikat aktualizacji</LanguageEntry>
 	<LanguageEntry id="ID_09_0002">Trwa aktualizacja pakietów, proszę czekać...</LanguageEntry>
 </Language>

@@ -146,9 +146,9 @@ namespace PhoenixSwitcher
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
-            if (machine == null)
+            if (machine == null || machine.Ops == null)
             {
-                _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected bundle was invalid.");
+                _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected a machine with invalid data.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid machine selected");
                 OnProcessCancelled?.Invoke();
                 return;
@@ -183,7 +183,7 @@ namespace PhoenixSwitcher
             }
 
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0020", "Waiting for bootup to switch drive.");
-            await Task.Delay(10000);
+            await Task.Delay(20000);
             // Switch drive to other device.
             await SwitchDriveConnection();
 

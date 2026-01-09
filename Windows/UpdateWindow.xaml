@@ -6,18 +6,23 @@
         xmlns:local="clr-namespace:PhoenixSwitcher.Windows"
         xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
-        Title="{Binding WindowName}" Height="360" Width="640">
+        WindowStyle="None"
+        Title="{Binding WindowName}" Height="180" Width="320">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
     <Grid>
         <Border Padding="20" CornerRadius="6">
-            <StackPanel>
-                <TextBlock Text="{Binding UpdatingText}"
-                       FontSize="16"
-                       Margin="0,0,0,10"/>
-                <ProgressBar IsIndeterminate="True" Height="20"/>
-            </StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Viewbox Grid.Row="0">
+                    <TextBlock Margin="0,0,0,10" FontSize="16" Text="{Binding UpdatingText}" />
+                </Viewbox>
+                <ProgressBar  Grid.Row="1" IsIndeterminate="True" Height="20"/>
+            </Grid>
         </Border>
     </Grid>
 </Window>
