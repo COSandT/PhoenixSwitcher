@@ -62,16 +62,6 @@ namespace PhoenixSwitcher.ControlTemplates
                 // Update the text
                 _statusList[level] = status;
             }
-            // Remove the lower status levels as they are from a previous status.
-            switch (level)
-            {
-                case StatusLevel.Main:
-                    _statusList.Remove(StatusLevel.L1);
-                    goto case StatusLevel.L1;
-                case StatusLevel.L1:
-                    _statusList.Remove(StatusLevel.L2);
-                    break;
-            }
             UpdateStatusText();
         }
         public void UpdateStatusPercentage(StatusLevel level, int newPercentage)
@@ -80,14 +70,8 @@ namespace PhoenixSwitcher.ControlTemplates
             int clampedPercentage = Math.Clamp(newPercentage, 0, 100);
             switch (level)
             {
-                case StatusLevel.Main:
+                case StatusLevel.Status:
                     _viewModel.MainStatusPercentage = clampedPercentage;
-                    break;
-                case StatusLevel.L1:
-                    _viewModel.L1StatusPercentage = clampedPercentage;
-                    break;
-                case StatusLevel.L2:
-                    _viewModel.L2StatusPercentage = clampedPercentage;
                     break;
             }
         }
@@ -97,19 +81,9 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogWarning($"StatusInstructionBar::ClearStatus -> Clear status message of specified level and lower levels.");
             switch (level)
             {
-                case StatusLevel.Main:
+                case StatusLevel.Status:
                     _viewModel.MainStatusPercentage = 0;
-                    _statusList.Remove(StatusLevel.Main);
-                    goto case StatusLevel.L1;
-                case StatusLevel.L1:
-                    _viewModel.L1StatusPercentage = 0;
-                    _statusList.Remove(StatusLevel.L1);
-                    _viewModel.L1StatusVisibility = Visibility.Collapsed;
-                    goto case StatusLevel.L2;
-                case StatusLevel.L2:
-                    _viewModel.L2StatusPercentage = 0;
-                    _statusList.Remove(StatusLevel.L2);
-                    _viewModel.L2StatusVisibility = Visibility.Collapsed;
+                    _statusList.Remove(StatusLevel.Status);
                     break;
             }
         }
@@ -118,31 +92,12 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             _logger?.LogInfo($"StatusInstructionBar::UpdateStatusText -> Updating Status text for all status levels");
             Status status;
-            if (!_statusList.TryGetValue(StatusLevel.Main, out status))
+            if (!_statusList.TryGetValue(StatusLevel.Status, out status))
             {
                 _viewModel.MainStatusText = "";
-                _viewModel.L1StatusText = "";
-                _viewModel.L2StatusText = "";
                 return;
             }
             _viewModel.MainStatusText = Helpers.TryGetLocalizedText(status.LocalizedTextID, status.FallbackText);
-
-
-            if (!_statusList.TryGetValue(StatusLevel.L1, out status))
-            {
-                _viewModel.L1StatusText = "";
-                _viewModel.L2StatusText = "";
-                return;
-            }
-            _viewModel.L1StatusText = Helpers.TryGetLocalizedText(status.LocalizedTextID, status.FallbackText);
-
-
-            if (!_statusList.TryGetValue(StatusLevel.L2, out status))
-            {
-                _viewModel.L2StatusText = "";
-                return;
-            }
-            _viewModel.L2StatusText = Helpers.TryGetLocalizedText(status.LocalizedTextID, status.FallbackText);
         }
     }
 }

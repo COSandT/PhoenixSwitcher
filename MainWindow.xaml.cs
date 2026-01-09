@@ -8,13 +8,10 @@ using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
 using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.ViewModels;
+using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
 {
-    public struct Version
-    {
-        public static string VersionNum = "0.1";
-    }
     public partial class MainWindow : Window
     {
         private MainWindowViewModel _viewModel = new MainWindowViewModel();
@@ -57,8 +54,20 @@ namespace PhoenixSwitcher
         }
         private async void InitPhoenixSwitcherLogic()
         {
-            await _phoenixSwitcher.Init();
-            await _phoenixSwitcher.UpdateBundleFiles();
+            await Task.Run(() => _phoenixSwitcher.Init());
+
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
+            TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(MachineListControl.UpdatePcmMachineList));
+
+            // Too long has passed since an updat for the bundle files. time to update them.
+            int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
+            int hoursBetweenUpdate = DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
+            if (hoursBetweenUpdate > 24)
+            {
+                await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
+                await Task.Run(() => MachineListControl.UpdatePcmMachineList());
+            }
         }
 
         // Click Events
@@ -83,7 +92,7 @@ namespace PhoenixSwitcher
         }
         private void UpdateBundleFiles_Click(object sender, RoutedEventArgs e)
         {
-            _ = _phoenixSwitcher.UpdateBundleFiles();
+            _phoenixSwitcher.UpdateBundleFilesOnDrive();
         }
         private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
         {
@@ -107,8 +116,8 @@ namespace PhoenixSwitcher
             _viewModel.HelpText = Helpers.TryGetLocalizedText("ID_01_0005", "UpdateBundleFiles");
             _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0006", "UpdateMachineList");
             _viewModel.UpdateText = Helpers.TryGetLocalizedText("ID_01_0007", "UpdateBundleFiles");
-            _viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateMachineList");
-            _viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateBundleFiles");
+            _viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateBundleFiles");
+            _viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateMachineList");
 
             foreach (MenuItem item in LanguageSettings.Items)
             {

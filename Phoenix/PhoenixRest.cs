@@ -91,6 +91,7 @@ namespace PhoenixSwitcher
             }
         }
 
+
         // Download methods
         public async Task<string> DownloadBundleFiles(FileDetail detail, string drive)
         {
@@ -114,49 +115,6 @@ namespace PhoenixSwitcher
             catch
             {
                 return "";
-            }
-        }
-        public async Task<bool> DownloadBundleFilesWithCallback(FileDetail detail, string drive)
-        {
-            try
-            {
-                string filePath = drive + detail.FileName;
-                if (File.Exists(filePath)) File.Delete(filePath); 
-                
-                using HttpClient http = new HttpClient();
-                using var response = await http.GetAsync($"{_baseServerURL}/pcmbundlefiles/{detail.Id}", HttpCompletionOption.ResponseHeadersRead);
-
-                response.EnsureSuccessStatusCode();
-
-                var total = response.Content.Headers.ContentLength ?? -1L;
-                var canReport = total != -1;
-
-                using var contentStream = await response.Content.ReadAsStreamAsync();
-                using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-
-                var buffer = new byte[8192];
-                long totalRead = 0;
-                int read;
-                while ((read = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                {
-                    await fileStream.WriteAsync(buffer, 0, read);
-                    totalRead += read;
-
-
-                    if (canReport)
-                    {
-                        //TODO: report downloadPercent.
-                        double percent = (double)totalRead / total;
-                    }
-                }
-
-                fileStream.Close();
-
-                return true;
-            }
-            catch
-            {
-                return false;
             }
         }
     }

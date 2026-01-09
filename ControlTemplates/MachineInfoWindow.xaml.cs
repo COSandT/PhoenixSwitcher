@@ -77,7 +77,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 _viewModel.PCMGenValueText = "";
                 _viewModel.DisplayTypeValueText = "";
                 _viewModel.BundleValueText = "";
-                StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_04_0011", "Select machine from list or use scanner.");
+                StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_04_0011", "Select machine from list or use scanner.");
             }
             else
             {
@@ -101,7 +101,7 @@ namespace PhoenixSwitcher.ControlTemplates
                     _viewModel.PCMGenValueText = "'not found'";
                     _viewModel.BundleValueText = "'not found'";
                 }
-                StatusDelegates.UpdateStatus(StatusLevel.Main, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
+                StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
             }
 
         }
@@ -110,13 +110,13 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke start bundle process event.");
             OnStartBundleProcess?.Invoke(_selectedMachine);
+            _viewModel.StartButtonVisibility = Visibility.Hidden;
         }
         private void FinishProcess_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke finish process event. And update button visibility");
             OnProcessFinished?.Invoke();
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
-            _viewModel.StartButtonVisibility = Visibility.Visible;
         }
         private void ProcessStarted()
         {

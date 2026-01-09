@@ -14,29 +14,31 @@
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Wybrano nieprawidłową maszynę</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Program aktualizuje pakiety. Proszę czekać do zakończenia.</LanguageEntry>
-	<LanguageEntry id="ID_02_0003">Nie znaleziono pasujących plików pakietu dla wybranego pojazdu. Spróbuj zaktualizować pliki pakietu.</LanguageEntry>
-	<LanguageEntry id="ID_02_0004">Usuwanie starych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
-	<LanguageEntry id="ID_02_0005">Pobieranie nowych plików zostało przerwane. Sprawdź logi, aby uzyskać szczegóły.</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Nie znaleziono pliku pakietu dla wybranej maszyny. Ręcznie zmień nazwę właściwego pliku pakietu na 'GMHIFiles' przed kontynuowaniem!</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Aktualizowanie plików pakietów</LanguageEntry>
-	<LanguageEntry id="ID_02_0008">Wybierz maszynę z listy lub użyj skanera.</LanguageEntry>
-	<LanguageEntry id="ID_02_0009">Proces rozpoczęty, przygotowywanie wszystkiego do konfiguracji 'Phoenix Screen'</LanguageEntry>
-	<LanguageEntry id="ID_02_0010">Zakończ konfigurację na 'Phoenix Screen' i naciśnij zakończ po ukończeniu.</LanguageEntry>
-	<LanguageEntry id="ID_02_0011">"Proces zakończony, resetowanie do startu</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Podłącz dysk do komputera</LanguageEntry>
-	<LanguageEntry id="ID_02_0013">Przełączanie połączenia dysku</LanguageEntry>
-	<LanguageEntry id="ID_02_0014">Sprawdzanie, czy dysk jest podłączony do komputera</LanguageEntry>
-	<LanguageEntry id="ID_02_0015">Ustawianie pliku pakietu na 'GHMIFile'.</LanguageEntry>
-	<LanguageEntry id="ID_02_0016">Usuwanie starych plików pakietów</LanguageEntry>
-	<LanguageEntry id="ID_02_0017">Pobieranie nowych plików pakietów</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Przełączanie zasilania na 'Phoenix Screen'</LanguageEntry>
-	<LanguageEntry id="ID_02_0019">'GHMIFile' do pliku pakietu.</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Nie znaleziono pasujących plików pakietu dla wybranej maszyny. Spróbuj zaktualizować pliki pakietu.</LanguageEntry>
+	<LanguageEntry id="ID_02_0004"></LanguageEntry>
+	<LanguageEntry id="ID_02_0005">Wybierz maszynę z listy lub zaznacz pole skanera i użyj skanera.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Proces rozpoczęty, przygotowywanie wszystkiego do konfiguracji 'Phoenix PCM'</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Zakończ konfigurację na 'Phoenix PCM' i naciśnij zakończ po ukończeniu.</LanguageEntry>
+	<LanguageEntry id="ID_02_0008">Proces zakończony, resetowanie do startu</LanguageEntry>
+	<LanguageEntry id="ID_02_0009">Podłącz dysk do komputera</LanguageEntry>
+	<LanguageEntry id="ID_02_0010">Przełączanie połączenia dysku</LanguageEntry>
+	<LanguageEntry id="ID_02_0011">Sprawdzanie, czy dysk jest podłączony do komputera</LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Przełączanie zasilania na 'Phoenix PCM'</LanguageEntry>
+	<LanguageEntry id="ID_02_0013"></LanguageEntry>
+	<LanguageEntry id="ID_02_0014"></LanguageEntry>
+	<LanguageEntry id="ID_02_0015">Nie udało się zaktualizować pakietów. Sprawdź logi, aby zobaczyć, co poszło nie tak.</LanguageEntry>
+	<LanguageEntry id="ID_02_0016">Konfiguracja Phoenix była w toku, gdy miała nastąpić aktualizacja pakietów. Aktualizacja została opóźniona do zakończenia konfiguracji.</LanguageEntry>
+	<LanguageEntry id="ID_02_0017">Pakiety są aktualizowane, proszę czekać.</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Przełączanie zasilania na Phoenix PCM</LanguageEntry>
+	<LanguageEntry id="ID_02_0019">Zmiana nazwy wybranego 'Bundle file' na 'GHMIFile'</LanguageEntry>
+	<LanguageEntry id="ID_02_0020">Oczekiwanie na uruchomienie w celu przełączenia dysku.</LanguageEntry>
+	<LanguageEntry id="ID_02_0021">Przełączanie dysku.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Lista maszyn</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Wybierz, aby skanować --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Nie udało się pobrać ustawień aplikacji PCM, powrót bez ładowania listy maszyn.</LanguageEntry>
-	<LanguageEntry id="ID_03_0004">Aktualizowanie listy maszyn PCM.</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">Aktualizowanie listy maszyn PCM, proszę czekać...</LanguageEntry>
 	<LanguageEntry id="ID_03_0005">Aktualizacja listy maszyn PCM zakończona. Wybierz lub zeskanuj maszynę.</LanguageEntry>
 
 	<!-- MachineInfoWindow -->
@@ -50,13 +52,15 @@
 	<LanguageEntry id="ID_04_0008">Pakiet: </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
 	<LanguageEntry id="ID_04_0010">Numer maszyny: </LanguageEntry>
-	<LanguageEntry id="ID_04_0011">Wybierz maszynę z listy lub użyj skanera.</LanguageEntry>
-	<LanguageEntry id="ID_04_0012">Naciśnij start, aby rozpocząć proces konfiguracji na 'Phoenix Screen'</LanguageEntry>
+	<LanguageEntry id="ID_04_0011">Wybierz maszynę z listy lub zaznacz pole skanera i użyj skanera.</LanguageEntry>
+	<LanguageEntry id="ID_04_0012">Naciśnij start, aby rozpocząć proces konfiguracji na 'Phoenix PCM'</LanguageEntry>
 
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Okno ustawień</LanguageEntry>
-	<LanguageEntry id="ID_06_0002">Zapisz</LanguageEntry>
-	<LanguageEntry id="ID_06_0003">Czy chcesz zapisać zmiany?</LanguageEntry>
+	<LanguageEntry id="ID_06_0002">Plik</LanguageEntry>
+	<LanguageEntry id="ID_06_0003">Zapisz</LanguageEntry>
+	<LanguageEntry id="ID_06_0004">Czy chcesz zapisać zmiany?</LanguageEntry>
+	<LanguageEntry id="ID_06_0005">Plik został zapisany. Aby zastosować zmiany, wymagany jest restart.</LanguageEntry>
 
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Informacje</LanguageEntry>
@@ -69,4 +73,7 @@
 	<LanguageEntry id="ID_08_0003">Nie</LanguageEntry>
 	<LanguageEntry id="ID_08_0004">Anuluj</LanguageEntry>
 
+	<!-- Update Window -->
+	<LanguageEntry id="ID_09_0001">Phoenix Switcher - Komunikat aktualizacji</LanguageEntry>
+	<LanguageEntry id="ID_09_0002">Trwa aktualizacja pakietów, proszę czekać...</LanguageEntry>
 </Language>

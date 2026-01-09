@@ -19,70 +19,48 @@
         </Grid.RowDefinitions>
         
         <!-- Menu Bar -->
-        <Border Grid.Row="0"
-            BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer0BorderBrush}}"
-            BorderThickness="2">
+        <Border Grid.Row="0" BorderThickness="2"
+            BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer0BorderBrush}}">
             <Menu
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}">
-                <MenuItem 
-                    Margin="2,0"
+                <MenuItem Margin="2,0"
                     Header="{Binding SettingsText}">
-                    <MenuItem 
-                        Header="{Binding ProgramSettingsText}"
-                        Click="ChangeSettings_Click" />
-                    <MenuItem 
-                        x:Name="LanguageSettings"
+                    <MenuItem Click="ChangeSettings_Click" 
+                        Header="{Binding ProgramSettingsText}" />
+                    <MenuItem x:Name="LanguageSettings"
                         Header="{Binding LanguageSettingsText}" />
                 </MenuItem>
-                <MenuItem
-                    Margin="2,0"
+                <MenuItem Margin="2,0"
                     Header="{Binding UpdateText}">
-                    <MenuItem 
-                        Header="{Binding UpdateBundleFilesText}"  
-                        Click="UpdateBundleFiles_Click" />
-                    <MenuItem 
-                        Header="{Binding UpdateMachineListText}"  
-                        Click="UpdateMachineList_Click" />
+                    <MenuItem Click="UpdateBundleFiles_Click"
+                        Header="{Binding UpdateBundleFilesText}" />
+                    <MenuItem Click="UpdateMachineList_Click" 
+                        Header="{Binding UpdateMachineListText}" />
                 </MenuItem>
-                <MenuItem
-                    Margin="2,0"
+                <MenuItem Margin="2,0"
                     Header="{Binding HelpText}">
-                    <MenuItem 
-                        Header="{Binding AboutText}" 
-                        Click="About_Click" />
+                    <MenuItem Click="About_Click" 
+                        Header="{Binding AboutText}" />
                 </MenuItem>
             </Menu>
         </Border>
-        <Grid 
-            Grid.Row="1">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="7.5"/>
+                <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <controltemplates:MachineList
-                x:Name="MachineListControl"
-                Grid.Column="0">
-
-            </controltemplates:MachineList>
-            <Grid
-                Grid.Column="2">
+            <controltemplates:MachineList x:Name="MachineListControl" Grid.Column="0" />
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="7.5"/>
+                    <RowDefinition Height="10"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <controltemplates:MachineInfoWindow
-                    Grid.Row="0"
-                    x:Name="MachineInfoWindowControl">
-
-                </controltemplates:MachineInfoWindow>
-                <controltemplates:StatusBar
-                    Grid.Row="2"
-                    x:Name="StatusBarControl">
-                    
-                </controltemplates:StatusBar>
+                
+                <controltemplates:MachineInfoWindow Grid.Row="0" x:Name="MachineInfoWindowControl" />
+                <controltemplates:StatusBar Grid.Row="2" x:Name="StatusBarControl" />
             </Grid>
         </Grid>
     </Grid>

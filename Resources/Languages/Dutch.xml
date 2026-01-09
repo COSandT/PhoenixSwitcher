@@ -14,29 +14,31 @@
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Ongeldige machine geselecteerd</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Het programma is bezig met het bijwerken van bundels. Wacht tot dit is voltooid.</LanguageEntry>
-	<LanguageEntry id="ID_02_0003">Geen overeenkomende bundelbestanden gevonden voor het geselecteerde voertuig. Probeer de bundelbestanden bij te werken.</LanguageEntry>
-	<LanguageEntry id="ID_02_0004">Het verwijderen van oude bestanden is onderbroken. Controleer de logboeken voor details.</LanguageEntry>
-	<LanguageEntry id="ID_02_0005">Het downloaden van nieuwe bestanden is onderbroken. Controleer de logboeken voor details.</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Geen bundelbestand gevonden voor de geselecteerde machine. Wijzig handmatig de naam van het juiste bundelbestand naar 'GMHIFiles' voordat u doorgaat!</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Bundelbestanden bijwerken</LanguageEntry>
-	<LanguageEntry id="ID_02_0008">Selecteer een machine uit de lijst of gebruik de scanner.</LanguageEntry>
-	<LanguageEntry id="ID_02_0009">Proces gestart om alles in te stellen voor het instellen van het 'Phoenix Screen'</LanguageEntry>
-	<LanguageEntry id="ID_02_0010">Voltooi de installatie op het 'Phoenix Screen' en druk op voltooien wanneer u klaar bent.</LanguageEntry>
-	<LanguageEntry id="ID_02_0011">Proces voltooid, terugzetten naar start</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Sluit de schijf aan op de pc</LanguageEntry>
-	<LanguageEntry id="ID_02_0013">Schakel schijfverbinding om</LanguageEntry>
-	<LanguageEntry id="ID_02_0014">Controleren of de schijf is aangesloten op de pc</LanguageEntry>
-	<LanguageEntry id="ID_02_0015">Bundelbestand instellen op 'GHMIFile'.</LanguageEntry>
-	<LanguageEntry id="ID_02_0016">Oude bundelbestanden verwijderen</LanguageEntry>
-	<LanguageEntry id="ID_02_0017">Nieuwe bundelbestanden downloaden</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Stroom omschakelen naar 'Phoenix Screen'</LanguageEntry>
-	<LanguageEntry id="ID_02_0019">'GHMIFile' naar bundelbestand.</LanguageEntry>
+	<LanguageEntry id="ID_02_0003">Geen overeenkomende bundelbestanden gevonden voor de geselecteerde machine. Probeer de bundelbestanden bij te werken.</LanguageEntry>
+	<LanguageEntry id="ID_02_0004"></LanguageEntry>
+	<LanguageEntry id="ID_02_0005">Selecteer een machine uit de lijst of selecteer het scannervak en gebruik de scanner.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Proces gestart om alles in te stellen voor het instellen van 'Phoenix PCM'</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Voltooi de installatie op 'Phoenix PCM' en druk op voltooien wanneer u klaar bent.</LanguageEntry>
+	<LanguageEntry id="ID_02_0008">Proces voltooid, resetten naar start</LanguageEntry>
+	<LanguageEntry id="ID_02_0009">Sluit de schijf aan op de pc</LanguageEntry>
+	<LanguageEntry id="ID_02_0010">Schijfverbinding omschakelen</LanguageEntry>
+	<LanguageEntry id="ID_02_0011">Controleren of de schijf is aangesloten op de pc</LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Stroom omschakelen naar 'Phoenix PCM'</LanguageEntry>
+	<LanguageEntry id="ID_02_0013"></LanguageEntry>
+	<LanguageEntry id="ID_02_0014"></LanguageEntry>
+	<LanguageEntry id="ID_02_0015">Bijwerken van de bundels is mislukt. Bekijk de logboeken om te zien wat er fout ging.</LanguageEntry>
+	<LanguageEntry id="ID_02_0016">Phoenix-installatie was bezig terwijl de bundelupdate moest plaatsvinden. Update wordt uitgesteld tot na voltooiing van de installatie.</LanguageEntry>
+	<LanguageEntry id="ID_02_0017">Bundels worden bijgewerkt, even geduld.</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Stroom omschakelen naar Phoenix PCM</LanguageEntry>
+	<LanguageEntry id="ID_02_0019">Geselecteerd 'Bundle file' hernoemen naar 'GHMIFile'</LanguageEntry>
+	<LanguageEntry id="ID_02_0020">Wachten op opstarten om schijf te wisselen.</LanguageEntry>
+	<LanguageEntry id="ID_02_0021">Schijf wisselen.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machinelijst</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Selecteer om te scannen --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Kan PCM-app-instellingen niet ophalen, terugkeren zonder de machinelijst te laden.</LanguageEntry>
-	<LanguageEntry id="ID_03_0004">Bezig met het bijwerken van de PCM-machinelijst.</LanguageEntry>
+	<LanguageEntry id="ID_03_0004">PCM-machinelijst wordt bijgewerkt, even geduld...</LanguageEntry>
 	<LanguageEntry id="ID_03_0005">Bijwerken van de PCM-machinelijst voltooid. Selecteer of scan een machine.</LanguageEntry>
 
 	<!-- MachineInfoWindow -->
@@ -50,17 +52,19 @@
 	<LanguageEntry id="ID_04_0008">Bundel: </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
 	<LanguageEntry id="ID_04_0010">Machinenummer: </LanguageEntry>
-	<LanguageEntry id="ID_04_0011">Selecteer een machine uit de lijst of gebruik de scanner.</LanguageEntry>
-	<LanguageEntry id="ID_04_0012">Druk op start om het installatieproces op het 'Phoenix Screen' te starten</LanguageEntry>
+	<LanguageEntry id="ID_04_0011">Selecteer een machine uit de lijst of selecteer het scannervak en gebruik de scanner.</LanguageEntry>
+	<LanguageEntry id="ID_04_0012">Druk op start om het installatieproces op 'Phoenix PCM' te starten</LanguageEntry>
 
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Switcher - Instellingen</LanguageEntry>
-	<LanguageEntry id="ID_06_0002">Opslaan</LanguageEntry>
-	<LanguageEntry id="ID_06_0003">Wilt u de wijzigingen opslaan?</LanguageEntry>
+	<LanguageEntry id="ID_06_0002">Bestand</LanguageEntry>
+	<LanguageEntry id="ID_06_0003">Opslaan</LanguageEntry>
+	<LanguageEntry id="ID_06_0004">Wilt u de wijzigingen opslaan?</LanguageEntry>
+	<LanguageEntry id="ID_06_0005">Bestand is opgeslagen. Herstart is vereist om wijzigingen toe te passen.</LanguageEntry>
 
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Switcher - Over</LanguageEntry>
-	<LanguageEntry id="ID_07_0002">Versie:</LanguageEntry>
+	<LanguageEntry id="ID_07_0002">Phoenix Switcher:</LanguageEntry>
 	<LanguageEntry id="ID_07_0003">Ontworpen door:</LanguageEntry>
 
 	<!-- Generic -->
@@ -69,4 +73,7 @@
 	<LanguageEntry id="ID_08_0003">Nee</LanguageEntry>
 	<LanguageEntry id="ID_08_0004">Annuleren</LanguageEntry>
 
+	<!-- Update Window -->
+	<LanguageEntry id="ID_09_0001">Phoenix Switcher - Updatebericht</LanguageEntry>
+	<LanguageEntry id="ID_09_0002">Bundels worden bijgewerkt, even geduld...</LanguageEntry>
 </Language>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +34,17 @@ namespace PhoenixSwitcher.Windows
         private void OnLanguageChanged()
         {
             _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_07_0001", "Phoenix Switcher - About");
-            _viewModel.VersionText = $"{Helpers.TryGetLocalizedText("ID_07_0002", "Version:")} {Version.VersionNum}";
+
+            AssemblyName ExecutingAssemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName);
+            string Major = "0", Minor = "0", Build = "0", Revision = "0";
+            if (ExecutingAssemblyName.Version != null)
+            {
+                Major = ExecutingAssemblyName.Version.Major.ToString();
+                Minor = ExecutingAssemblyName.Version.Minor.ToString();
+                Build = ExecutingAssemblyName.Version.Build.ToString();
+                Revision = ExecutingAssemblyName.Version.Revision.ToString();
+            }
+            _viewModel.VersionText = $"{Helpers.TryGetLocalizedText("ID_07_0002", "Phoenix Switcher:")} {Major}.{Minor}.{Build}.{Revision}";
 
             DateTime now = DateTime.Now;
             _viewModel.CopyrightText = $"Copyright 2025-{now.Year} COS&T";
