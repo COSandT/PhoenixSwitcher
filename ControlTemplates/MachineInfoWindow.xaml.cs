@@ -81,13 +81,23 @@ namespace PhoenixSwitcher.ControlTemplates
             }
             else
             {
-                _viewModel.StartButtonVisibility = Visibility.Visible;
                 _viewModel.MachineN17ValueText = _selectedMachine.N17;
                 _viewModel.MachineN9ValueText = _selectedMachine.NS;
                 _viewModel.MachineTypeValueText = _selectedMachine.Ty;
                 _viewModel.DisplayTypeValueText = _selectedMachine.DT;
                 _viewModel.SeriesValueText = _selectedMachine.SE;
                 _viewModel.VANValueText = _selectedMachine.VAN;
+
+                if (_selectedMachine.DT == 1.ToString())
+                {
+                    StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0014", "Cannot update phoenix software for display type 1. Select new Machine.");
+                    Helpers.ShowLocalizedOkMessageBox("ID_02_0014", "Cannot update phoenix software for display type 1. Select new Machine.");
+                }
+                else
+                {
+                    _viewModel.StartButtonVisibility = Visibility.Visible;
+                    StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
+                }
 
                 if (_selectedMachine.Ops != null && _selectedMachine.Ops.Modules != null)
                 {
@@ -99,7 +109,6 @@ namespace PhoenixSwitcher.ControlTemplates
                 {
                     _viewModel.BundleValueText = "'not found'";
                 }
-                StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
             }
 
         }

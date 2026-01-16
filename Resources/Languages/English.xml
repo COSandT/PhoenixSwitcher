@@ -25,7 +25,7 @@
 	<LanguageEntry id="ID_02_0011">Checking if drive is connected to pc</LanguageEntry>
 	<LanguageEntry id="ID_02_0012">Switching power to Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0013">Failed to update pcm machine list. Look at logs for reason.</LanguageEntry>
-	<LanguageEntry id="ID_02_0014"></LanguageEntry>
+	<LanguageEntry id="ID_02_0014">Cannot update phoenix software for display type 1. Please select new Machine.</LanguageEntry>
 	<LanguageEntry id="ID_02_0015">Failed to update the bundles. Look at logs for what went wrong.</LanguageEntry>
 	<LanguageEntry id="ID_02_0016">Phoenix setup was ongoing while bundle update was supposed to happen. Delaying update until after setup has completed.</LanguageEntry>
 	<LanguageEntry id="ID_02_0017">Bundles are being updated please wait.</LanguageEntry>
