@@ -16,8 +16,7 @@
                 Value="{Binding MainStatusPercentage}">
             </ProgressBar>
             <Viewbox Margin="10,5">
-                <TextBlock Text="{Binding MainStatusText}"
-                           Foreground="Green"/>
+                <TextBlock Text="{Binding MainStatusText}" Foreground="{Binding StatusColor}"/>
             </Viewbox>
         </Grid>
     </Border>

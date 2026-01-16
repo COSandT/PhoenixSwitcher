@@ -1,4 +1,4 @@
-﻿using System.Windows;
+﻿using System.Windows.Media;
 using PropertyChanged;
 
 namespace PhoenixSwitcher.ViewModels
@@ -8,5 +8,6 @@ namespace PhoenixSwitcher.ViewModels
     {
         public string MainStatusText { get; set; } = "";
         public int MainStatusPercentage { get; set; } = 0;
+        public SolidColorBrush StatusColor { get; set; } = Brushes.White;
     }
 }

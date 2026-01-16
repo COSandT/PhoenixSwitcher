@@ -1,16 +1,15 @@
 ﻿using System.IO;
 using System.Windows;
-
-using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
 using CosntCommonLibrary.Esp32;
-using CosntCommonLibrary.Tools.Usb;
-using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-
-using PhoenixSwitcher.Windows;
-using PhoenixSwitcher.Delegates;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Tools.Usb;
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using PhoenixSwitcher.ControlTemplates;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.Windows;
 
 namespace PhoenixSwitcher
 {
@@ -58,18 +57,33 @@ namespace PhoenixSwitcher
         public void UpdateBundleFilesOnDrive()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files.");
-            Application.Current.Dispatcher.Invoke((Action)async delegate
+            try
             {
-                _bIsUpdatingBundles = true;
+                Application.Current.Dispatcher.Invoke((Action)async delegate
+                {
+                    _bIsUpdatingBundles = true;
+                    Mouse.OverrideCursor = Cursors.Wait;
 
-                UpdateWindow updatingWindow = new UpdateWindow();
-                updatingWindow.Show();
-                await Task.Run(() => UpdateBundleFiles_Internal());
-                updatingWindow.Close();
+                    UpdateWindow updatingWindow = new UpdateWindow();
+                    updatingWindow.Show();
+                    await Task.Run(() => UpdateBundleFiles_Internal());
+                    updatingWindow.Close();
 
-                _bIsUpdatingBundles = false;
-                _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle file.");
-            });
+                    Mouse.OverrideCursor = null;
+                    _bIsUpdatingBundles = false;
+                    _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle file.");
+                });
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    Mouse.OverrideCursor = null;
+                    _bIsUpdatingBundles = false;
+                });
+                _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
+            }
         }
         private async Task UpdateBundleFiles_Internal()
         {
@@ -162,9 +176,6 @@ namespace PhoenixSwitcher
                 return;
             }
 
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
-            SwitchPowerToPhoenix(true);
-
             // Check if a PhoenixFile already exists.
             // If it does make sure it gets set to old name as we do not want to overwrite.
             // Normally should only happen if program was shut down or crashed in the middle of the process.
@@ -182,6 +193,9 @@ namespace PhoenixSwitcher
                 return;
             }
 
+            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
+            SwitchPowerToPhoenix(true);
+
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0020", "Waiting for bootup to switch drive.");
             await Task.Delay(20000);
             // Switch drive to other device.
@@ -197,7 +211,7 @@ namespace PhoenixSwitcher
             }
             OnProcessStarted?.Invoke();
 
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0007", "Complete setup on 'Phoenix Screen' and press finish once done.");
+            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0007", "Complete setup on 'Phoenix Screen' and press finish once done.");
         }
         private async void FinishProcess()
         {
@@ -218,7 +232,7 @@ namespace PhoenixSwitcher
                 await Task.Run(() => UpdateBundleFilesOnDrive());
                 _bExecuteDelayedBundleUpdate = false;
             }
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0005", "Select machine from list or use scanner.");
+            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0005", "Select machine from list or use scanner.");
         }
 
         // Helpers

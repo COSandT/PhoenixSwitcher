@@ -30,7 +30,7 @@
                 <Viewbox
                     Margin="10,0"
                     Grid.Column="1">
-                    <TextBlock Text="{Binding MachineListHeaderText}" />
+                    <TextBlock Text="{Binding MachineListHeaderText}" FontWeight="DemiBold" />
                 </Viewbox>
             </Border>
             <!-- Scan Machine Box -->
@@ -71,13 +71,14 @@
                 BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
                 <ScrollViewer 
+                    x:Name="ListScrollViewer"
                     Margin="0,2,2,0" 
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch" 
                     HorizontalScrollBarVisibility="Auto" 
                     VerticalScrollBarVisibility="Auto" 
                     adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="AlwaysExpand">
-                    <StackPanel x:Name="List" />
+                    <StackPanel x:Name="List" HorizontalAlignment="Stretch" />
                 </ScrollViewer>
             </Border>
         </Grid>

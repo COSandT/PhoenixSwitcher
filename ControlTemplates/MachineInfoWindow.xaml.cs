@@ -77,7 +77,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 _viewModel.VANValueText = "";
                 _viewModel.DisplayTypeValueText = "";
                 _viewModel.BundleValueText = "";
-                StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_04_0011", "Select machine from list or use scanner.");
+                StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
             }
             else
             {
@@ -99,7 +99,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 {
                     _viewModel.BundleValueText = "'not found'";
                 }
-                StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
+                StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
             }
 
         }

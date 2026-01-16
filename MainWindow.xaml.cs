@@ -1,13 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-
-using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.Windows;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
@@ -54,19 +53,29 @@ namespace PhoenixSwitcher
         }
         private async void InitPhoenixSwitcherLogic()
         {
-            await Task.Run(() => _phoenixSwitcher.Init());
-
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
-            TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(MachineListControl.UpdatePcmMachineList));
-
-            // Too long has passed since an updat for the bundle files. time to update them.
-            int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
-            int hoursBetweenUpdate = DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
-            if (hoursBetweenUpdate > 24)
+            try
             {
-                await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
-                await Task.Run(() => MachineListControl.UpdatePcmMachineList());
+                await Task.Run(() => _phoenixSwitcher.Init());
+
+                XmlProjectSettings settings = Helpers.GetProjectSettings();
+                TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
+                TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(MachineListControl.UpdatePcmMachineList));
+
+                // Too long has passed since an updat for the bundle files. time to update them.
+                int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
+                int hoursBetweenUpdate = DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
+                if (hoursBetweenUpdate > 24)
+                {
+                    Mouse.OverrideCursor = Cursors.Wait;
+                    await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
+                    await Task.Run(() => MachineListControl.UpdatePcmMachineList());
+                    Mouse.OverrideCursor = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Mouse.OverrideCursor = null;
+                _logger.LogError($"MainWindow::InitPhoenixSwitcherLoging -> exception occured: {ex.Message}");
             }
         }
 

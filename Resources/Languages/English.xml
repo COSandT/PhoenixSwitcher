@@ -24,7 +24,7 @@
 	<LanguageEntry id="ID_02_0010">Switching drive connection</LanguageEntry>
 	<LanguageEntry id="ID_02_0011">Checking if drive is connected to pc</LanguageEntry>
 	<LanguageEntry id="ID_02_0012">Switching power to Phoenix</LanguageEntry>
-	<LanguageEntry id="ID_02_0013"></LanguageEntry>
+	<LanguageEntry id="ID_02_0013">Failed to update pcm machine list. Look at logs for reason.</LanguageEntry>
 	<LanguageEntry id="ID_02_0014"></LanguageEntry>
 	<LanguageEntry id="ID_02_0015">Failed to update the bundles. Look at logs for what went wrong.</LanguageEntry>
 	<LanguageEntry id="ID_02_0016">Phoenix setup was ongoing while bundle update was supposed to happen. Delaying update until after setup has completed.</LanguageEntry>
@@ -39,7 +39,6 @@
 	<LanguageEntry id="ID_03_0002">-- Select to Scan --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Failed to get pcm app settings, returning without loading machine list.</LanguageEntry>
 	<LanguageEntry id="ID_03_0004">Updating pcm machine list, please wait...</LanguageEntry>
-	<LanguageEntry id="ID_03_0005">Finished updating pcm machine list. Please select or scan a machine.</LanguageEntry>
 	
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>

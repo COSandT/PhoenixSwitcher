@@ -1,11 +1,11 @@
-﻿using System.Windows;
+﻿using System.Windows.Media;
 using System.Windows.Controls;
 
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
 
-using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -14,8 +14,8 @@ namespace PhoenixSwitcher.ControlTemplates
     /// </summary>
     public partial class StatusBar : UserControl
     {
-        private Dictionary<StatusLevel, Status> _statusList = new Dictionary<StatusLevel, Status>();
         private StatusBarViewModel _viewModel = new StatusBarViewModel();
+        private Status _status = new Status();
         private Logger? _logger;
 
         // Struct holding all the status info.
@@ -55,12 +55,16 @@ namespace PhoenixSwitcher.ControlTemplates
         public void UpdateStatus(StatusLevel level, string locaStatusId, string fallbackStatusText)
         {
             _logger?.LogInfo($"StatusInstructionBar::UpdateNewStatus -> Recieved new status:");
-            Status status = new Status(locaStatusId, fallbackStatusText);
-            if (!_statusList.TryAdd(level, status))
+            _status = new Status(locaStatusId, fallbackStatusText);
+            switch (level)
             {
-                if (!_statusList.ContainsKey(level)) return; // failed to add.
-                // Update the text
-                _statusList[level] = status;
+                case StatusLevel.Instruction:
+                    _viewModel.StatusColor = Brushes.Green;
+                    break;
+                case StatusLevel.Status:
+                    default:
+                    _viewModel.StatusColor = Brushes.White;
+                    break;
             }
             UpdateStatusText();
         }
@@ -68,36 +72,20 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             _logger?.LogWarning($"StatusInstructionBar::UpdateStatusPercentage -> Updating status percentage for specified sstatus level.");
             int clampedPercentage = Math.Clamp(newPercentage, 0, 100);
-            switch (level)
-            {
-                case StatusLevel.Status:
-                    _viewModel.MainStatusPercentage = clampedPercentage;
-                    break;
-            }
+            _viewModel.MainStatusPercentage = clampedPercentage;
         }
         public void ClearStatus(StatusLevel level)
         {
             // When we clear a status we also want to clear all the status messages of lower level.
             _logger?.LogWarning($"StatusInstructionBar::ClearStatus -> Clear status message of specified level and lower levels.");
-            switch (level)
-            {
-                case StatusLevel.Status:
-                    _viewModel.MainStatusPercentage = 0;
-                    _statusList.Remove(StatusLevel.Status);
-                    break;
-            }
+            _viewModel.MainStatusPercentage = 0;
+            _viewModel.MainStatusText = string.Empty;
         }
 
         private void UpdateStatusText()
         {
             _logger?.LogInfo($"StatusInstructionBar::UpdateStatusText -> Updating Status text for all status levels");
-            Status status;
-            if (!_statusList.TryGetValue(StatusLevel.Status, out status))
-            {
-                _viewModel.MainStatusText = "";
-                return;
-            }
-            _viewModel.MainStatusText = Helpers.TryGetLocalizedText(status.LocalizedTextID, status.FallbackText);
+            _viewModel.MainStatusText = Helpers.TryGetLocalizedText(_status.LocalizedTextID, _status.FallbackText);
         }
     }
 }

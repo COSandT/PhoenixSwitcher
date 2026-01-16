@@ -4,7 +4,7 @@ namespace PhoenixSwitcher.Delegates
 {
     public enum StatusLevel
     {
-        Intruction,
+        Instruction,
         Status,
     }
     public class StatusDelegates
