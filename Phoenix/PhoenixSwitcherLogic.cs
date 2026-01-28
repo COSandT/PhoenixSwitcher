@@ -1,15 +1,16 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Input;
+
 using CosntCommonLibrary.Esp32;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Tools.Usb;
-using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.ControlTemplates;
-using PhoenixSwitcher.Delegates;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+
 using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.ControlTemplates;
 
 namespace PhoenixSwitcher
 {
@@ -41,6 +42,8 @@ namespace PhoenixSwitcher
             _logger?.LogInfo($"PhoenixSwitcherLogic::Constructor -> Start");
             _usbTool = new UsbTool();
 
+            MachineInfoWindow.OnShutOffPower += SwitchPowerToPhoenix;
+            MachineInfoWindow.OnTest += SwitchPowerToPhoenix;
             MachineInfoWindow.OnStartBundleProcess += StartProcess;
             MachineInfoWindow.OnProcessFinished += FinishProcess;
             _logger?.LogInfo($"PhoenixSwitcherLogic::Constructor -> End");
@@ -155,12 +158,12 @@ namespace PhoenixSwitcher
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
             }
         }
-        private async void StartProcess(XmlMachinePCM? machine)
+        private async void StartProcess(PhoenixSwitcherDone? machine)
         {
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
-            if (machine == null || machine.Ops == null)
+            if (machine == null)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected a machine with invalid data.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid machine selected");
@@ -181,11 +184,8 @@ namespace PhoenixSwitcher
             // Normally should only happen if program was shut down or crashed in the middle of the process.
             if (Directory.Exists(_phoenixFilePath)) RenameGMHIFileToBundleFile();
 
-            XmlModulePCM pcmModule = machine.Ops.Modules.First();
-            BundleSelection? bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(machine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, machine.DT);
-
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0019", "Renaming selected 'Bundle file' to 'GHMIFile'");
-            if (bundle == null || bundle.Bundle == null || !await RenameBundleFileToGMHIFile(bundle.Bundle))
+            if (!await RenameBundleFileToGMHIFile(machine.Bundle_version))
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to find matching bundle files for selected vehicle. Try updating bundle files.");
@@ -197,7 +197,9 @@ namespace PhoenixSwitcher
             SwitchPowerToPhoenix(true);
 
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0020", "Waiting for bootup to switch drive.");
-            await Task.Delay(20000);
+
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            await Task.Delay(settings.DriveSwitchWaitTimeSec * 100);
             // Switch drive to other device.
             await SwitchDriveConnection();
 
@@ -211,7 +213,7 @@ namespace PhoenixSwitcher
             }
             OnProcessStarted?.Invoke();
 
-            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0007", "Complete setup on 'Phoenix Screen' and press finish once done.");
+            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0007", "Complete setup on 'Phoenix Screen' and press 'Power off' once done.");
         }
         private async void FinishProcess()
         {
@@ -242,6 +244,12 @@ namespace PhoenixSwitcher
             _espController = new Esp32Controller();
             await _espController.Connect();
 
+            if (!_espController.IsConnected)
+            {
+                _logger?.LogError($"PhoenixSwitcherLogic::SetupEspController -> Unable to connect to EspController");
+                StatusDelegates.UpdateStatus(StatusLevel.Error, "ID_02_0022", "Failed to connect to EspController. Check if pc is connected and retry connecting.");
+                return;
+            }
             _espController.SetAllRelays(false);
             await ConnectDriveToPC();
         }

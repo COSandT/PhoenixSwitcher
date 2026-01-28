@@ -7,13 +7,18 @@ namespace PhoenixSwitcher.ViewModels
     public class MachineInfoWindowViewModel
     {
         public Visibility StartButtonVisibility { get; set; } = Visibility.Hidden;
+        public Visibility TestButtonVisibility { get; set; } = Visibility.Hidden;
+        public Visibility ShutDownPhoenixButtonVisibility { get; set; } = Visibility.Hidden;
         public Visibility FinishButtonVisibility { get; set; } = Visibility.Hidden;
 
         public string StartButtonText { get; set; } = "";
+        public string TestButtonText { get; set; } = "";
+        public string ShutDownPhoenixText { get; set; } = "";
         public string FinishButtonText { get; set; } = "";
 
         // Selected Machine Info
         public string SelectedMachineHeaderText { get; set; } = "";
+
         // Machine Number Long
         public string MachineN17DescriptionText { get; set; } = "";
         public string MachineN17ValueText { get; set; } = "";

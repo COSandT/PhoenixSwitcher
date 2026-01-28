@@ -6,6 +6,7 @@ namespace PhoenixSwitcher.Delegates
     {
         Instruction,
         Status,
+        Error,
     }
     public class StatusDelegates
     {

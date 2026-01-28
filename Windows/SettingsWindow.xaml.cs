@@ -26,7 +26,7 @@ namespace PhoenixSwitcher.Windows
         
         private void OnWindowClosing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox(Helpers.TryGetLocalizedText("ID_06_0004", "Do you want to save changes?"));
+            MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox("ID_06_0004", "Do you want to save changes?");
             if (result == MessageBoxResult.Yes)
             {
                 Save_Click(null, null);

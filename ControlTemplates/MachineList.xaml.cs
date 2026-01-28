@@ -100,7 +100,10 @@ namespace PhoenixSwitcher.ControlTemplates
             }
             catch (Exception ex)
             {
-                Helpers.ShowLocalizedOkMessageBox("ID_03_0013", "Failed to update pcm machine list. Look at logs for reason.");
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_03_0013", "Failed to update pcm machine list. Look at logs for reason.");
+                });
                 _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}");
                 OnMachineSelected?.Invoke(null);
             }

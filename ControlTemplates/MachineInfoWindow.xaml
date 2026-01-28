@@ -150,6 +150,22 @@
                             <TextBlock Text="{Binding StartButtonText}" />
                         </Viewbox>
                     </Button>
+                    <!-- Test Process Button-->
+                    <Button Grid.Column="0" Click="TestProcess_Click"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                        Visibility="{Binding TestButtonVisibility}">
+                        <Viewbox>
+                            <TextBlock Text="{Binding TestButtonText}" />
+                        </Viewbox>
+                    </Button>
+                    <!-- Turn off Power-->
+                    <Button Grid.Column="1" Click="ShutDownPhoenixProcess_Click"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
+                        Visibility="{Binding ShutDownPhoenixButtonVisibility}">
+                        <Viewbox>
+                            <TextBlock Text="{Binding ShutDownPhoenixText}" />
+                        </Viewbox>
+                    </Button>
                     <!-- Finish Process Button-->
                     <Button Grid.Column="1" Click="FinishProcess_Click"
                         Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"

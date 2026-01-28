@@ -9,6 +9,8 @@ using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+
 namespace PhoenixSwitcher.ControlTemplates
 {
     /// <summary>
@@ -17,12 +19,19 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class MachineInfoWindow : UserControl
     {
         private MachineInfoWindowViewModel _viewModel = new MachineInfoWindowViewModel();
-        private XmlMachinePCM? _selectedMachine;
+        private PhoenixSwitcherDone _selectedMachineInfo = new PhoenixSwitcherDone();
+        private XmlMachinePCM? _selectedMachine = new XmlMachinePCM();
         private Logger? _logger;
 
 
-        public delegate void StartBundleProcessHandler(XmlMachinePCM? selectedMachine);
+        public delegate void StartBundleProcessHandler(PhoenixSwitcherDone? selectedMachine);
         public static event StartBundleProcessHandler? OnStartBundleProcess;
+
+        public delegate void TestProcessHandler(bool power = true);
+        public static event TestProcessHandler? OnTest;
+
+        public delegate void ShutOffPowerProcessHandler(bool power = false);
+        public static event ShutOffPowerProcessHandler? OnShutOffPower;
 
         public delegate void FinishedProcessHandler();
         public static event FinishedProcessHandler? OnProcessFinished;
@@ -53,6 +62,9 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogInfo($"MachineInfoWindow::OnLanguageChanged -> Updating text to match newly selected language.");
             _viewModel.StartButtonText = Helpers.TryGetLocalizedText("ID_04_0001", "Start");
             _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("ID_04_0002", "Finish");
+            _viewModel.TestButtonText = Helpers.TryGetLocalizedText("ID_04_0016", "Power On");
+            _viewModel.ShutDownPhoenixText = Helpers.TryGetLocalizedText("ID_04_0017", "Power Off");
+
             _viewModel.SelectedMachineHeaderText = Helpers.TryGetLocalizedText("ID_04_0003", "SelectedMachineInfo");
             _viewModel.MachineTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0004", "MachineType: ");
             _viewModel.MachineN17DescriptionText = Helpers.TryGetLocalizedText("ID_04_0005", "Machine Num Long: ");
@@ -66,10 +78,11 @@ namespace PhoenixSwitcher.ControlTemplates
         public async void UpdateSelectedMachine(XmlMachinePCM? machine)
         {
             _logger?.LogInfo($"MachineInfoWindow::SetMachineInfoFromBundle -> Set selected bundle.");
-            _selectedMachine = machine;
-            if (_selectedMachine == null)
+            if (machine == null)
             {
                 _viewModel.StartButtonVisibility = Visibility.Hidden;
+                _selectedMachineInfo = new PhoenixSwitcherDone();
+                _selectedMachine = null;
                 _viewModel.MachineN17ValueText = "";
                 _viewModel.MachineN9ValueText = "";
                 _viewModel.MachineTypeValueText = "";
@@ -78,57 +91,87 @@ namespace PhoenixSwitcher.ControlTemplates
                 _viewModel.DisplayTypeValueText = "";
                 _viewModel.BundleValueText = "";
                 StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
+                return;
             }
-            else
+
+            _selectedMachine = machine;
+            _selectedMachineInfo.Vin = _viewModel.MachineN17ValueText = machine.N17;
+            _selectedMachineInfo.Vin_9char = _viewModel.MachineN9ValueText = machine.No;
+            if (machine.DT == 1.ToString())
             {
-                _viewModel.MachineN17ValueText = _selectedMachine.N17;
-                _viewModel.MachineN9ValueText = _selectedMachine.NS;
-                _viewModel.MachineTypeValueText = _selectedMachine.Ty;
-                _viewModel.DisplayTypeValueText = _selectedMachine.DT;
-                _viewModel.SeriesValueText = _selectedMachine.SE;
-                _viewModel.VANValueText = _selectedMachine.VAN;
-
-                if (_selectedMachine.DT == 1.ToString())
-                {
-                    StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0014", "Cannot update phoenix software for display type 1. Select new Machine.");
-                    Helpers.ShowLocalizedOkMessageBox("ID_02_0014", "Cannot update phoenix software for display type 1. Select new Machine.");
-                }
-                else
-                {
-                    _viewModel.StartButtonVisibility = Visibility.Visible;
-                    StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
-                }
-
-                if (_selectedMachine.Ops != null && _selectedMachine.Ops.Modules != null)
-                {
-                    XmlModulePCM pcmModule = _selectedMachine.Ops.Modules.First();
-                    BundleSelection? bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(_selectedMachine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, _selectedMachine.DT);
-                    _viewModel.BundleValueText = (bundle != null && bundle.Bundle != null) ? bundle.Bundle : "'not found'";
-                }
-                else
-                {
-                    _viewModel.BundleValueText = "'not found'";
-                }
+                StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
+                Helpers.ShowLocalizedOkMessageBox("ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
+                return;
             }
 
+            _selectedMachineInfo.Machine_type = _viewModel.MachineTypeValueText = machine.N17.Substring(0, 4);
+            _selectedMachineInfo.Display_type = _viewModel.DisplayTypeValueText = machine.DT;
+            _selectedMachineInfo.Van = _viewModel.VANValueText = machine.VAN;
+
+            _viewModel.SeriesValueText = machine.SE;
+            _viewModel.BundleValueText = "'not found'";
+            if (machine.Ops != null && machine.Ops.Modules != null)
+            {
+                XmlModulePCM pcmModule = machine.Ops.Modules.First();
+                _selectedMachineInfo.Pcm_type = pcmModule.PCMT;
+                _selectedMachineInfo.Pcm_gen = pcmModule.PCMG;
+
+                BundleSelection? bundle = await PhoenixRest.GetInstance().GetPcmAppSettings(machine.N17.Substring(0, 4), pcmModule.PCMT, pcmModule.PCMG, machine.DT);
+                if (bundle != null && bundle.Bundle != null) _selectedMachineInfo.Bundle_version = _viewModel.BundleValueText = bundle.Bundle;
+            }
+
+            if (_viewModel.BundleValueText == "'not found'")
+            {
+                StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
+                Helpers.ShowLocalizedOkMessageBox("ID_04_0014", "Unable to find bundle for machine. Try other machine.");
+                return;
+            }
+
+            _viewModel.StartButtonVisibility = Visibility.Visible;
+            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
         }
 
         private void StartProcess_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke start bundle process event.");
-            OnStartBundleProcess?.Invoke(_selectedMachine);
+            OnStartBundleProcess?.Invoke(_selectedMachineInfo);
             _viewModel.StartButtonVisibility = Visibility.Hidden;
+        }
+        private void TestProcess_Click(object sender, RoutedEventArgs e)
+        {
+            OnTest?.Invoke(true);
+            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
+            _viewModel.FinishButtonVisibility = Visibility.Hidden;
+            _viewModel.TestButtonVisibility = Visibility.Hidden;
+            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0018", "Press power off once done.");
+        }
+        private void ShutDownPhoenixProcess_Click(object sender, RoutedEventArgs e)
+        {
+            OnShutOffPower?.Invoke(false);
+            _viewModel.TestButtonVisibility = Visibility.Visible;
+            _viewModel.FinishButtonVisibility = Visibility.Visible;
+            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Hidden;
+            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_04_0019", "Press finish once done with this screen or Power On if you want to see if screen got updates properly.");
         }
         private void FinishProcess_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke finish process event. And update button visibility");
-            OnProcessFinished?.Invoke();
+            _selectedMachineInfo.TimeStamp = DateTime.Now;
+            PhoenixRest.GetInstance().PostMachineResults(_selectedMachineInfo);
+
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
+            _viewModel.TestButtonVisibility = Visibility.Hidden;
+            XmlMachinePCM? machine = _selectedMachine;
+            OnProcessFinished?.Invoke();
+            MessageBoxResult result = Helpers.ShowLocalizedYesNoMessageBox("ID_04_0013", "Do you want to setup another screen for this machine?");
+
+            // Still call finish to reset everything properly but immediatly call UpdateSelectedMachine to fill in the info again.
+            if (result == MessageBoxResult.Yes) UpdateSelectedMachine(machine);
         }
         private void ProcessStarted()
         {
             _logger?.LogInfo($"MachineInfoWindow::ProcessStarted -> Update button visibility for started process");
-            _viewModel.FinishButtonVisibility = Visibility.Visible;
+            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
             _viewModel.StartButtonVisibility = Visibility.Hidden;
         }
 

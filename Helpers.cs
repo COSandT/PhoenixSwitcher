@@ -47,12 +47,12 @@ namespace PhoenixSwitcher
             return result.Substring(0, result.Length - 1);
         }
 
-        public static MessageBoxResult ShowLocalizedYesNoMessageBox(string text)
+        public static MessageBoxResult ShowLocalizedYesNoMessageBox(string localizedTextId, string fallbackText)
         {
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0002", "yes"), MessageBoxResult.Yes));
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0003", "no"), MessageBoxResult.No));
-            model.Text = text;
+            model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
             return MessageBox.Show(model);
         }
         public static MessageBoxResult ShowLocalizedOkMessageBox(string localizedTextId, string fallbackText)

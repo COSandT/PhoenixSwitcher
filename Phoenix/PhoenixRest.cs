@@ -1,10 +1,12 @@
 ﻿using System.IO;
-using System.Net.Http;
-using CosntCommonLibrary.Rest;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Xml.PhoenixSwitcher;
+using System.Text.Json;
+
 using RestSharp;
+
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Rest;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 
 namespace PhoenixSwitcher
 {
@@ -79,6 +81,17 @@ namespace PhoenixSwitcher
             }
         }
 
+        public async void PostMachineResults(PhoenixSwitcherDone machineResult)
+        {
+            try
+            {
+                RestRequest request = new RestRequest($"{_baseServerURL}dones", Method.Post);
+                request.AddJsonBody(JsonSerializer.Serialize(machineResult));
+
+                await _restClient.ExecuteAsync(request);
+            }
+            catch { }
+        }
         public Task<XmlProductionDataPCM?> GetPCMMachineFile(string department = "croix")
         {
             try

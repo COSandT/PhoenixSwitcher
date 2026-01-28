@@ -1,12 +1,14 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Controls;
+
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.ViewModels;
+
 using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.ViewModels;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
@@ -60,22 +62,26 @@ namespace PhoenixSwitcher
                 XmlProjectSettings settings = Helpers.GetProjectSettings();
                 TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
                 TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(MachineListControl.UpdatePcmMachineList));
-
-                // Too long has passed since an updat for the bundle files. time to update them.
-                int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
-                int hoursBetweenUpdate = DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
-                if (hoursBetweenUpdate > 24)
-                {
-                    Mouse.OverrideCursor = Cursors.Wait;
-                    await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
-                    await Task.Run(() => MachineListControl.UpdatePcmMachineList());
-                    Mouse.OverrideCursor = null;
-                }
+                UpdateBundleAndMachineList();
             }
             catch (Exception ex)
             {
                 Mouse.OverrideCursor = null;
                 _logger.LogError($"MainWindow::InitPhoenixSwitcherLoging -> exception occured: {ex.Message}");
+            }
+        }
+        private async void UpdateBundleAndMachineList()
+        {
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            // Too long has passed since an updat for the bundle files. time to update them.
+            int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
+            int hoursBetweenUpdate = DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
+            if (hoursBetweenUpdate > 24)
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
+                await Task.Run(() => MachineListControl.UpdatePcmMachineList());
+                Mouse.OverrideCursor = null;
             }
         }
 
@@ -107,6 +113,14 @@ namespace PhoenixSwitcher
         {
             MachineListControl.UpdatePcmMachineList();
         }
+        private void ConnectToEspController_Click(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+            Task.Run(() => _phoenixSwitcher.Init());
+            UpdateBundleAndMachineList();
+            MachineInfoWindowControl.UpdateSelectedMachine(null);
+            Mouse.OverrideCursor = null;
+        }
         private void About_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo("MainWindow::About_Click -> About button clicked, opening the about window.");
@@ -127,6 +141,8 @@ namespace PhoenixSwitcher
             _viewModel.UpdateText = Helpers.TryGetLocalizedText("ID_01_0007", "UpdateBundleFiles");
             _viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateBundleFiles");
             _viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateMachineList");
+            _viewModel.ConntectText = Helpers.TryGetLocalizedText("ID_01_0010", "Connect");
+            _viewModel.EspControllerText = Helpers.TryGetLocalizedText("ID_01_0011", "EspController");
 
             foreach (MenuItem item in LanguageSettings.Items)
             {

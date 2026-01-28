@@ -38,6 +38,11 @@
                         Header="{Binding UpdateMachineListText}" />
                 </MenuItem>
                 <MenuItem Margin="2,0"
+                    Header="{Binding ConntectText}">
+                    <MenuItem Click="ConnectToEspController_Click" 
+                        Header="{Binding EspControllerText}" />
+                </MenuItem>
+                <MenuItem Margin="2,0"
                     Header="{Binding HelpText}">
                     <MenuItem Click="About_Click" 
                         Header="{Binding AboutText}" />

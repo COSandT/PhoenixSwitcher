@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <WindowHeight>900</WindowHeight>
+  <WindowWidth>1440</WindowWidth>
+  <FontSize>0</FontSize>
+  <IsWindowMaximized>false</IsWindowMaximized>
+  <ButtonsHeight>50</ButtonsHeight>
+  <FontSizeButtons>16</FontSizeButtons>
+  <FontSizeUserMessage>16</FontSizeUserMessage>
+  <FontSizeLoadingBarPercentage>16</FontSizeLoadingBarPercentage>
+  <LoadingBarHeight>20</LoadingBarHeight>
+  <FontSizeStatusLight>16</FontSizeStatusLight>
+  <FontSizeText>16</FontSizeText>
+  <FontSizeColumns>16</FontSizeColumns>
+  <FontSizeStepMessage>0</FontSizeStepMessage>
+  <CurrentColorScheme />
+  <GridSettingsSensorEditor>
+    <GridLengths />
+  </GridSettingsSensorEditor>
+</ApplicationSettings>

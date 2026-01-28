@@ -10,6 +10,8 @@
 	<LanguageEntry id="ID_01_0007">Update</LanguageEntry>
 	<LanguageEntry id="ID_01_0008">Update Bundle Files</LanguageEntry>
 	<LanguageEntry id="ID_01_0009">Update Machine List</LanguageEntry>
+	<LanguageEntry id="ID_01_0010">Connect</LanguageEntry>
+	<LanguageEntry id="ID_01_0011">EspController</LanguageEntry>
 	
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Invalid machine selected</LanguageEntry>
@@ -18,7 +20,7 @@
 	<LanguageEntry id="ID_02_0004"></LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Select machine from list or select the scanner box and use scanner.</LanguageEntry>
 	<LanguageEntry id="ID_02_0006">Process started setting up everything to setup Phoenix</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Complete setup on Phoenix and press finish once done.</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Complete setup on Phoenix and press 'Power Off' button once done.</LanguageEntry>
 	<LanguageEntry id="ID_02_0008">Process finished, resetting to start</LanguageEntry>
 	<LanguageEntry id="ID_02_0009">Connect drive to pc</LanguageEntry>
 	<LanguageEntry id="ID_02_0010">Switching drive connection</LanguageEntry>
@@ -33,6 +35,7 @@
 	<LanguageEntry id="ID_02_0019">Renaming selected 'Bundle file' to 'GHMIFile'</LanguageEntry>
 	<LanguageEntry id="ID_02_0020">Waiting for bootup to switch drive.</LanguageEntry>
 	<LanguageEntry id="ID_02_0021">Switching drive.</LanguageEntry>
+	<LanguageEntry id="ID_02_0022">Failed to connect to EspController. Check if pc is connected and retry connecting.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
@@ -53,6 +56,13 @@
 	<LanguageEntry id="ID_04_0010">Series: </LanguageEntry>
 	<LanguageEntry id="ID_04_0011">Select machine from list or select the scanner box and use scanner.</LanguageEntry>
 	<LanguageEntry id="ID_04_0012">Press start to update Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_04_0013">Do you want to setup another screen for this machine?</LanguageEntry>
+	<LanguageEntry id="ID_04_0014">Unable to find bundle for machine. Try other machine.</LanguageEntry>
+	<LanguageEntry id="ID_04_0015">Cannot update phoenix software for display type 1. Select new Machine.</LanguageEntry>
+	<LanguageEntry id="ID_04_0016">Power On</LanguageEntry>
+	<LanguageEntry id="ID_04_0017">Power Off</LanguageEntry>
+	<LanguageEntry id="ID_04_0018">Press power off once done.</LanguageEntry>
+	<LanguageEntry id="ID_04_0019">Press finish once done with this screen or 'Power On' if you want to see if screen got updates properly.</LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->

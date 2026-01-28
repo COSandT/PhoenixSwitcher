@@ -61,6 +61,9 @@ namespace PhoenixSwitcher.ControlTemplates
                 case StatusLevel.Instruction:
                     _viewModel.StatusColor = Brushes.Green;
                     break;
+                case StatusLevel.Error:
+                    _viewModel.StatusColor = Brushes.Red;
+                    break;
                 case StatusLevel.Status:
                     default:
                     _viewModel.StatusColor = Brushes.White;
