@@ -9,10 +9,15 @@
     <ApplicationIcon>Resources\Images\Phoenix_logo.ico</ApplicationIcon>
     <AssemblyVersion>1.2.1.0</AssemblyVersion>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Company>COS&amp;T</Company>
+    <Product>PhoenixUpdater</Product>
+    <Authors>Miel</Authors>
+    <Copyright>COS&amp;T BV</Copyright>
+    <PackageIcon>Phoenix_Icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Images\Phoenix_Icon.png" />
     <None Remove="Resources\Images\Phoenix_logo.ico" />
     <None Remove="Resources\Phoenix_Icon.png" />
     <None Remove="Resources\phoenix_logo.ico" />
@@ -43,8 +48,15 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\Images\Phoenix_Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\Settings\&quot; /Y /E" />
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E" />
   </Target>
 
 </Project>

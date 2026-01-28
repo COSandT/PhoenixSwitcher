@@ -60,8 +60,9 @@ namespace PhoenixSwitcher
                 await Task.Run(() => _phoenixSwitcher.Init());
 
                 XmlProjectSettings settings = Helpers.GetProjectSettings();
-                TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
-                TaskScheduler.GetInstance().ScheduleTask(settings.HourBundleShouldUpdateAt, 30, 24, new Action(MachineListControl.UpdatePcmMachineList));
+                int hour = Math.Abs(settings.HourBundleShouldUpdateAt) % 24;
+                TaskScheduler.GetInstance().ScheduleTask(hour, 0, 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
+                TaskScheduler.GetInstance().ScheduleTask(hour, 0, 24, new Action(MachineListControl.UpdatePcmMachineList));
                 UpdateBundleAndMachineList();
             }
             catch (Exception ex)
