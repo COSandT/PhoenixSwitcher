@@ -62,7 +62,7 @@
 	<LanguageEntry id="ID_04_0016">Power On</LanguageEntry>
 	<LanguageEntry id="ID_04_0017">Power Off</LanguageEntry>
 	<LanguageEntry id="ID_04_0018">Press power off once done.</LanguageEntry>
-	<LanguageEntry id="ID_04_0019">Press finish once done with this screen or 'Power On' if you want to see if screen got updates properly.</LanguageEntry>
+	<LanguageEntry id="ID_04_0019">Press 'Finish' if done or 'Power On' for success verification.</LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->

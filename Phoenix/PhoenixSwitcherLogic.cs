@@ -199,7 +199,7 @@ namespace PhoenixSwitcher
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0020", "Waiting for bootup to switch drive.");
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
-            await Task.Delay(settings.DriveSwitchWaitTimeSec * 100);
+            await Task.Delay(settings.DriveSwitchWaitTimeSec * 1000);
             // Switch drive to other device.
             await SwitchDriveConnection();
 
