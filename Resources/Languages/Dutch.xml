@@ -10,6 +10,8 @@
 	<LanguageEntry id="ID_01_0007">Bijwerken</LanguageEntry>
 	<LanguageEntry id="ID_01_0008">Bundelbestanden bijwerken</LanguageEntry>
 	<LanguageEntry id="ID_01_0009">Machinelijst bijwerken</LanguageEntry>
+	<LanguageEntry id="ID_01_0010">Verbinden</LanguageEntry>
+	<LanguageEntry id="ID_01_0011">EspController</LanguageEntry>
 
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Ongeldige machine geselecteerd</LanguageEntry>
@@ -17,43 +19,50 @@
 	<LanguageEntry id="ID_02_0003">Geen overeenkomende bundelbestanden gevonden voor de geselecteerde machine. Probeer de bundelbestanden bij te werken.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004"></LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Selecteer een machine uit de lijst of selecteer het scannervak en gebruik de scanner.</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Proces gestart om alles in te stellen voor het instellen van 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Voltooi de installatie op 'Phoenix PCM' en druk op voltooien wanneer u klaar bent.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Proces gestart om alles in te stellen voor het instellen van Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Voltooi de installatie op Phoenix en druk op de knop 'Power Off' wanneer u klaar bent.</LanguageEntry>
 	<LanguageEntry id="ID_02_0008">Proces voltooid, resetten naar start</LanguageEntry>
 	<LanguageEntry id="ID_02_0009">Sluit de schijf aan op de pc</LanguageEntry>
 	<LanguageEntry id="ID_02_0010">Schijfverbinding omschakelen</LanguageEntry>
 	<LanguageEntry id="ID_02_0011">Controleren of de schijf is aangesloten op de pc</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Stroom omschakelen naar 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0013"></LanguageEntry>
-	<LanguageEntry id="ID_02_0014"></LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Stroom omschakelen naar Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0013">Bijwerken van de PCM-machinelijst is mislukt. Bekijk de logboeken voor de reden.</LanguageEntry>
+	<LanguageEntry id="ID_02_0014">Kan Phoenix-software niet bijwerken voor weergavetype 1. Selecteer een nieuwe machine.</LanguageEntry>
 	<LanguageEntry id="ID_02_0015">Bijwerken van de bundels is mislukt. Bekijk de logboeken om te zien wat er fout ging.</LanguageEntry>
-	<LanguageEntry id="ID_02_0016">Phoenix-installatie was bezig terwijl de bundelupdate moest plaatsvinden. Update wordt uitgesteld tot na voltooiing van de installatie.</LanguageEntry>
+	<LanguageEntry id="ID_02_0016">De Phoenix-installatie was bezig terwijl de bundelupdate moest plaatsvinden. Update wordt uitgesteld tot na voltooiing van de installatie.</LanguageEntry>
 	<LanguageEntry id="ID_02_0017">Bundels worden bijgewerkt, even geduld.</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Stroom omschakelen naar Phoenix PCM</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Stroom omschakelen naar Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0019">Geselecteerd 'Bundle file' hernoemen naar 'GHMIFile'</LanguageEntry>
 	<LanguageEntry id="ID_02_0020">Wachten op opstarten om schijf te wisselen.</LanguageEntry>
 	<LanguageEntry id="ID_02_0021">Schijf wisselen.</LanguageEntry>
+	<LanguageEntry id="ID_02_0022">Kan geen verbinding maken met EspController. Controleer of de pc is verbonden en probeer opnieuw.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machinelijst</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Selecteer om te scannen --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Kan PCM-app-instellingen niet ophalen, terugkeren zonder de machinelijst te laden.</LanguageEntry>
 	<LanguageEntry id="ID_03_0004">PCM-machinelijst wordt bijgewerkt, even geduld...</LanguageEntry>
-	<LanguageEntry id="ID_03_0005">Bijwerken van de PCM-machinelijst voltooid. Selecteer of scan een machine.</LanguageEntry>
 
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
 	<LanguageEntry id="ID_04_0002">Voltooien</LanguageEntry>
 	<LanguageEntry id="ID_04_0003">Geselecteerde machine-informatie</LanguageEntry>
 	<LanguageEntry id="ID_04_0004">Machinetype: </LanguageEntry>
-	<LanguageEntry id="ID_04_0005">PCM-type: </LanguageEntry>
-	<LanguageEntry id="ID_04_0006">PCM-generatie: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">Machinenummer lang: </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">Machinenummer kort: </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Weergavetype: </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Bundel: </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
-	<LanguageEntry id="ID_04_0010">Machinenummer: </LanguageEntry>
+	<LanguageEntry id="ID_04_0010">Serie: </LanguageEntry>
 	<LanguageEntry id="ID_04_0011">Selecteer een machine uit de lijst of selecteer het scannervak en gebruik de scanner.</LanguageEntry>
-	<LanguageEntry id="ID_04_0012">Druk op start om het installatieproces op 'Phoenix PCM' te starten</LanguageEntry>
+	<LanguageEntry id="ID_04_0012">Druk op start om Phoenix bij te werken</LanguageEntry>
+	<LanguageEntry id="ID_04_0013">Wilt u nog een scherm voor deze machine instellen?</LanguageEntry>
+	<LanguageEntry id="ID_04_0014">Kan geen bundel vinden voor de machine. Probeer een andere machine.</LanguageEntry>
+	<LanguageEntry id="ID_04_0015">Kan Phoenix-software niet bijwerken voor weergavetype 1. Selecteer een nieuwe machine.</LanguageEntry>
+	<LanguageEntry id="ID_04_0016">Inschakelen</LanguageEntry>
+	<LanguageEntry id="ID_04_0017">Uitschakelen</LanguageEntry>
+	<LanguageEntry id="ID_04_0018">Druk op uitschakelen wanneer u klaar bent.</LanguageEntry>
+	<LanguageEntry id="ID_04_0019">Druk op 'Finish' wanneer u klaar bent of op 'Power On' voor succesverificatie.</LanguageEntry>
 
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Instellingen</LanguageEntry>

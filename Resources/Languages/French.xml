@@ -10,58 +10,67 @@
 	<LanguageEntry id="ID_01_0007">Mettre à jour</LanguageEntry>
 	<LanguageEntry id="ID_01_0008">Mettre à jour les fichiers de bundle</LanguageEntry>
 	<LanguageEntry id="ID_01_0009">Mettre à jour la liste des machines</LanguageEntry>
-
+	<LanguageEntry id="ID_01_0010">Connexion</LanguageEntry>
+	<LanguageEntry id="ID_01_0011">EspController</LanguageEntry>
+	
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Machine sélectionnée invalide</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Le programme met à jour les bundles. Veuillez patienter jusqu’à la fin.</LanguageEntry>
 	<LanguageEntry id="ID_02_0003">Impossible de trouver des fichiers de bundle correspondants pour la machine sélectionnée. Essayez de mettre à jour les fichiers de bundle.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004"></LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Sélectionnez une machine dans la liste ou sélectionnez la zone du scanner et utilisez le scanner.</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Processus démarré pour configurer tout ce qui est nécessaire pour 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Terminez la configuration sur 'Phoenix PCM' et appuyez sur terminer une fois terminé.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Processus démarré pour configurer Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Terminez la configuration sur Phoenix et appuyez sur le bouton 'Power Off' une fois terminé.</LanguageEntry>
 	<LanguageEntry id="ID_02_0008">Processus terminé, réinitialisation au démarrage</LanguageEntry>
 	<LanguageEntry id="ID_02_0009">Connectez le lecteur au PC</LanguageEntry>
 	<LanguageEntry id="ID_02_0010">Changement de la connexion du lecteur</LanguageEntry>
 	<LanguageEntry id="ID_02_0011">Vérification de la connexion du lecteur au PC</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Basculement de l’alimentation vers 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0013"></LanguageEntry>
-	<LanguageEntry id="ID_02_0014"></LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Basculement de l’alimentation vers Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0013">Échec de la mise à jour de la liste des machines PCM. Consultez les journaux pour la raison.</LanguageEntry>
+	<LanguageEntry id="ID_02_0014">Impossible de mettre à jour le logiciel Phoenix pour le type d’affichage 1. Veuillez sélectionner une nouvelle machine.</LanguageEntry>
 	<LanguageEntry id="ID_02_0015">Échec de la mise à jour des bundles. Consultez les journaux pour plus de détails.</LanguageEntry>
 	<LanguageEntry id="ID_02_0016">La configuration Phoenix était en cours lorsque la mise à jour des bundles devait avoir lieu. Mise à jour reportée jusqu’à la fin de la configuration.</LanguageEntry>
 	<LanguageEntry id="ID_02_0017">Les bundles sont en cours de mise à jour, veuillez patienter.</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Basculement de l’alimentation vers Phoenix PCM</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Basculement de l’alimentation vers Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0019">Renommage du 'Bundle file' sélectionné en 'GHMIFile'</LanguageEntry>
 	<LanguageEntry id="ID_02_0020">En attente du démarrage pour changer le lecteur.</LanguageEntry>
 	<LanguageEntry id="ID_02_0021">Changement du lecteur.</LanguageEntry>
+	<LanguageEntry id="ID_02_0022">Impossible de se connecter à EspController. Vérifiez que le PC est connecté et réessayez.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Liste des machines</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Sélectionner pour analyser --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Impossible d’obtenir les paramètres de l’application PCM, retour sans charger la liste des machines.</LanguageEntry>
 	<LanguageEntry id="ID_03_0004">Mise à jour de la liste des machines PCM, veuillez patienter...</LanguageEntry>
-	<LanguageEntry id="ID_03_0005">Mise à jour de la liste des machines PCM terminée. Veuillez sélectionner ou analyser une machine.</LanguageEntry>
-
+	
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Début</LanguageEntry>
 	<LanguageEntry id="ID_04_0002">Fin</LanguageEntry>
 	<LanguageEntry id="ID_04_0003">Informations sur la machine sélectionnée</LanguageEntry>
 	<LanguageEntry id="ID_04_0004">Type de machine : </LanguageEntry>
-	<LanguageEntry id="ID_04_0005">Type PCM : </LanguageEntry>
-	<LanguageEntry id="ID_04_0006">Génération PCM : </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">Numéro de machine long : </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">Numéro de machine court : </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Type d’affichage : </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Bundle : </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN : </LanguageEntry>
-	<LanguageEntry id="ID_04_0010">Numéro de machine : </LanguageEntry>
+	<LanguageEntry id="ID_04_0010">Série : </LanguageEntry>
 	<LanguageEntry id="ID_04_0011">Sélectionnez une machine dans la liste ou sélectionnez la zone du scanner et utilisez le scanner.</LanguageEntry>
-	<LanguageEntry id="ID_04_0012">Appuyez sur démarrer pour lancer le processus de configuration sur 'Phoenix PCM'</LanguageEntry>
-
+	<LanguageEntry id="ID_04_0012">Appuyez sur démarrer pour mettre à jour Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_04_0013">Souhaitez-vous configurer un autre écran pour cette machine ?</LanguageEntry>
+	<LanguageEntry id="ID_04_0014">Impossible de trouver un bundle pour la machine. Essayez une autre machine.</LanguageEntry>
+	<LanguageEntry id="ID_04_0015">Impossible de mettre à jour le logiciel Phoenix pour le type d’affichage 1. Sélectionnez une nouvelle machine.</LanguageEntry>
+	<LanguageEntry id="ID_04_0016">Allumer</LanguageEntry>
+	<LanguageEntry id="ID_04_0017">Éteindre</LanguageEntry>
+	<LanguageEntry id="ID_04_0018">Appuyez sur éteindre une fois terminé.</LanguageEntry>
+	<LanguageEntry id="ID_04_0019">Appuyez sur 'Finish' si terminé ou sur 'Power On' pour vérifier le succès.</LanguageEntry>
+	
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Fenêtre des paramètres</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Fichier</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Enregistrer</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Voulez-vous enregistrer les modifications ?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">Le fichier a été enregistré. Un redémarrage est nécessaire pour appliquer les modifications.</LanguageEntry>
-
+	
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - À propos</LanguageEntry>
 	<LanguageEntry id="ID_07_0002">Phoenix Software Updater :</LanguageEntry>
@@ -72,7 +81,7 @@
 	<LanguageEntry id="ID_08_0002">Oui</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">Non</LanguageEntry>
 	<LanguageEntry id="ID_08_0004">Annuler</LanguageEntry>
-
+	
 	<!-- Update Window -->
 	<LanguageEntry id="ID_09_0001">Phoenix Software Updater - Message de mise à jour</LanguageEntry>
 	<LanguageEntry id="ID_09_0002">Mise à jour des bundles, veuillez patienter...</LanguageEntry>

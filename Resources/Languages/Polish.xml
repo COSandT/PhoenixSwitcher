@@ -10,58 +10,67 @@
 	<LanguageEntry id="ID_01_0007">Aktualizuj</LanguageEntry>
 	<LanguageEntry id="ID_01_0008">Aktualizuj pliki pakietów</LanguageEntry>
 	<LanguageEntry id="ID_01_0009">Aktualizuj listę maszyn</LanguageEntry>
-
+	<LanguageEntry id="ID_01_0010">Połącz</LanguageEntry>
+	<LanguageEntry id="ID_01_0011">EspController</LanguageEntry>
+	
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Wybrano nieprawidłową maszynę</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Program aktualizuje pakiety. Proszę czekać do zakończenia.</LanguageEntry>
 	<LanguageEntry id="ID_02_0003">Nie znaleziono pasujących plików pakietu dla wybranej maszyny. Spróbuj zaktualizować pliki pakietu.</LanguageEntry>
 	<LanguageEntry id="ID_02_0004"></LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Wybierz maszynę z listy lub zaznacz pole skanera i użyj skanera.</LanguageEntry>
-	<LanguageEntry id="ID_02_0006">Proces rozpoczęty, przygotowywanie wszystkiego do konfiguracji 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0007">Zakończ konfigurację na 'Phoenix PCM' i naciśnij zakończ po ukończeniu.</LanguageEntry>
+	<LanguageEntry id="ID_02_0006">Proces rozpoczęty, przygotowywanie konfiguracji Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0007">Zakończ konfigurację Phoenix i naciśnij przycisk 'Power Off' po zakończeniu.</LanguageEntry>
 	<LanguageEntry id="ID_02_0008">Proces zakończony, resetowanie do startu</LanguageEntry>
 	<LanguageEntry id="ID_02_0009">Podłącz dysk do komputera</LanguageEntry>
 	<LanguageEntry id="ID_02_0010">Przełączanie połączenia dysku</LanguageEntry>
 	<LanguageEntry id="ID_02_0011">Sprawdzanie, czy dysk jest podłączony do komputera</LanguageEntry>
-	<LanguageEntry id="ID_02_0012">Przełączanie zasilania na 'Phoenix PCM'</LanguageEntry>
-	<LanguageEntry id="ID_02_0013"></LanguageEntry>
-	<LanguageEntry id="ID_02_0014"></LanguageEntry>
-	<LanguageEntry id="ID_02_0015">Nie udało się zaktualizować pakietów. Sprawdź logi, aby zobaczyć, co poszło nie tak.</LanguageEntry>
+	<LanguageEntry id="ID_02_0012">Przełączanie zasilania na Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_02_0013">Nie udało się zaktualizować listy maszyn PCM. Sprawdź logi, aby poznać przyczynę.</LanguageEntry>
+	<LanguageEntry id="ID_02_0014">Nie można zaktualizować oprogramowania Phoenix dla typu wyświetlacza 1. Wybierz nową maszynę.</LanguageEntry>
+	<LanguageEntry id="ID_02_0015">Nie udało się zaktualizować pakietów. Sprawdź logi, aby dowiedzieć się, co poszło nie tak.</LanguageEntry>
 	<LanguageEntry id="ID_02_0016">Konfiguracja Phoenix była w toku, gdy miała nastąpić aktualizacja pakietów. Aktualizacja została opóźniona do zakończenia konfiguracji.</LanguageEntry>
 	<LanguageEntry id="ID_02_0017">Pakiety są aktualizowane, proszę czekać.</LanguageEntry>
-	<LanguageEntry id="ID_02_0018">Przełączanie zasilania na Phoenix PCM</LanguageEntry>
+	<LanguageEntry id="ID_02_0018">Przełączanie zasilania na Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0019">Zmiana nazwy wybranego 'Bundle file' na 'GHMIFile'</LanguageEntry>
 	<LanguageEntry id="ID_02_0020">Oczekiwanie na uruchomienie w celu przełączenia dysku.</LanguageEntry>
 	<LanguageEntry id="ID_02_0021">Przełączanie dysku.</LanguageEntry>
+	<LanguageEntry id="ID_02_0022">Nie można połączyć się z EspController. Sprawdź, czy komputer jest podłączony, i spróbuj ponownie.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Lista maszyn</LanguageEntry>
 	<LanguageEntry id="ID_03_0002">-- Wybierz, aby skanować --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Nie udało się pobrać ustawień aplikacji PCM, powrót bez ładowania listy maszyn.</LanguageEntry>
 	<LanguageEntry id="ID_03_0004">Aktualizowanie listy maszyn PCM, proszę czekać...</LanguageEntry>
-	<LanguageEntry id="ID_03_0005">Aktualizacja listy maszyn PCM zakończona. Wybierz lub zeskanuj maszynę.</LanguageEntry>
-
+	
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
 	<LanguageEntry id="ID_04_0002">Zakończenie</LanguageEntry>
 	<LanguageEntry id="ID_04_0003">Informacje o wybranej maszynie</LanguageEntry>
 	<LanguageEntry id="ID_04_0004">Typ maszyny: </LanguageEntry>
-	<LanguageEntry id="ID_04_0005">Typ PCM: </LanguageEntry>
-	<LanguageEntry id="ID_04_0006">Generacja PCM: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">Długi numer maszyny: </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">Krótki numer maszyny: </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Typ wyświetlacza: </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Pakiet: </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>
-	<LanguageEntry id="ID_04_0010">Numer maszyny: </LanguageEntry>
+	<LanguageEntry id="ID_04_0010">Seria: </LanguageEntry>
 	<LanguageEntry id="ID_04_0011">Wybierz maszynę z listy lub zaznacz pole skanera i użyj skanera.</LanguageEntry>
-	<LanguageEntry id="ID_04_0012">Naciśnij start, aby rozpocząć proces konfiguracji na 'Phoenix PCM'</LanguageEntry>
-
+	<LanguageEntry id="ID_04_0012">Naciśnij start, aby zaktualizować Phoenix</LanguageEntry>
+	<LanguageEntry id="ID_04_0013">Czy chcesz skonfigurować kolejny ekran dla tej maszyny?</LanguageEntry>
+	<LanguageEntry id="ID_04_0014">Nie można znaleźć pakietu dla maszyny. Spróbuj innej maszyny.</LanguageEntry>
+	<LanguageEntry id="ID_04_0015">Nie można zaktualizować oprogramowania Phoenix dla typu wyświetlacza 1. Wybierz nową maszynę.</LanguageEntry>
+	<LanguageEntry id="ID_04_0016">Włącz</LanguageEntry>
+	<LanguageEntry id="ID_04_0017">Wyłącz</LanguageEntry>
+	<LanguageEntry id="ID_04_0018">Naciśnij wyłącz po zakończeniu.</LanguageEntry>
+	<LanguageEntry id="ID_04_0019">Naciśnij 'Finish', jeśli zakończono, lub 'Power On', aby potwierdzić powodzenie.</LanguageEntry>
+	
 	<!-- Settings Window -->
 	<LanguageEntry id="ID_06_0001">Phoenix Software Updater - Okno ustawień</LanguageEntry>
 	<LanguageEntry id="ID_06_0002">Plik</LanguageEntry>
 	<LanguageEntry id="ID_06_0003">Zapisz</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Czy chcesz zapisać zmiany?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">Plik został zapisany. Aby zastosować zmiany, wymagany jest restart.</LanguageEntry>
-
+	
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - Informacje</LanguageEntry>
 	<LanguageEntry id="ID_07_0002">Phoenix Software Updater:</LanguageEntry>
@@ -72,7 +81,7 @@
 	<LanguageEntry id="ID_08_0002">Tak</LanguageEntry>
 	<LanguageEntry id="ID_08_0003">Nie</LanguageEntry>
 	<LanguageEntry id="ID_08_0004">Anuluj</LanguageEntry>
-
+	
 	<!-- Update Window -->
 	<LanguageEntry id="ID_09_0001">Phoenix Software Updater - Komunikat aktualizacji</LanguageEntry>
 	<LanguageEntry id="ID_09_0002">Trwa aktualizacja pakietów, proszę czekać...</LanguageEntry>
