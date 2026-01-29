@@ -83,9 +83,9 @@ namespace PhoenixSwitcher
                 {
                     Mouse.OverrideCursor = null;
                     _bIsUpdatingBundles = false;
+                    _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
+                    Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
                 });
-                _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
             }
         }
         private async Task UpdateBundleFiles_Internal()
@@ -132,7 +132,6 @@ namespace PhoenixSwitcher
                 _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Attempt to download new bundles not on drive yet.");
                 foreach (string newBundleFolder in bundleFoldersOnPC)
                 {
-
                     string targetPath = _drive + Path.GetFileName(newBundleFolder);
                     string sourcePath = settings.BundleFilesDirectory + Path.GetFileName(newBundleFolder);
                     // Create bundle directory and any subdirectories.
@@ -154,8 +153,11 @@ namespace PhoenixSwitcher
             }
             catch (Exception ex)
             {
-                _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Failed to update bundle files exception: {ex.Message}");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Failed to update bundle files exception: {ex.Message}");
+                    Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
+                });
             }
         }
         private async void StartProcess(PhoenixSwitcherDone? machine)

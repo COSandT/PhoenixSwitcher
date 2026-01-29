@@ -11,6 +11,9 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </UserControl.Resources>
+    <UserControl.DataContext>
+        <viewmodels:MachineListViewModel />
+    </UserControl.DataContext>
     <Border
         BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
         BorderThickness="2">
@@ -68,18 +71,39 @@
             <Border 
                 Grid.Row="2"
                 BorderThickness="2"
+                Padding="5"
                 BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
-                <ScrollViewer 
-                    x:Name="ListScrollViewer"
-                    Margin="0,2,2,0" 
-                    HorizontalAlignment="Stretch" 
-                    VerticalAlignment="Stretch" 
-                    HorizontalScrollBarVisibility="Auto" 
-                    VerticalScrollBarVisibility="Auto" 
-                    adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="AlwaysExpand">
-                    <StackPanel x:Name="List" HorizontalAlignment="Stretch" />
-                </ScrollViewer>
+                <ListBox ItemsSource="{Binding ListViewItems}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    SelectionChanged="ListView_SelectionChanged"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Padding" Value="5,0,5,0"/>
+                            <Setter Property="Margin" Value="0,0,0,1"/>
+                            <Style.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="15" />
+                                </Style>
+                            </Style.Resources>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2">
+                                <Viewbox>
+                                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource {x:Static adonisUI:Brushes.ForegroundBrush}}" TextAlignment="Center" />
+                                </Viewbox>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Border>
         </Grid>
     </Border>

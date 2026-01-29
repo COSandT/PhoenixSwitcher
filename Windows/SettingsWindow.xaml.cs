@@ -47,7 +47,6 @@ namespace PhoenixSwitcher.Windows
         {
             _viewModel.OnSaveCommand.Invoke();
             Helpers.ShowLocalizedOkMessageBox("ID_06_0005", "File has saved. Restart is required to apply changes.");
-            this.Close();
         }
     }
 }

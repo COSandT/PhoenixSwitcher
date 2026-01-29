@@ -3,7 +3,7 @@
   <LogDirectory>D:\Miel\Git Repos\PhoenixSwitcher\bin\Debug\net8.0-windows\Logging\</LogDirectory>
   <LogFileName>Log</LogFileName>
   <BundleFilesDirectory>D:\Miel\Git Repos\PhoenixSwitcher\bin\Debug\net8.0-windows\Bundles\</BundleFilesDirectory>
-  <HourBundleShouldUpdateAt>1</HourBundleShouldUpdateAt>
+  <HourBundleShouldUpdateAt>16</HourBundleShouldUpdateAt>
   <LastBundleUpdateDate>2026-01-28T11:12:55.1974065+01:00</LastBundleUpdateDate>
   <RestAPIBaseURL>http://10.240.17.7:5063/PhoenixSwitcher/</RestAPIBaseURL>
   <DriveSwitchWaitTimeSec>22</DriveSwitchWaitTimeSec>

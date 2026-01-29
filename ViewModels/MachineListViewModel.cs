@@ -1,4 +1,6 @@
-﻿using PropertyChanged;
+﻿using System.Collections.ObjectModel;
+using PhoenixSwitcher.Models;
+using PropertyChanged;
 
 namespace PhoenixSwitcher.ViewModels
 {
@@ -8,5 +10,7 @@ namespace PhoenixSwitcher.ViewModels
         public string MachineListHeaderText { get; set; } = "";
         public string SelectToScanText { get; set; } = "";
         public bool MachineListExpander { get; set; } = false;
+
+        public ObservableCollection<MachineListItem> ListViewItems { get; set; } = new ObservableCollection<MachineListItem>();
     }
 }
