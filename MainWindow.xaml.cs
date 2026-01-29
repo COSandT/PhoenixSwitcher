@@ -84,7 +84,7 @@ namespace PhoenixSwitcher
             {
                 Mouse.OverrideCursor = Cursors.Wait;
                 await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
-                await Task.Run(() => MachineListControl.UpdatePcmMachineList());
+                MachineListControl.UpdatePcmMachineList();
                 Mouse.OverrideCursor = null;
             }
         }

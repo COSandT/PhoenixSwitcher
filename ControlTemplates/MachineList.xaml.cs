@@ -16,7 +16,6 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class MachineList : UserControl
     {
         private readonly MachineListViewModel _viewModel = new MachineListViewModel();
-        private readonly int _maxMachineButtonsInView = 14;
 
         private XmlProductionDataPCM? _pcmMachineList;
         private XmlMachinePCM? _selectedMachine = null;
@@ -71,15 +70,18 @@ namespace PhoenixSwitcher.ControlTemplates
         public async void UpdatePcmMachineList()
         {
             StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
+            _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Started updating pcm machine list.");
             await Application.Current.Dispatcher.Invoke(async delegate
             {
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
+                    _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
                     _pcmMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
                     if (_pcmMachineList == null) throw new Exception("pcm machine list is null.");
 
                     _viewModel.ListViewItems.Clear();
+                    _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Filling in listview.");
                     foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
                     {
                         MachineListItem item = new MachineListItem();
@@ -97,6 +99,7 @@ namespace PhoenixSwitcher.ControlTemplates
                     OnMachineSelected?.Invoke(null);
                 }
                 Mouse.OverrideCursor = null;
+                _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
             });
         }
 
