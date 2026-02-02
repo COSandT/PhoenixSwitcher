@@ -15,6 +15,7 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class StatusBar : UserControl
     {
         private StatusBarViewModel _viewModel = new StatusBarViewModel();
+        private PhoenixSwitcherLogic? _switcherLogic = null;
         private Status _status = new Status();
         private Logger? _logger;
 
@@ -38,8 +39,9 @@ namespace PhoenixSwitcher.ControlTemplates
             InitializeComponent();
             this.DataContext = _viewModel;
         }
-        public void Init(Logger logger)
+        public void Init(PhoenixSwitcherLogic? switcherLogic, Logger logger)
         {
+            _switcherLogic = switcherLogic;
             _logger = logger;
             _logger?.LogInfo($"StatusInstructionBar::Init -> Initializing StatusInstructionBar.");
 
@@ -52,8 +54,9 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogInfo($"StatusInstructionBar::Init -> Finished initializing StatusInstructionBar.");
         }
 
-        public void UpdateStatus(StatusLevel level, string locaStatusId, string fallbackStatusText)
+        public void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaStatusId, string fallbackStatusText)
         {
+            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             _logger?.LogInfo($"StatusInstructionBar::UpdateNewStatus -> Recieved new status:");
             _status = new Status(locaStatusId, fallbackStatusText);
             switch (level)
@@ -71,14 +74,16 @@ namespace PhoenixSwitcher.ControlTemplates
             }
             UpdateStatusText();
         }
-        public void UpdateStatusPercentage(StatusLevel level, int newPercentage)
+        public void UpdateStatusPercentage(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, int newPercentage)
         {
+            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             _logger?.LogWarning($"StatusInstructionBar::UpdateStatusPercentage -> Updating status percentage for specified sstatus level.");
             int clampedPercentage = Math.Clamp(newPercentage, 0, 100);
             _viewModel.MainStatusPercentage = clampedPercentage;
         }
-        public void ClearStatus(StatusLevel level)
+        public void ClearStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level)
         {
+            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             // When we clear a status we also want to clear all the status messages of lower level.
             _logger?.LogWarning($"StatusInstructionBar::ClearStatus -> Clear status message of specified level and lower levels.");
             _viewModel.MainStatusPercentage = 0;

@@ -12,12 +12,12 @@
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <!-- Menu Bar -->
         <Border Grid.Row="0" BorderThickness="2"
             BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer0BorderBrush}}">
@@ -49,24 +49,13 @@
                 </MenuItem>
             </Menu>
         </Border>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20*"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="80*"/>
-            </Grid.ColumnDefinitions>
-
-            <controltemplates:MachineList Grid.Column="0" x:Name="MachineListControl"/>
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="85*"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="15*"/>
-                </Grid.RowDefinitions>
-                
-                <controltemplates:MachineInfoWindow Grid.Row="0" x:Name="MachineInfoWindowControl" />
-                <controltemplates:StatusBar Grid.Row="2" x:Name="StatusBarControl" />
-            </Grid>
-        </Grid>
+        <!-- Software Updater Grid -->
+        <Border x:Name="GridBorder" Grid.Row="1" >
+            <StackPanel x:Name="SoftwareUpdaterGrid"
+            Orientation="Vertical" 
+            HorizontalAlignment="Stretch" SizeChanged="SoftwareUpdaterGrid_SizeChanged">
+                <!-- Will be dynamically filled -->
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

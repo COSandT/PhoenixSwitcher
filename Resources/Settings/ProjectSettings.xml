@@ -7,4 +7,16 @@
   <LastBundleUpdateDate>2026-01-28T11:12:55.1974065+01:00</LastBundleUpdateDate>
   <RestAPIBaseURL>http://10.240.17.7:5063/PhoenixSwitcher/</RestAPIBaseURL>
   <DriveSwitchWaitTimeSec>22</DriveSwitchWaitTimeSec>
+  <ESPControllersInfo>
+	  <ESPControllerInfo>
+		  <bIsActive>true</bIsActive>
+		  <EspID>AAAB</EspID>
+		  <DriveName>PHOENIXD</DriveName>
+	  </ESPControllerInfo>
+	  <ESPControllerInfo>
+		  <bIsActive>true</bIsActive>
+		  <EspID>AAAC</EspID>
+		  <DriveName>PHOENIXD2</DriveName>
+	  </ESPControllerInfo>
+  </ESPControllersInfo>
 </ProjectSettings>

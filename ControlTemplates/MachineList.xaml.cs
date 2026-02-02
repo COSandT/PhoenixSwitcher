@@ -1,14 +1,13 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
-
-using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
+using CosntCommonLibrary.Esp32;
 using CosntCommonLibrary.Settings;
-
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Xml;
 using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.Models;
+using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -16,12 +15,13 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class MachineList : UserControl
     {
         private readonly MachineListViewModel _viewModel = new MachineListViewModel();
+        private PhoenixSwitcherLogic? _switcherLogic = null;
 
-        private XmlProductionDataPCM? _pcmMachineList;
         private XmlMachinePCM? _selectedMachine = null;
+        private XmlProductionDataPCM? _pcmMachineList;
         private Logger? _logger;
 
-        public delegate void MachineSelectedHandler(XmlMachinePCM? selectedMachinePCMProductionData);
+        public delegate void MachineSelectedHandler(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? selectedMachinePCMProductionData);
         public static event MachineSelectedHandler? OnMachineSelected;
 
         public MachineList()
@@ -34,17 +34,18 @@ namespace PhoenixSwitcher.ControlTemplates
             // Call once to setup initial language.
             OnLanguageChanged();
         }
-        public void Init(Logger logger)
+        public void Init(PhoenixSwitcherLogic switcherLogic, XmlProductionDataPCM? pcmMachineList, Logger logger)
         {
             _logger = logger;
+            _switcherLogic = switcherLogic;
             _logger?.LogInfo($"MachineList::Init -> Start initializing MachineList.");
 
+            MainWindow.OnMachineListUpdated += UpdateMachineList;
             PhoenixSwitcherLogic.OnProcessFinished += OnProcessFinished;
             PhoenixSwitcherLogic.OnProcessCancelled += OnProcessCancelled;
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
 
-            UpdatePcmMachineList();
             //ListScrollViewer.ScrollChanged += OnScrollViewerChanged;
             _logger?.LogInfo($"MachineList::Init -> Finished initializing MachineList.");
         }
@@ -54,55 +55,37 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
             _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
         }
-        private void OnProcessCancelled()
+        private void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
         {
-            OnMachineSelected?.Invoke(_selectedMachine);
+            if (_switcherLogic != switcherLogic) return;
+            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
         }
-        private void OnProcessFinished()
+        private void OnProcessFinished(PhoenixSwitcherLogic switcherLogic)
         {
+            if (_switcherLogic != switcherLogic) return;
             _selectedMachine = null;
-            OnMachineSelected?.Invoke(_selectedMachine);
+            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
         }
-        private void OnScrollViewerChanged(object? sender, EventArgs e)
+
+        private void UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
         {
-            //UpdateMachineListButtonScale();
-        }
-        public async void UpdatePcmMachineList()
-        {
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
-            _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Started updating pcm machine list.");
-            await Application.Current.Dispatcher.Invoke(async delegate
+            _pcmMachineList = pcmMachineList;
+            if (_pcmMachineList != null)
             {
-                Mouse.OverrideCursor = Cursors.Wait;
-                try
+                _viewModel.ListViewItems.Clear();
+                _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Filling in listview.");
+                foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
                 {
-                    _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
-                    _pcmMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
-                    if (_pcmMachineList == null) throw new Exception("pcm machine list is null.");
+                    MachineListItem item = new MachineListItem();
+                    item.Name = pcmMachine.N17;
+                    item.Tag = pcmMachine;
 
-                    _viewModel.ListViewItems.Clear();
-                    _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Filling in listview.");
-                    foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
-                    {
-                        MachineListItem item = new MachineListItem();
-                        item.Name = pcmMachine.N17;
-                        item.Tag = pcmMachine;
+                    _viewModel.ListViewItems.Add(item);
+                }
+            }
 
-                        _viewModel.ListViewItems.Add(item);
-                    }
-                    OnMachineSelected?.Invoke(null);
-                }
-                catch (Exception ex)
-                {
-                    Helpers.ShowLocalizedOkMessageBox("ID_03_0013", "Failed to update pcm machine list. Look at logs for reason.");
-                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}");
-                    OnMachineSelected?.Invoke(null);
-                }
-                Mouse.OverrideCursor = null;
-                _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
-            });
+            OnMachineSelected?.Invoke(_switcherLogic, null);
         }
-
         private async void ScannedMachineText_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
@@ -113,7 +96,7 @@ namespace PhoenixSwitcher.ControlTemplates
             XmlMachinePCM? foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == barcode || mach.VAN == barcode);
 
             if (foundMachine == null) return;
-            OnMachineSelected?.Invoke(foundMachine);
+            OnMachineSelected?.Invoke(_switcherLogic, foundMachine);
 
             ScannedMachineText.Clear();
             ScannedMachineText.Focus();
@@ -129,7 +112,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
             MachineListItem? item = (MachineListItem?)e.AddedItems[0];
             _selectedMachine = (XmlMachinePCM?)item?.Tag;
-            OnMachineSelected?.Invoke(_selectedMachine);
+            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
         }
     }
 }

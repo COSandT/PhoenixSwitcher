@@ -1,23 +1,37 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
-
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
+using CosntCommonLibrary.Esp32;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-
-using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.ControlTemplates;
+using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.Windows;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
 {
     public partial class MainWindow : Window
     {
+        private List<PhoenixSoftwareUpdater> _softwareUpdaters = new List<PhoenixSoftwareUpdater>();
         private MainWindowViewModel _viewModel = new MainWindowViewModel();
-        private PhoenixSwitcherLogic _phoenixSwitcher;
         private Logger _logger;
+
+        private int _gridColumns;
+        private int _gridRows;
+
+        private long _millisecondsToWaitGridUpdate = 1000;
+        private bool _bCanUpdateGrid = true;
+
+        public XmlProductionDataPCM? PCMMachineList { get; private set; }
+
+        public delegate void MachineListUpdated(XmlProductionDataPCM? pcmMachineList);
+        public static event MachineListUpdated? OnMachineListUpdated;
 
         public MainWindow()
         {
@@ -28,18 +42,125 @@ namespace PhoenixSwitcher
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);
             _logger.LogInfo("MainWindow::Constructor -> Start initializing.");
 
-            _phoenixSwitcher = new PhoenixSwitcherLogic(_logger);
-            InitPhoenixSwitcherLogic();
+            InitializeEspControllers();
             InitLanguageSettings();
-
-            StatusBarControl.Init(_logger);
-            MachineInfoWindowControl.Init(_logger);
-            MachineListControl.Init(_logger);
 
             _logger.LogInfo("MainWindow::Constructor -> Finished initializing.");
         }
+        private async void InitializeEspControllers()
+        {
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+
+            //Math to determing how many rows/columns should be made.
+            List<EspControllerInfo> activeControllers = new List<EspControllerInfo>();
+            foreach (EspControllerInfo espController in settings.EspControllers)
+            {
+                if (!espController.bIsActive) continue;
+                activeControllers.Add(espController);
+            }
+
+            _gridRows = (int)Math.Round(Math.Sqrt(activeControllers.Count));
+            _gridColumns = (int)Math.Ceiling((double)(activeControllers.Count) / (double)_gridRows);
+            for (int i = 0; i < _gridRows; ++i)
+            {
+                StackPanel panel = new StackPanel();
+                SoftwareUpdaterGrid.Children.Add(panel);
+                panel.Orientation = Orientation.Horizontal;
+                panel.VerticalAlignment = VerticalAlignment.Stretch;
+                panel.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+                for (int j = 0; j < _gridColumns; ++j)
+                {
+                    int index = i * _gridColumns + j;
+                    if (activeControllers.Count <= index) break;
+
+                    EspControllerInfo espController = activeControllers[index];
+                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController.EspID, espController.DriveName, _logger);
+                    _softwareUpdaters.Add(updater);
+                    panel.Children.Add(updater);
+                    await Task.Delay(500);
+                    updater.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    updater.VerticalAlignment = VerticalAlignment.Stretch;
+                }
+            }
+
+            // Slight delay giving the stackpanels time to load so their height is set.
+            await Task.Delay(500);
+            UpdateGridSize();
+
+            TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
+                , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
+                , 24, new Action(UpdatePcmMachineList));
+            UpdatePcmMachineList();
+        }
+        private void SoftwareUpdaterGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            CheckUpdateGridSize(500);
+        }
+        private async void CheckUpdateGridSize(long timer)
+        {
+            _millisecondsToWaitGridUpdate = timer;
+            if (_bCanUpdateGrid == true)
+            {
+                _bCanUpdateGrid = false;
+                while (_millisecondsToWaitGridUpdate > 0.0)
+                {
+                    Stopwatch sw = Stopwatch.StartNew();
+                    await Task.Delay(250);
+                    _millisecondsToWaitGridUpdate -= sw.ElapsedMilliseconds;
+                }
+                UpdateGridSize();
+                _bCanUpdateGrid = true;
+            }
+        }
+        private void UpdateGridSize()
+        {
+            
+            foreach (StackPanel panel in SoftwareUpdaterGrid.Children)
+            {
+                panel.MaxHeight = GridBorder.ActualHeight / _gridRows;
+                panel.Height = GridBorder.ActualHeight / _gridRows;
+                panel.MaxWidth = GridBorder.ActualWidth;
+                panel.Width = GridBorder.ActualWidth;
+                foreach (PhoenixSoftwareUpdater updater in panel.Children)
+                {
+                    updater.MaxHeight = panel.Height;
+                    updater.MaxWidth = panel.Width / _gridColumns;
+                    updater.Height = panel.Height;
+                    updater.Width = panel.Width / _gridColumns;
+                }
+            }
+        }
+
 
         // Init
+        private bool ShouldUpdatePCMMachineList()
+        {
+            return Helpers.GetHoursSinceLastUpdate() > 24;
+        }
+        public async void UpdatePcmMachineList()
+        {
+            StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
+            _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Started updating pcm machine list.");
+            await Application.Current.Dispatcher.Invoke(async delegate
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                try
+                {
+                    _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
+                    PCMMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
+                    if (PCMMachineList == null) throw new Exception("pcm machine list is null.");
+                    OnMachineListUpdated?.Invoke(PCMMachineList);
+                }
+                catch (Exception ex)
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_03_0013", "Failed to update pcm machine list. Look at logs for reason.");
+                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}");
+                }
+                Mouse.OverrideCursor = null;
+                _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
+            });
+        }
         private void InitLanguageSettings()
         {
             foreach (string language in LocalizationManager.GetInstance().AvailableLanguages)
@@ -53,41 +174,7 @@ namespace PhoenixSwitcher
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
         }
-        private async void InitPhoenixSwitcherLogic()
-        {
-            try
-            {
-                await Task.Run(() => _phoenixSwitcher.Init());
 
-                XmlProjectSettings settings = Helpers.GetProjectSettings();
-                TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
-                    , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
-                    , 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
-                TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
-                    , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
-                    , 24, new Action(MachineListControl.UpdatePcmMachineList));
-                UpdateBundleAndMachineList();
-            }
-            catch (Exception ex)
-            {
-                Mouse.OverrideCursor = null;
-                _logger.LogError($"MainWindow::InitPhoenixSwitcherLoging -> exception occured: {ex.Message}");
-            }
-        }
-        private async void UpdateBundleAndMachineList()
-        {
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            // Too long has passed since an updat for the bundle files. time to update them.
-            int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
-            int hoursBetweenUpdate = DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
-            if (hoursBetweenUpdate > 24)
-            {
-                Mouse.OverrideCursor = Cursors.Wait;
-                await Task.Run(() => _phoenixSwitcher.UpdateBundleFilesOnDrive());
-                MachineListControl.UpdatePcmMachineList();
-                Mouse.OverrideCursor = null;
-            }
-        }
 
         // Click Events
         private void ChangeSettings_Click(object sender, RoutedEventArgs e)
@@ -111,18 +198,23 @@ namespace PhoenixSwitcher
         }
         private void UpdateBundleFiles_Click(object sender, RoutedEventArgs e)
         {
-            _phoenixSwitcher.UpdateBundleFilesOnDrive();
+            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+            {
+                updater.UpdateBundleFiles();
+            }
         }
         private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
         {
-            MachineListControl.UpdatePcmMachineList();
+            UpdatePcmMachineList();
         }
         private void ConnectToEspController_Click(object sender, RoutedEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Wait;
-            Task.Run(() => _phoenixSwitcher.Init());
-            UpdateBundleAndMachineList();
-            MachineInfoWindowControl.UpdateSelectedMachine(null);
+            if (ShouldUpdatePCMMachineList()) UpdatePcmMachineList();
+            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+            {
+                updater.ConnectToEspController();
+            }
             Mouse.OverrideCursor = null;
         }
         private void About_Click(object sender, RoutedEventArgs e)
@@ -131,6 +223,7 @@ namespace PhoenixSwitcher
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.Show();
         }
+
 
         // Other
         private void OnLanguageChanged()
@@ -154,5 +247,6 @@ namespace PhoenixSwitcher
                 item.IsChecked = language == LocalizationManager.GetInstance().GetActiveLanguage();
             }
         }
+
     }
 }

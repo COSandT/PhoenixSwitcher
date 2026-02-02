@@ -11,6 +11,8 @@ using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ControlTemplates;
+using System.Linq.Expressions;
+using System.Diagnostics;
 
 namespace PhoenixSwitcher
 {
@@ -21,19 +23,22 @@ namespace PhoenixSwitcher
 
         private readonly Logger? _logger;
 
+        private string _driveName = string.Empty;
+        private string _espID = string.Empty;
+
         private const string _phoenixFileName = "GHMIFiles";
-        private string _phoenixFilePath = "";
-        private string _drive = "";
+        private string _phoenixFilePath = string.Empty;
+        private string _drive = string.Empty;
 
         private bool _bExecuteDelayedBundleUpdate = false;
         private bool _bIsPhoenixSetupOngoing = false;
         private bool _bIsUpdatingBundles = false;
 
-        public delegate void ProcessStartedHandler();
+        public delegate void ProcessStartedHandler(PhoenixSwitcherLogic switcherLogic);
         public static event ProcessStartedHandler? OnProcessStarted;
-        public delegate void ProcessFinishedHandler();
+        public delegate void ProcessFinishedHandler(PhoenixSwitcherLogic switcherLogic);
         public static event ProcessFinishedHandler? OnProcessFinished;
-        public delegate void ProcessCancelledHandler();
+        public delegate void ProcessCancelledHandler(PhoenixSwitcherLogic switcherLogic);
         public static event ProcessCancelledHandler? OnProcessCancelled;
 
         public PhoenixSwitcherLogic(Logger logger)
@@ -50,11 +55,21 @@ namespace PhoenixSwitcher
         }
 
 
-        public async Task Init()
+        public async Task Init(string espID, string driveName)
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::Init -> Initializing switcher logic");
-            await SetupEspController();
-            CleanupDrive();
+            _driveName = driveName;
+            _espID = espID;
+
+            try
+            {
+                await SetupEspController();
+                CleanupDrive();
+            }
+            catch
+            {
+
+            }
         }
 
         public void UpdateBundleFilesOnDrive()
@@ -160,16 +175,17 @@ namespace PhoenixSwitcher
                 });
             }
         }
-        private async void StartProcess(PhoenixSwitcherDone? machine)
+        private async void StartProcess(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? machine)
         {
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
+            if (switcherLogic != this) return;
+            StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
             if (machine == null)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected a machine with invalid data.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid machine selected");
-                OnProcessCancelled?.Invoke();
+                OnProcessCancelled?.Invoke(this);
                 return;
             }
 
@@ -177,7 +193,7 @@ namespace PhoenixSwitcher
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Is updating bundles please wait until done.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0017", "Bundles are being updated please wait.");
-                OnProcessCancelled?.Invoke();
+                OnProcessCancelled?.Invoke(this);
                 return;
             }
 
@@ -186,19 +202,19 @@ namespace PhoenixSwitcher
             // Normally should only happen if program was shut down or crashed in the middle of the process.
             if (Directory.Exists(_phoenixFilePath)) RenameGMHIFileToBundleFile();
 
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0019", "Renaming selected 'Bundle file' to 'GHMIFile'");
+            StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0019", "Renaming selected 'Bundle file' to 'GHMIFile'");
             if (!await RenameBundleFileToGMHIFile(machine.Bundle_version))
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to find matching bundle files for selected vehicle. Try updating bundle files.");
-                OnProcessCancelled?.Invoke();
+                OnProcessCancelled?.Invoke(this);
                 return;
             }
 
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
-            SwitchPowerToPhoenix(true);
+            StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
+            SwitchPowerToPhoenix(this, true);
 
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0020", "Waiting for bootup to switch drive.");
+            StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0020", "Waiting for bootup to switch drive.");
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             await Task.Delay(settings.DriveSwitchWaitTimeSec * 1000);
@@ -208,22 +224,23 @@ namespace PhoenixSwitcher
             // Wait with showing finished button atleast until the drive is no longer connected.
             // User cannot complete process before the drive has switched properly.
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Invoking process started delegate once drive has properly switched.");
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0021", "Switching drive.");
+            StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0021", "Switching drive.");
             while (IsDriveConnectedToPC())
             {
                 await Task.Delay(500);
             }
-            OnProcessStarted?.Invoke();
+            OnProcessStarted?.Invoke(this);
 
-            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0007", "Complete setup on 'Phoenix Screen' and press 'Power off' once done.");
+            StatusDelegates.UpdateStatus(this, StatusLevel.Instruction, "ID_02_0007", "Complete setup on 'Phoenix Screen' and press 'Power off' once done.");
         }
-        private async void FinishProcess()
+        private async void FinishProcess(PhoenixSwitcherLogic? switcherLogic)
         {
-            OnProcessFinished?.Invoke();
-            StatusDelegates.UpdateStatus(StatusLevel.Status, "ID_02_0008", "Process finished, resetting to start");
+            if (switcherLogic != this) return;
+            OnProcessFinished?.Invoke(this);
+            StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0008", "Process finished, resetting to start");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
-            SwitchPowerToPhoenix(false);
+            SwitchPowerToPhoenix(this, false);
             await ConnectDriveToPC();
 
             // Switch filename back to proper bundle name.
@@ -236,7 +253,7 @@ namespace PhoenixSwitcher
                 await Task.Run(() => UpdateBundleFilesOnDrive());
                 _bExecuteDelayedBundleUpdate = false;
             }
-            StatusDelegates.UpdateStatus(StatusLevel.Instruction, "ID_02_0005", "Select machine from list or use scanner.");
+            StatusDelegates.UpdateStatus(this, StatusLevel.Instruction, "ID_02_0005", "Select machine from list or use scanner.");
         }
 
         // Helpers
@@ -244,13 +261,13 @@ namespace PhoenixSwitcher
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Start setup for Esp32Controller");
             _espController = new Esp32Controller();
-            await _espController.Connect();
+            await _espController.Connect(_espID);
 
             if (!_espController.IsConnected)
             {
                 _logger?.LogError($"PhoenixSwitcherLogic::SetupEspController -> Unable to connect to EspController");
-                StatusDelegates.UpdateStatus(StatusLevel.Error, "ID_02_0022", "Failed to connect to EspController. Check if pc is connected and retry connecting.");
-                return;
+                StatusDelegates.UpdateStatus(this, StatusLevel.Error, "ID_02_0022", "Failed to connect to EspController. Check if pc is connected and retry connecting.");
+                throw new Exception($"Unable to connect to EspController EspID: {_espID}, DriveName: {_driveName}");
             }
             _espController.SetAllRelays(false);
             await ConnectDriveToPC();
@@ -279,12 +296,13 @@ namespace PhoenixSwitcher
         private bool IsDriveConnectedToPC()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::IsDriveConnectedToPC -> Checking if drive is connected to pc.");
-            _drive = _usbTool.GetDrive("PHOENIXD").DriveLetter;
+            _drive = _usbTool.GetDrive(_driveName).DriveLetter;
             _phoenixFilePath = _drive + _phoenixFileName;
             return !string.IsNullOrEmpty(_drive);
         }
-        private void SwitchPowerToPhoenix(bool result)
+        private void SwitchPowerToPhoenix(PhoenixSwitcherLogic? switcherLogic, bool result)
         {
+            if (switcherLogic != this) return;
             _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Use relais to switch power of phoenix on/off");
             if (_espController != null)
             {
@@ -294,22 +312,37 @@ namespace PhoenixSwitcher
 
         private void CleanupDrive()
         {
-            RenameGMHIFileToBundleFile();
-
-            //re Remove any folders/files that are nt bundle files
-            List<string> foldersOnDrive = Directory.GetDirectories(_drive).ToList();
-            foreach (string folder in foldersOnDrive)
+            try
             {
-                if (!folder.Contains("PCMBUNDLE_"))
+                RenameGMHIFileToBundleFile();
+
+                // Remove any folders/files that are nt bundle files
+                List<string> foldersOnDrive = Directory.GetDirectories(_drive).ToList();
+                foreach (string folder in foldersOnDrive)
                 {
-                    Directory.Delete(folder, true);
+                    if (!folder.Contains("PCMBUNDLE_"))
+                    {
+                        Directory.Delete(folder, true);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    // The exceptions here is already a localized messege.
+                    Helpers.ShowLocalizedOkMessageBox("", ex.Message);
+                });
             }
         }
         private void RenameGMHIFileToBundleFile()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> resetting potential phoenix file back to its bundle file name.");
             // if there is none do not care.
+            if (!Directory.Exists(_drive))
+            {
+                throw new Exception(Helpers.TryGetLocalizedText("ID_02_0004", "Could not find drive with DriveName: ") + _driveName);
+            }
             if (!Directory.Exists(_phoenixFilePath))
             {
                 _logger?.LogInfo($"PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> No phoenix file found returning.");

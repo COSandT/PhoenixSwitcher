@@ -25,6 +25,12 @@ namespace PhoenixSwitcher
             if (localizationManager == null) return fallBackText;
             return localizationManager.GetEntryForActiveLanguage(localizedTextID, fallBackText);
         }
+        public static int GetHoursSinceLastUpdate()
+        {
+            XmlProjectSettings settings = GetProjectSettings();
+            int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
+            return DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
+        }
 
         public static string RemoveExtraZeroFromVersionName(string versionName)
         {

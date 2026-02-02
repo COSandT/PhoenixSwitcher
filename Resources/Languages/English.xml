@@ -17,7 +17,7 @@
 	<LanguageEntry id="ID_02_0001">Invalid machine selected</LanguageEntry>
 	<LanguageEntry id="ID_02_0002">Program is busy updating bundles, Please wait until this is finished.</LanguageEntry>
 	<LanguageEntry id="ID_02_0003">Failed to find matching bundle files for selected machine. Try updating bundle files.</LanguageEntry>
-	<LanguageEntry id="ID_02_0004"></LanguageEntry>
+	<LanguageEntry id="ID_02_0004">Could not find drive with DriveName: </LanguageEntry>
 	<LanguageEntry id="ID_02_0005">Select machine from list or select the scanner box and use scanner.</LanguageEntry>
 	<LanguageEntry id="ID_02_0006">Process started setting up everything to setup Phoenix</LanguageEntry>
 	<LanguageEntry id="ID_02_0007">Complete setup on Phoenix and press 'Power Off' button once done.</LanguageEntry>
@@ -63,6 +63,7 @@
 	<LanguageEntry id="ID_04_0017">Power Off</LanguageEntry>
 	<LanguageEntry id="ID_04_0018">Press power off once done.</LanguageEntry>
 	<LanguageEntry id="ID_04_0019">Press 'Finish' if done or 'Power On' for success verification.</LanguageEntry>
+	<LanguageEntry id="ID_04_0020">'No available Bundle'</LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->
