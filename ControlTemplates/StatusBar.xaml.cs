@@ -1,9 +1,7 @@
 ﻿using System.Windows.Media;
 using System.Windows.Controls;
-
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
-
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 
@@ -32,7 +30,6 @@ namespace PhoenixSwitcher.ControlTemplates
             public string LocalizedTextID = "";
             public string FallbackText = "";
         }
-
 
         public StatusBar()
         {

@@ -1,17 +1,18 @@
-﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
+using System.Diagnostics;
 using System.Windows.Input;
-using CosntCommonLibrary.Esp32;
+using System.Windows.Controls;
+
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools;
-using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.ControlTemplates;
+
+using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
-using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.ControlTemplates;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
@@ -49,6 +50,7 @@ namespace PhoenixSwitcher
         }
         private async void InitializeEspControllers()
         {
+            Mouse.OverrideCursor = Cursors.Wait;
             XmlProjectSettings settings = Helpers.GetProjectSettings();
 
             //Math to determing how many rows/columns should be made.
@@ -58,7 +60,7 @@ namespace PhoenixSwitcher
                 if (!espController.bIsActive) continue;
                 activeControllers.Add(espController);
             }
-
+            SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
             _gridRows = (int)Math.Round(Math.Sqrt(activeControllers.Count));
             _gridColumns = (int)Math.Ceiling((double)(activeControllers.Count) / (double)_gridRows);
             for (int i = 0; i < _gridRows; ++i)
@@ -78,7 +80,7 @@ namespace PhoenixSwitcher
                     PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController.EspID, espController.DriveName, _logger);
                     _softwareUpdaters.Add(updater);
                     panel.Children.Add(updater);
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                     updater.HorizontalAlignment = HorizontalAlignment.Stretch;
                     updater.VerticalAlignment = VerticalAlignment.Stretch;
                 }
@@ -87,11 +89,14 @@ namespace PhoenixSwitcher
             // Slight delay giving the stackpanels time to load so their height is set.
             await Task.Delay(500);
             UpdateGridSize();
+            SoftwareUpdaterGrid.Visibility = Visibility.Visible;
 
             TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
                 , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
                 , 24, new Action(UpdatePcmMachineList));
             UpdatePcmMachineList();
+
+            Mouse.OverrideCursor = null;
         }
         private void SoftwareUpdaterGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {

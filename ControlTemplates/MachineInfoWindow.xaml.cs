@@ -1,10 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using CosntCommonLibrary.Esp32;
+
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools;
-using CosntCommonLibrary.Xml;
+
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
@@ -65,7 +66,7 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.TestButtonText = Helpers.TryGetLocalizedText("ID_04_0016", "Power On");
             _viewModel.ShutDownPhoenixText = Helpers.TryGetLocalizedText("ID_04_0017", "Power Off");
 
-            _viewModel.SelectedMachineHeaderText = Helpers.TryGetLocalizedText("ID_04_0003", "SelectedMachineInfo");
+            _viewModel.SelectedMachineHeaderText = Helpers.TryGetLocalizedText("ID_04_0003", "Machine Info");
             _viewModel.MachineTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0004", "MachineType: ");
             _viewModel.MachineN17DescriptionText = Helpers.TryGetLocalizedText("ID_04_0005", "Machine Num Long: ");
             _viewModel.MachineN9DescriptionText = Helpers.TryGetLocalizedText("ID_04_0006", "Machine Num Short: ");
@@ -77,7 +78,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
         public async void UpdateSelectedMachine(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? machine)
         {
-            if (_switcherLogic != switcherLogic) return;
+            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             _logger?.LogInfo($"MachineInfoWindow::SetMachineInfoFromBundle -> Set selected bundle.");
             if (machine == null)
             {
@@ -106,8 +107,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
             if (machine.DT == 1.ToString())
             {
-                StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
-                Helpers.ShowLocalizedOkMessageBox("ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
+               _viewModel.StartButtonVisibility = Visibility.Hidden;
                 return;
             }
 

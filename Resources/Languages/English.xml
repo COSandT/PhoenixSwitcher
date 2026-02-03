@@ -36,6 +36,7 @@
 	<LanguageEntry id="ID_02_0020">Waiting for bootup to switch drive.</LanguageEntry>
 	<LanguageEntry id="ID_02_0021">Switching drive.</LanguageEntry>
 	<LanguageEntry id="ID_02_0022">Failed to connect to EspController. Check if pc is connected and retry connecting.</LanguageEntry>
+	<LanguageEntry id="ID_02_0023">EspController connection has not been established yet. Wait or retry connecting.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
@@ -46,10 +47,10 @@
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>
 	<LanguageEntry id="ID_04_0002">Finish</LanguageEntry>
-	<LanguageEntry id="ID_04_0003">Selected Machine Info</LanguageEntry>
-	<LanguageEntry id="ID_04_0004">Machine Type: </LanguageEntry>
-	<LanguageEntry id="ID_04_0005">Machine Number Long: </LanguageEntry>
-	<LanguageEntry id="ID_04_0006">Machine Number Short: </LanguageEntry>
+	<LanguageEntry id="ID_04_0003">Machine Info</LanguageEntry>
+	<LanguageEntry id="ID_04_0004">Type: </LanguageEntry>
+	<LanguageEntry id="ID_04_0005">VIN 17: </LanguageEntry>
+	<LanguageEntry id="ID_04_0006">VIN 9: </LanguageEntry>
 	<LanguageEntry id="ID_04_0007">Display Type: </LanguageEntry>
 	<LanguageEntry id="ID_04_0008">Bundle: </LanguageEntry>
 	<LanguageEntry id="ID_04_0009">VAN: </LanguageEntry>

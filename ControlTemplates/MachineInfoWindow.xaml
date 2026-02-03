@@ -35,19 +35,19 @@
                 <Border Grid.Row="1" BorderThickness="2"
                     Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
                     BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
-                    <Grid HorizontalAlignment="Left" Margin="5,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <!-- Machine Number Long -->
-                        <Viewbox Grid.Row="0" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                    <Viewbox VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Grid Margin="4,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <!-- Machine Number Long -->
+                            <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -56,10 +56,8 @@
                                 <TextBlock Grid.Column="0" Text="{Binding MachineN17DescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding MachineN17ValueText}" />
                             </Grid>
-                        </Viewbox>
-                        <!-- Machine Number Short-->
-                        <Viewbox Grid.Row="1" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                            <!-- Machine Number Short-->
+                            <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -68,10 +66,8 @@
                                 <TextBlock Grid.Column="0" Text="{Binding MachineN9DescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding MachineN9ValueText}" />
                             </Grid>
-                        </Viewbox>
-                        <!-- Machine Type-->
-                        <Viewbox Grid.Row="2" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                            <!-- Machine Type-->
+                            <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -80,10 +76,8 @@
                                 <TextBlock Grid.Column="0" Text="{Binding MachineTypeDescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding MachineTypeValueText}" />
                             </Grid>
-                        </Viewbox>
-                        <!-- VAN -->
-                        <Viewbox Grid.Row="3" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                            <!-- VAN -->
+                            <Grid Grid.Row="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -92,10 +86,8 @@
                                 <TextBlock Grid.Column="0" Text="{Binding VANDescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding VANValueText}" />
                             </Grid>
-                        </Viewbox>
-                        <!-- PCM Type-->
-                        <Viewbox Grid.Row="4" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                            <!-- PCM Type-->
+                            <Grid Grid.Row="4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -104,10 +96,8 @@
                                 <TextBlock Grid.Column="0" Text="{Binding SeriesDescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding SeriesValueText}" />
                             </Grid>
-                        </Viewbox>
-                        <!-- Display Type-->
-                        <Viewbox Grid.Row="5" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                            <!-- Display Type-->
+                            <Grid Grid.Row="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -116,10 +106,8 @@
                                 <TextBlock Grid.Column="0" Text="{Binding DisplayTypeDescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding DisplayTypeValueText}" />
                             </Grid>
-                        </Viewbox>
-                        <!-- Bundle -->
-                        <Viewbox Grid.Row="6" MaxHeight="75" HorizontalAlignment="Left">
-                            <Grid>
+                            <!-- Bundle -->
+                            <Grid Grid.Row="6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="5"/>
@@ -128,8 +116,9 @@
                                 <TextBlock Grid.Column="0" Text="{Binding BundleDescriptionText}" />
                                 <TextBlock Grid.Column="2" Text="{Binding BundleValueText}" />
                             </Grid>
-                        </Viewbox>
-                    </Grid>
+                        </Grid>
+                    </Viewbox>
+                    
                 </Border>
                 
             </Grid>

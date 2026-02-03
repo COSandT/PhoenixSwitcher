@@ -1,10 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
-using CosntCommonLibrary.Esp32;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.Models;
 using PhoenixSwitcher.ViewModels;
@@ -84,7 +83,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 }
             }
 
-            OnMachineSelected?.Invoke(_switcherLogic, null);
+            SelectMachine_Internal(null);
         }
         private async void ScannedMachineText_KeyUp(object sender, KeyEventArgs e)
         {
@@ -93,10 +92,21 @@ namespace PhoenixSwitcher.ControlTemplates
 
             if (string.IsNullOrEmpty(barcode)) return;
             if (_pcmMachineList == null) await PhoenixRest.GetInstance().GetPCMMachineFile();
-            XmlMachinePCM? foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == barcode || mach.VAN == barcode);
 
-            if (foundMachine == null) return;
-            OnMachineSelected?.Invoke(_switcherLogic, foundMachine);
+            XmlMachinePCM? foundMachine = null;
+            if (barcode.Length == 17) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == barcode);
+            else if (barcode.Length == 10) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == barcode);
+            else if (barcode.Length < 10)
+            {
+                while (barcode.Length < 10)
+                {
+                    barcode = $"0{barcode}";
+                }
+                foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == barcode);
+            }
+            else return;
+
+            SelectMachine_Internal(foundMachine);
 
             ScannedMachineText.Clear();
             ScannedMachineText.Focus();
@@ -112,7 +122,25 @@ namespace PhoenixSwitcher.ControlTemplates
 
             MachineListItem? item = (MachineListItem?)e.AddedItems[0];
             _selectedMachine = (XmlMachinePCM?)item?.Tag;
-            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
+            SelectMachine_Internal(_selectedMachine);
+        }
+        private void SelectMachine_Internal(XmlMachinePCM? machine)
+        {
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            if (settings.bShouldSelectPCMForAll)
+            {
+                OnMachineSelected?.Invoke(null, machine);
+            }
+            else
+            {
+                OnMachineSelected?.Invoke(_switcherLogic, machine);
+            }
+
+            if (machine != null && machine.DT == 1.ToString())
+            {
+                StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
+                Helpers.ShowLocalizedOkMessageBox("ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
+            }
         }
     }
 }

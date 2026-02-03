@@ -7,7 +7,7 @@
         xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:viewlibrary="clr-namespace:CosntCommonViewLibrary.XmlEditor;assembly=CosntCommonViewLibrary"
         mc:Ignorable="d"
-        Title="{Binding WindowName}"  Height="360" Width="640">
+        Title="{Binding WindowName}"  Height="720" Width="1280">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>

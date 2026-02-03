@@ -29,7 +29,8 @@ namespace PhoenixSwitcher.Windows
             MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox("ID_06_0004", "Do you want to save changes?");
             if (result == MessageBoxResult.Yes)
             {
-                Save_Click(null, null);
+                _viewModel.OnSaveCommand.Invoke();
+                Helpers.ShowLocalizedOkMessageBox("ID_06_0005", "File has saved. Restart is required to apply changes.");
             }
         }
 

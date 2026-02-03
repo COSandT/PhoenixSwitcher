@@ -178,6 +178,15 @@ namespace PhoenixSwitcher
         private async void StartProcess(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? machine)
         {
             if (switcherLogic != this) return;
+
+            if (_espController == null || _espController.IsConnected)
+            {
+                _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> No EspController connected, cannot start.");
+                Helpers.ShowLocalizedOkMessageBox("ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
+                StatusDelegates.UpdateStatus(this, StatusLevel.Error, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
+                OnProcessCancelled?.Invoke(this);
+                return;
+            }
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");

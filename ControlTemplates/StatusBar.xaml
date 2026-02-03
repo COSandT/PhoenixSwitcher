@@ -7,17 +7,29 @@
              xmlns:viewmodels="clr-namespace:PhoenixSwitcher.ViewModels"
              xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             xmlns:converters="clr-namespace:PhoenixSwitcher.ValueConverters"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:FontSizeForTextConverter x:Key="FontSizeForTextConverter" MinFontSize="6" MaxFontSize="40" Multiplier="0.85" />
+    </UserControl.Resources>
     <Border BorderThickness="2"
         Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
         BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
-        <Grid>
-            <ProgressBar Minimum="0" Maximum="100" Padding="0,2"
-                Value="{Binding MainStatusPercentage}">
-            </ProgressBar>
-            <Viewbox Margin="10,5">
-                <TextBlock Text="{Binding MainStatusText}" Foreground="{Binding StatusColor}"/>
-            </Viewbox>
-        </Grid>
+        <TextBlock x:Name="StatusTextBlock"
+           Text="{Binding MainStatusText}"
+           TextWrapping="Wrap"
+           Foreground="{Binding StatusColor}"
+           TextAlignment="Left"
+           HorizontalAlignment="Stretch"
+           VerticalAlignment="Center"
+           Margin="5,0">
+            <TextBlock.FontSize>
+                <MultiBinding Converter="{StaticResource FontSizeForTextConverter}">
+                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                    <Binding Path="ActualHeight" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                    <Binding Path="Text" RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+            </TextBlock.FontSize>
+        </TextBlock>
     </Border>
 </UserControl>
