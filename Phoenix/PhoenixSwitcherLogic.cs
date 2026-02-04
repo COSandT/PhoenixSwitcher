@@ -187,10 +187,10 @@ namespace PhoenixSwitcher
 
             if (_espController == null || !_espController.IsConnected)
             {
+                OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> No EspController connected, cannot start.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
                 StatusDelegates.UpdateStatus(this, StatusLevel.Error, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
-                OnProcessCancelled?.Invoke(this);
                 return;
             }
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
@@ -198,17 +198,17 @@ namespace PhoenixSwitcher
             _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
             if (machine == null)
             {
+                OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected a machine with invalid data.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid machine selected");
-                OnProcessCancelled?.Invoke(this);
                 return;
             }
 
             if (bIsUpdatingBundles)
             {
+                OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Is updating bundles please wait until done.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0017", "Bundles are being updated please wait.");
-                OnProcessCancelled?.Invoke(this);
                 return;
             }
 
@@ -220,9 +220,9 @@ namespace PhoenixSwitcher
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0019", "Renaming selected 'Bundle file' to 'GHMIFile'");
             if (!await RenameBundleFileToGMHIFile(machine.Bundle_version))
             {
+                OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to find matching bundle files for selected vehicle. Try updating bundle files.");
-                OnProcessCancelled?.Invoke(this);
                 return;
             }
 
