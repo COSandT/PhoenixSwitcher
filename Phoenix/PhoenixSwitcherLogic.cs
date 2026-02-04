@@ -31,8 +31,10 @@ namespace PhoenixSwitcher
         private string _drive = string.Empty;
 
         private bool _bExecuteDelayedBundleUpdate = false;
-        private bool _bIsPhoenixSetupOngoing = false;
-        private bool _bIsUpdatingBundles = false;
+
+        public static int NumActiveSetups = 0;
+        public bool bIsPhoenixSetupOngoing { get; private set; } = false;
+        public bool bIsUpdatingBundles { get; private set; } = false;
 
         public delegate void ProcessStartedHandler(PhoenixSwitcherLogic switcherLogic);
         public static event ProcessStartedHandler? OnProcessStarted;
@@ -66,9 +68,13 @@ namespace PhoenixSwitcher
                 await SetupEspController();
                 CleanupDrive();
             }
-            catch
+            catch (Exception ex)
             {
-
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    // exceptions is already localized notmally.
+                    Helpers.ShowLocalizedOkMessageBox("", ex.Message);
+                });
             }
         }
 
@@ -79,16 +85,16 @@ namespace PhoenixSwitcher
             {
                 Application.Current.Dispatcher.Invoke((Action)async delegate
                 {
-                    _bIsUpdatingBundles = true;
+                    bIsUpdatingBundles = true;
                     Mouse.OverrideCursor = Cursors.Wait;
 
                     UpdateWindow updatingWindow = new UpdateWindow();
-                    updatingWindow.Show();
+                    updatingWindow.ShowDialog();
                     await Task.Run(() => UpdateBundleFiles_Internal());
                     updatingWindow.Close();
 
                     Mouse.OverrideCursor = null;
-                    _bIsUpdatingBundles = false;
+                    bIsUpdatingBundles = false;
                     _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle file.");
                 });
             }
@@ -97,7 +103,7 @@ namespace PhoenixSwitcher
                 Application.Current.Dispatcher.Invoke(delegate
                 {
                     Mouse.OverrideCursor = null;
-                    _bIsUpdatingBundles = false;
+                    bIsUpdatingBundles = false;
                     _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
                     Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
                 });
@@ -107,7 +113,7 @@ namespace PhoenixSwitcher
         {
             try
             {
-                if (_bIsPhoenixSetupOngoing)
+                if (bIsPhoenixSetupOngoing)
                 {
                     // Proecess is still running when bundle update is supposed to happen.
                     // Delay update until after process has finished.
@@ -179,7 +185,7 @@ namespace PhoenixSwitcher
         {
             if (switcherLogic != this) return;
 
-            if (_espController == null || _espController.IsConnected)
+            if (_espController == null || !_espController.IsConnected)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> No EspController connected, cannot start.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
@@ -198,7 +204,7 @@ namespace PhoenixSwitcher
                 return;
             }
 
-            if (_bIsUpdatingBundles)
+            if (bIsUpdatingBundles)
             {
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Is updating bundles please wait until done.");
                 Helpers.ShowLocalizedOkMessageBox("ID_02_0017", "Bundles are being updated please wait.");
@@ -220,6 +226,8 @@ namespace PhoenixSwitcher
                 return;
             }
 
+            NumActiveSetups++;
+            bIsPhoenixSetupOngoing = true;
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
             SwitchPowerToPhoenix(this, true);
 
@@ -245,6 +253,9 @@ namespace PhoenixSwitcher
         private async void FinishProcess(PhoenixSwitcherLogic? switcherLogic)
         {
             if (switcherLogic != this) return;
+
+            NumActiveSetups++;
+            bIsPhoenixSetupOngoing = false;
             OnProcessFinished?.Invoke(this);
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0008", "Process finished, resetting to start");
 

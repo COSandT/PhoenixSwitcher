@@ -4,7 +4,7 @@
   <LogFileName>Log</LogFileName>
   <BundleFilesDirectory>D:\Miel\Git Repos\PhoenixSwitcher\bin\Debug\net8.0-windows\Bundles\</BundleFilesDirectory>
   <TimeToUpdateBundleAt>PT1H30M</TimeToUpdateBundleAt>
-  <LastBundleUpdateDate>2026-01-28T11:12:55.1974065+01:00</LastBundleUpdateDate>
+  <LastBundleUpdateDate>2026-02-03T11:12:55.1974065+01:00</LastBundleUpdateDate>
   <RestAPIBaseURL>http://10.240.17.7:5063/PhoenixSwitcher/</RestAPIBaseURL>
   <DriveSwitchWaitTimeSec>22</DriveSwitchWaitTimeSec>
   <ShouldSelectPCMForAll>true</ShouldSelectPCMForAll>
@@ -18,11 +18,6 @@
 		  <bIsActive>true</bIsActive>
 		  <EspID>AAAC</EspID>
 		  <DriveName>PHOENIXD2</DriveName>
-	  </ESPControllerInfo>
-	  <ESPControllerInfo>
-		  <bIsActive>true</bIsActive>
-		  <EspID>AAAD</EspID>
-		  <DriveName>PHOENIXD3</DriveName>
 	  </ESPControllerInfo>
   </ESPControllersInfo>
 </ProjectSettings>

@@ -83,6 +83,7 @@ namespace PhoenixSwitcher
                     await Task.Delay(1000);
                     updater.HorizontalAlignment = HorizontalAlignment.Stretch;
                     updater.VerticalAlignment = VerticalAlignment.Stretch;
+                    updater.MachineListControl.MachineListBox.SelectionChanged += OnMachineListSelectionChanged;
                 }
             }
 
@@ -189,7 +190,9 @@ namespace PhoenixSwitcher
 
             XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}//Settings//");
             settingsWindow.SetXmlToEdit(projectSettings.SettingsFileFolderPath + projectSettings.SettingsFileName);
-            settingsWindow.Show();
+            settingsWindow.Topmost = true;
+            settingsWindow.ShowDialog();
+
         }
         private void ChangeLanguage_Click(object sender, RoutedEventArgs e)
         {
@@ -226,7 +229,8 @@ namespace PhoenixSwitcher
         {
             _logger?.LogInfo("MainWindow::About_Click -> About button clicked, opening the about window.");
             AboutWindow aboutWindow = new AboutWindow();
-            aboutWindow.Show();
+            aboutWindow.Topmost = true;
+            aboutWindow.ShowDialog();
         }
 
 
@@ -250,6 +254,21 @@ namespace PhoenixSwitcher
             {
                 string? language = (string?)item.Header;
                 item.IsChecked = language == LocalizationManager.GetInstance().GetActiveLanguage();
+            }
+        }
+
+        private void OnMachineListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            if (settings == null || !settings.bShouldSelectPCMForAll) return;
+            if (e.AddedItems.Count <= 0) return;
+
+            // Select the same object for all machinelists
+            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+            {
+                ListBox targetListBox = updater.MachineListControl.MachineListBox;
+                targetListBox.SelectedItem = e.AddedItems[0];
+                targetListBox.ScrollIntoView(targetListBox.SelectedItem);
             }
         }
 

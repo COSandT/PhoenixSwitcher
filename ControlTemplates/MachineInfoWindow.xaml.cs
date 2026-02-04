@@ -9,6 +9,7 @@ using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -164,10 +165,15 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.TestButtonVisibility = Visibility.Hidden;
             XmlMachinePCM? machine = _selectedMachine;
             OnProcessFinished?.Invoke(_switcherLogic);
-            MessageBoxResult result = Helpers.ShowLocalizedYesNoMessageBox("ID_04_0013", "Do you want to setup another screen for this machine?");
 
-            // Still call finish to reset everything properly but immediatly call UpdateSelectedMachine to fill in the info again.
-            if (result == MessageBoxResult.Yes) UpdateSelectedMachine(_switcherLogic, machine);
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            if (!settings.bShouldSelectPCMForAll)
+            {
+                MessageBoxResult result = Helpers.ShowLocalizedYesNoMessageBox("ID_04_0013", "Do you want to setup another screen for this machine?");
+                // Still call finish to reset everything properly but immediatly call UpdateSelectedMachine to fill in the info again.
+                if (result == MessageBoxResult.Yes) UpdateSelectedMachine(_switcherLogic, machine);
+            }
+
         }
         private void ProcessStarted(PhoenixSwitcherLogic switcherLogic)
         {

@@ -74,7 +74,7 @@
                 Padding="5"
                 BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
-                <ListBox ItemsSource="{Binding ListViewItems}"
+                <ListBox x:Name="MachineListBox" ItemsSource="{Binding ListViewItems}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     SelectionChanged="ListView_SelectionChanged"
                     HorizontalContentAlignment="Stretch"

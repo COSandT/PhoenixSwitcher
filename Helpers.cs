@@ -58,6 +58,7 @@ namespace PhoenixSwitcher
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0002", "yes"), MessageBoxResult.Yes));
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0003", "no"), MessageBoxResult.No));
+            model.Caption = TryGetLocalizedText("ID_01_0001", "Phoenix Software Updater");
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
             return MessageBox.Show(model);
         }
@@ -65,6 +66,7 @@ namespace PhoenixSwitcher
         {
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0001", "ok"), MessageBoxResult.OK));
+            model.Caption = TryGetLocalizedText("ID_01_0001", "Phoenix Software Updater");
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
             return MessageBox.Show(model);
         }
@@ -73,6 +75,7 @@ namespace PhoenixSwitcher
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0001", "ok"), MessageBoxResult.OK));
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0004", "cancel"), MessageBoxResult.Cancel));
+            model.Caption = TryGetLocalizedText("ID_01_0001", "Phoenix Software Updater");
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
             return MessageBox.Show(model);
         }

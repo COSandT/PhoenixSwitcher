@@ -65,6 +65,7 @@
 	<LanguageEntry id="ID_04_0018">Press power off once done.</LanguageEntry>
 	<LanguageEntry id="ID_04_0019">Press 'Finish' if done or 'Power On' for success verification.</LanguageEntry>
 	<LanguageEntry id="ID_04_0020">'No available Bundle'</LanguageEntry>
+	<LanguageEntry id="ID_04_0021">Cannot select a new machine when setup is ongoing.</LanguageEntry>
 	
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->

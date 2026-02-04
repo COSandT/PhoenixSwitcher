@@ -10,7 +10,7 @@
              xmlns:converters="clr-namespace:PhoenixSwitcher.ValueConverters"
              mc:Ignorable="d">
     <UserControl.Resources>
-        <converters:FontSizeForTextConverter x:Key="FontSizeForTextConverter" MinFontSize="6" MaxFontSize="40" Multiplier="0.85" />
+        <converters:FontSizeForTextConverter x:Key="FontSizeForTextConverter" MinFontSize="6" MaxFontSize="76" Multiplier="0.85" />
     </UserControl.Resources>
     <Border BorderThickness="2"
         Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"

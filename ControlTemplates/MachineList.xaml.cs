@@ -7,6 +7,7 @@ using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.Models;
 using PhoenixSwitcher.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -120,6 +121,21 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogInfo($"MachineList::MachineSelected_Click -> A machine was selected. Let any listeners know which one.");
             if (e.AddedItems.Count != 1) return;
 
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            if ((_switcherLogic != null && _switcherLogic.bIsPhoenixSetupOngoing)
+                || settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumActiveSetups > 0)
+            {
+                _logger?.LogInfo($"MachineList::MachineSelected_Click -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
+                // Select original items again.
+                if (e.RemovedItems.Count > 0)
+                {
+                    ListBox listBox = (ListBox)sender;
+                    listBox.SelectedItem = e.RemovedItems[0];
+                }
+                Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
+                return;
+            }
+
             MachineListItem? item = (MachineListItem?)e.AddedItems[0];
             _selectedMachine = (XmlMachinePCM?)item?.Tag;
             SelectMachine_Internal(_selectedMachine);
@@ -127,18 +143,17 @@ namespace PhoenixSwitcher.ControlTemplates
         private void SelectMachine_Internal(XmlMachinePCM? machine)
         {
             XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if (settings.bShouldSelectPCMForAll)
+            if ((_switcherLogic != null && _switcherLogic.bIsPhoenixSetupOngoing)
+                || settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumActiveSetups > 0)
             {
-                OnMachineSelected?.Invoke(null, machine);
-            }
-            else
-            {
-                OnMachineSelected?.Invoke(_switcherLogic, machine);
+                Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
+                return;
             }
 
+            OnMachineSelected?.Invoke(settings.bShouldSelectPCMForAll ? null : _switcherLogic, machine);
             if (machine != null && machine.DT == 1.ToString())
             {
-                StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
+                StatusDelegates.UpdateStatus(settings.bShouldSelectPCMForAll ? null : _switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
                 Helpers.ShowLocalizedOkMessageBox("ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
             }
         }
