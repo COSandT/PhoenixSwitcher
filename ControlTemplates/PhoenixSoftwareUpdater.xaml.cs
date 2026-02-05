@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using System.Windows.Input;
+
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
@@ -19,36 +19,34 @@ namespace PhoenixSwitcher.ControlTemplates
         private Logger _logger;
 
         private string _driveName;
+        private string _boxName;
         private string _espID;
 
-        public PhoenixSoftwareUpdater(MainWindow parent, string espID, string driveName, Logger logger)
+        public PhoenixSoftwareUpdater(MainWindow parent, string espID, string driveName, string boxName, Logger logger)
         {
             InitializeComponent();
             this.DataContext = _viewModel;
 
             _driveName = driveName;
+            _boxName = boxName;
             _logger = logger;
             _espID = espID;
 
             _phoenixSwitcher = new PhoenixSwitcherLogic(_logger);
-            InitPhoenixSwither();
+            InitPhoenixSwitcher();
 
             StatusBarControl.Init(_phoenixSwitcher, _logger);
             MachineInfoWindowControl.Init(_phoenixSwitcher, _logger);
             MachineListControl.Init(_phoenixSwitcher, parent.PCMMachineList, _logger);
-        }
-        public async void ConnectToEspController()
-        {
-            await _phoenixSwitcher.Init(_espID, _driveName);
         }
         public void UpdateBundleFiles()
         {
             _phoenixSwitcher.UpdateBundleFilesOnDrive();
         }
 
-        private async void InitPhoenixSwither()
+        private void InitPhoenixSwitcher()
         {
-            await Task.Run(() => _phoenixSwitcher.Init(_espID, _driveName));
+            _phoenixSwitcher.Init(_espID, _driveName, _boxName);
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours

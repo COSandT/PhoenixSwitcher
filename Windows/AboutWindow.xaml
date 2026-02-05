@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PhoenixSwitcher.Windows"
         xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
-        Title="{Binding WindowName}" Height="360" Width="640">
+        Title="{Binding WindowName}" Height="472" Width="640">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -18,35 +18,35 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                
+
                 <Image Grid.Row="0" Grid.Column="0" Width="128" Height="128" VerticalAlignment="Top" Margin="10"
                     Source="/Resources/Images/Phoenix_Icon.png" />
-                
                 <Separator Grid.Column="1" Width="5" Visibility="Hidden"/>
-                
-                <Grid Grid.Row="0" Grid.Column="2"  Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
+                <Viewbox Grid.Row="0" MaxHeight="128" Grid.Column="2" Margin="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Text="{Binding VersionText}" FontSize="30"/>
-                    <TextBlock Grid.Row="1" Text="{Binding CopyrightText}" FontSize="30"/>
-                    <TextBlock Grid.Row="2" Text="{Binding CreatorText}" FontSize="30"/>
-                </Grid>
-                
+                        <TextBlock Grid.Row="0" Text="{Binding VersionText}" />
+                        <TextBlock Grid.Row="1" Text="{Binding CopyrightText}" />
+                        <TextBlock Grid.Row="2" Text="{Binding CreatorText}" />
+                    </Grid>
+                </Viewbox>
                 <Separator Grid.Row="1" Grid.Column="0" Height="5" Visibility="Hidden"/>
-                
-                <Image Grid.Row="2" Grid.Column="0" Width="128" Height="128" VerticalAlignment="Top" Margin="10"
-                    Source="/Resources/Images/CNH_COSnT_Icon.png" />
+                <Viewbox Grid.Row="2" Grid.ColumnSpan="3" MaxHeight="256" HorizontalAlignment="Left">
+                    <Image VerticalAlignment="Top" Margin="5,0"
+                        Source="/Resources/Images/CNH_COSnT_Icon.png" />
+                </Viewbox>
             </Grid>
         </Border>
         

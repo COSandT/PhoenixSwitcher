@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Reflection.PortableExecutable;
+using System.Windows.Controls;
 using System.Windows.Input;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Tools;
@@ -58,7 +59,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
         {
             if (_switcherLogic != switcherLogic) return;
-            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
+            Internal_SelectMachine(_selectedMachine);
         }
         private void OnProcessFinished(PhoenixSwitcherLogic switcherLogic)
         {
@@ -67,7 +68,7 @@ namespace PhoenixSwitcher.ControlTemplates
             OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
         }
 
-        private void UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
+        private async void UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
         {
             _pcmMachineList = pcmMachineList;
             if (_pcmMachineList != null)
@@ -84,33 +85,32 @@ namespace PhoenixSwitcher.ControlTemplates
                 }
             }
 
-            SelectMachine_Internal(null);
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            if (_switcherLogic != null)
+            {
+                if (_switcherLogic.HasEspConnection() || (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers >= settings.EspControllers.Count))
+                {
+                    if (_switcherLogic != null)
+                    {
+                        EspControllerInfo? esp = GetEspInfoFromID(_switcherLogic.EspID);
+                        if (esp == null || !await Internal_SelectMachineFromText(esp.LastSelectedMachineN17))
+                        {
+                            StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
+                        }
+                    }
+                            
+                }
+                else if (_switcherLogic.bIsInitializingEsp)
+                {
+                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Status, "ID_04_0022", "Initializing ControllerBox.");
+                }
+            }
         }
         private async void ScannedMachineText_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter) return;
             string barcode = ScannedMachineText.Text.Trim();
-
-            if (string.IsNullOrEmpty(barcode)) return;
-            if (_pcmMachineList == null) await PhoenixRest.GetInstance().GetPCMMachineFile();
-
-            XmlMachinePCM? foundMachine = null;
-            if (barcode.Length == 17) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == barcode);
-            else if (barcode.Length == 10) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == barcode);
-            else if (barcode.Length < 10)
-            {
-                while (barcode.Length < 10)
-                {
-                    barcode = $"0{barcode}";
-                }
-                foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == barcode);
-            }
-            else return;
-
-            SelectMachine_Internal(foundMachine);
-
-            ScannedMachineText.Clear();
-            ScannedMachineText.Focus();
+            await Internal_SelectMachineFromText(barcode);
 
             e.Handled = true;
         }
@@ -126,36 +126,105 @@ namespace PhoenixSwitcher.ControlTemplates
                 || settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumActiveSetups > 0)
             {
                 _logger?.LogInfo($"MachineList::MachineSelected_Click -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
-                // Select original items again.
-                if (e.RemovedItems.Count > 0)
-                {
-                    ListBox listBox = (ListBox)sender;
-                    listBox.SelectedItem = e.RemovedItems[0];
-                }
                 Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
                 return;
             }
 
             MachineListItem? item = (MachineListItem?)e.AddedItems[0];
             _selectedMachine = (XmlMachinePCM?)item?.Tag;
-            SelectMachine_Internal(_selectedMachine);
+            Internal_SelectMachine(_selectedMachine);
         }
-        private void SelectMachine_Internal(XmlMachinePCM? machine)
+        private async Task<bool> Internal_SelectMachineFromText(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return false;
+            if (_pcmMachineList == null) await PhoenixRest.GetInstance().GetPCMMachineFile();
+
+            XmlMachinePCM? foundMachine = null;
+            if (text.Length == 17) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == text);
+            else if (text.Length == 10) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
+            else if (text.Length < 10)
+            {
+                while (text.Length < 10)
+                {
+                    text = $"0{text}";
+                }
+                foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
+            }
+            else return false;
+
+            Internal_SelectMachine(foundMachine);
+
+            ScannedMachineText.Clear();
+            ScannedMachineText.Focus();
+            return true;
+        }
+        private void Internal_SelectMachine(XmlMachinePCM? machine)
         {
             XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if ((_switcherLogic != null && _switcherLogic.bIsPhoenixSetupOngoing)
-                || settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumActiveSetups > 0)
+            if (_switcherLogic != null)
             {
-                Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
-                return;
+                if (_switcherLogic.bIsPhoenixSetupOngoing)
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_04_0023", "Cannot select a new machine when ControllerBox is still initializing.");
+                    return;
+                }
+                else if (!_switcherLogic.HasEspConnection())
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_04_0024", "Cannot select a new machine when ControllerBox is not connected.");
+                    return;
+                }
+                else if (_switcherLogic.bIsPhoenixSetupOngoing)
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
+                    return;
+                }
+                if (_switcherLogic.bIsUpdatingBundles)
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_02_0028", "Cannot select a machine when bundle update is ongoing.");
+                    return;
+                }
+            }
+            if (settings.bShouldSelectPCMForAll)
+            {
+                if (PhoenixSwitcherLogic.NumConnectedEspControllers < settings.EspControllers.Count)
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_04_0026", "Cannot select a new machine in multiselect mode when not all ControllerBoxes are ready.");
+                    return;
+                }
+                else if (PhoenixSwitcherLogic.NumActiveSetups > 0)
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_04_0027", "Cannot select a machine in multiselect mode when a setup is still ongoing.");
+                    return;
+                }
             }
 
             OnMachineSelected?.Invoke(settings.bShouldSelectPCMForAll ? null : _switcherLogic, machine);
+            if (_switcherLogic != null)
+            {
+                EspControllerInfo? esp = GetEspInfoFromID(_switcherLogic.EspID);
+                if (esp != null)
+                {
+                    esp.LastSelectedMachineN17 = machine != null ? machine.N17 : "";
+                    settings.TrySave($"{AppContext.BaseDirectory}//Settings//ProjectSettings.xml");
+                }
+            }
             if (machine != null && machine.DT == 1.ToString())
             {
                 StatusDelegates.UpdateStatus(settings.bShouldSelectPCMForAll ? null : _switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
                 Helpers.ShowLocalizedOkMessageBox("ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
             }
+
         }
+        
+        private EspControllerInfo? GetEspInfoFromID(string id)
+        {
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            foreach (EspControllerInfo esp in settings.EspControllers)
+            {
+                if (esp.EspID == id) return esp;
+            }
+            return null;
+        }
+
     }
 }

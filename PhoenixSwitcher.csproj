@@ -8,7 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Phoenix_Icon.ico</ApplicationIcon>
     <AssemblyVersion>1.3.1.0</AssemblyVersion>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Company>COS&amp;T</Company>
     <Product>PhoenixUpdater</Product>
@@ -18,13 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Images\CNH_COSnT_Icon.png" />
     <None Remove="Resources\Images\Phoenix_logo.ico" />
     <None Remove="Resources\Phoenix_Icon.png" />
     <None Remove="Resources\phoenix_logo.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\Images\Phoenix_Icon.ico" />
+    <Resource Include="Resources\Images\Phoenix_Icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Images\CNH_COSnT_Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Images\Phoenix_Icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -50,7 +56,32 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Update="Resources\Languages\Dutch.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Languages\English.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Languages\French.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Languages\Polish.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Settings\ApplicationSettings.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Settings\LanguageSettings.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Settings\ProjectSettings.xml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E" />
+  </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E" />

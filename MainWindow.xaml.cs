@@ -77,7 +77,7 @@ namespace PhoenixSwitcher
                     if (activeControllers.Count <= index) break;
 
                     EspControllerInfo espController = activeControllers[index];
-                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController.EspID, espController.DriveName, _logger);
+                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController.EspID, espController.DriveName, espController.BoxName, _logger);
                     _softwareUpdaters.Add(updater);
                     panel.Children.Add(updater);
                     await Task.Delay(1000);
@@ -186,7 +186,7 @@ namespace PhoenixSwitcher
         private void ChangeSettings_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo("MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
-            SettingsWindow settingsWindow = new SettingsWindow();
+            SettingsWindow settingsWindow = new SettingsWindow(_logger);
 
             XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}//Settings//");
             settingsWindow.SetXmlToEdit(projectSettings.SettingsFileFolderPath + projectSettings.SettingsFileName);
@@ -214,16 +214,6 @@ namespace PhoenixSwitcher
         private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
         {
             UpdatePcmMachineList();
-        }
-        private void ConnectToEspController_Click(object sender, RoutedEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Wait;
-            if (ShouldUpdatePCMMachineList()) UpdatePcmMachineList();
-            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
-            {
-                updater.ConnectToEspController();
-            }
-            Mouse.OverrideCursor = null;
         }
         private void About_Click(object sender, RoutedEventArgs e)
         {
@@ -266,9 +256,12 @@ namespace PhoenixSwitcher
             // Select the same object for all machinelists
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
-                ListBox targetListBox = updater.MachineListControl.MachineListBox;
+                ListBox? targetListBox = updater.MachineListControl.MachineListBox;
+                if (targetListBox == null) continue;
+                FocusManager.SetFocusedElement(targetListBox, targetListBox);
+
                 targetListBox.SelectedItem = e.AddedItems[0];
-                targetListBox.ScrollIntoView(targetListBox.SelectedItem);
+                if (targetListBox.SelectedItem == null) continue;
             }
         }
 

@@ -1,15 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-
-using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
-using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -49,6 +48,7 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogInfo($"MachineInfoWindow::Init -> Start initializing MachineInfoWindow.");
 
             PhoenixSwitcherLogic.OnProcessStarted += ProcessStarted;
+            PhoenixSwitcherLogic.OnFinishedEspSetup += OnFinishedEspSetup;
 
             // Setup localization for window.
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
@@ -59,11 +59,35 @@ namespace PhoenixSwitcher.ControlTemplates
 
             _logger?.LogInfo($"MachineInfoWindow::Init -> Finished initializing MachineInfoWindow.");
         }
+
+        // Bound delegate events
+        private void ProcessStarted(PhoenixSwitcherLogic switcherLogic)
+        {
+            if (_switcherLogic != switcherLogic) return;
+
+            _logger?.LogInfo($"MachineInfoWindow::ProcessStarted -> Update button visibility for started process");
+            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
+            _viewModel.StartButtonVisibility = Visibility.Hidden;
+        }
+        private void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
+        {
+            if (switcherLogic != _switcherLogic) return;
+            if (bSuccess)
+            {
+                StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
+            }
+            else
+            {
+                _viewModel.RetryButtonVisibility = Visibility.Visible;
+            }
+        }
+
         private void OnLanguageChanged()
         {
             _logger?.LogInfo($"MachineInfoWindow::OnLanguageChanged -> Updating text to match newly selected language.");
             _viewModel.StartButtonText = Helpers.TryGetLocalizedText("ID_04_0001", "Start");
             _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("ID_04_0002", "Finish");
+            _viewModel.RetryButtonText = Helpers.TryGetLocalizedText("ID_04_0025", "Retry");
             _viewModel.TestButtonText = Helpers.TryGetLocalizedText("ID_04_0016", "Power On");
             _viewModel.ShutDownPhoenixText = Helpers.TryGetLocalizedText("ID_04_0017", "Power Off");
 
@@ -76,7 +100,6 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.VANDescriptionText = Helpers.TryGetLocalizedText("ID_04_0009", "VAN: ");
             _viewModel.SeriesDescriptionText = Helpers.TryGetLocalizedText("ID_04_00010", "Series: ");
         }
-
         public async void UpdateSelectedMachine(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? machine)
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
@@ -133,6 +156,7 @@ namespace PhoenixSwitcher.ControlTemplates
             StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
         }
 
+        // Button press events
         private void StartProcess_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke start bundle process event.");
@@ -175,14 +199,14 @@ namespace PhoenixSwitcher.ControlTemplates
             }
 
         }
-        private void ProcessStarted(PhoenixSwitcherLogic switcherLogic)
+        private void RetryEspSetup_Click(object sender, RoutedEventArgs e)
         {
-            if (_switcherLogic != switcherLogic) return;
-
-            _logger?.LogInfo($"MachineInfoWindow::ProcessStarted -> Update button visibility for started process");
-            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
-            _viewModel.StartButtonVisibility = Visibility.Hidden;
+            Mouse.OverrideCursor = Cursors.Wait;
+            _switcherLogic?.RetryInit();
+            _viewModel.RetryButtonVisibility = Visibility.Hidden;
+            Mouse.OverrideCursor = null;
         }
+
 
     }
 }

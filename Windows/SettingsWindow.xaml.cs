@@ -2,8 +2,8 @@
 
 using PhoenixSwitcher.ViewModels;
 
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
-
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace PhoenixSwitcher.Windows
@@ -14,11 +14,14 @@ namespace PhoenixSwitcher.Windows
     public partial class SettingsWindow : Window
     {
         private SettingsWindowViewModel _viewModel = new SettingsWindowViewModel();
-        public SettingsWindow()
+        private Logger? _logger;
+        public SettingsWindow(Logger? logger)
         {
             InitializeComponent();
             this.DataContext = _viewModel;
+            _logger = logger;
 
+            _logger?.LogInfo("SettingsWindow::Constructor -> Setting up settings window");
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
             Closing += OnWindowClosing;
@@ -26,6 +29,7 @@ namespace PhoenixSwitcher.Windows
         
         private void OnWindowClosing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
+            _logger?.LogInfo("SettingsWindow::OnWindowClosing -> Settings window is closing");
             MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox("ID_06_0004", "Do you want to save changes?");
             if (result == MessageBoxResult.Yes)
             {
@@ -42,10 +46,12 @@ namespace PhoenixSwitcher.Windows
         }
         public void SetXmlToEdit(string path)
         {
+            _logger?.LogInfo("SettingsWindow::SetXmlToEdit -> Setting the xml we want to edit");
             _viewModel.XmlToEditPath = path;
         }
         private void Save_Click(object? sender, RoutedEventArgs? e)
         {
+            _logger?.LogInfo("SettingsWindow::Save_Click -> Attempting to save settings");
             _viewModel.OnSaveCommand.Invoke();
             Helpers.ShowLocalizedOkMessageBox("ID_06_0005", "File has saved. Restart is required to apply changes.");
         }

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using CosntCommonLibrary.Settings;
 using PhoenixSwitcher.ViewModels;
 
@@ -17,6 +18,8 @@ namespace PhoenixSwitcher.Windows
 
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
+
+            Mouse.OverrideCursor = Cursors.Wait;
         }
         private void OnLanguageChanged()
         {

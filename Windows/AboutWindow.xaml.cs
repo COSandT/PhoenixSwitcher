@@ -44,7 +44,7 @@ namespace PhoenixSwitcher.Windows
                 Build = ExecutingAssemblyName.Version.Build.ToString();
                 Revision = ExecutingAssemblyName.Version.Revision.ToString();
             }
-            _viewModel.VersionText = $"{Helpers.TryGetLocalizedText("ID_07_0002", "Phoenix Switcher:")} {Major}.{Minor}.{Build}.{Revision}";
+            _viewModel.VersionText = $"{Helpers.TryGetLocalizedText("ID_07_0002", "Version:")} {Major}.{Minor}.{Build}.{Revision}";
 
             DateTime now = DateTime.Now;
             _viewModel.CopyrightText = $"Copyright 2025-{now.Year} COS&T";
