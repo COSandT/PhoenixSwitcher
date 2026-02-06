@@ -17,7 +17,8 @@
     <Border
         BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}"
         BorderThickness="2">
-        <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}">
+        <Grid Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+              IsEnabled="{Binding bIsMachineListEnabled}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="7.5*"/>
                 <RowDefinition Height="5.5*"/>
@@ -92,6 +93,20 @@
                                     <Setter Property="CornerRadius" Value="15" />
                                 </Style>
                             </Style.Resources>
+                            <Style.Triggers>
+                                <!-- Selected -->
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background"
+                                        Value="{DynamicResource {x:Static adonisUI:Brushes.AccentBrush}}"/>
+                                    <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"/>
+                                </Trigger>
+                                <!-- Hover -->
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background"
+                                        Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}"/>
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>

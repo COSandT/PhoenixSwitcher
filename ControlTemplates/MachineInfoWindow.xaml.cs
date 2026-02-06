@@ -1,11 +1,13 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools;
+using System.Windows.Controls;
+
 using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;

@@ -9,6 +9,7 @@ using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
+using PhoenixSwitcher.Models;
 using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
@@ -256,12 +257,14 @@ namespace PhoenixSwitcher
             // Select the same object for all machinelists
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
-                ListBox? targetListBox = updater.MachineListControl.MachineListBox;
-                if (targetListBox == null) continue;
-                FocusManager.SetFocusedElement(targetListBox, targetListBox);
-
-                targetListBox.SelectedItem = e.AddedItems[0];
-                if (targetListBox.SelectedItem == null) continue;
+                MachineList machineList = updater.MachineListControl;
+                var listItems = machineList.GetListItems();
+                
+                var targetItem = listItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == ((e.AddedItems[0] as MachineListItem)?.Tag as XmlMachinePCM)?.N17);
+                if (targetItem != null)
+                {
+                    machineList.MachineListBox.SelectedItem = targetItem;
+                }
             }
         }
 

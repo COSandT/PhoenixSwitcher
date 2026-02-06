@@ -10,6 +10,7 @@ namespace PhoenixSwitcher.ViewModels
         public string MachineListHeaderText { get; set; } = "";
         public string SelectToScanText { get; set; } = "";
         public bool MachineListExpander { get; set; } = false;
+        public bool bIsMachineListEnabled { get; set; } = true;
 
         public ObservableCollection<MachineListItem> ListViewItems { get; set; } = new ObservableCollection<MachineListItem>();
     }

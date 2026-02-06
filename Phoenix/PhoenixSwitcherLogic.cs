@@ -1,19 +1,18 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Input;
-
 using CosntCommonLibrary.Esp32;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Tools.Usb;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-
-using PhoenixSwitcher.Windows;
-using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.ControlTemplates;
-using System.Linq.Expressions;
-using System.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
+using PhoenixSwitcher.ControlTemplates;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.Windows;
 
 namespace PhoenixSwitcher
 {
@@ -30,6 +29,7 @@ namespace PhoenixSwitcher
 
 
         public static int NumConnectedEspControllers = 0;
+        public static int NumOngoingBundleUpdates = 0;
         public static int NumActiveSetups = 0;
         public string DriveName { get; private set; } = string.Empty;
         public string BoxName { get; private set; } = string.Empty;
@@ -47,6 +47,11 @@ namespace PhoenixSwitcher
         public static event ProcessFinishedHandler? OnProcessFinished;
         public delegate void ProcessCancelledHandler(PhoenixSwitcherLogic switcherLogic);
         public static event ProcessCancelledHandler? OnProcessCancelled;
+
+        public delegate void ProcessStartedBundleUpdate(PhoenixSwitcherLogic switcherLogic);
+        public static event ProcessStartedBundleUpdate? OnBundleUpdateStarted;
+        public delegate void ProcessFinishedBundleUpdate(PhoenixSwitcherLogic switcherLogic);
+        public static event ProcessFinishedBundleUpdate? OnBundleUpdateFinished;
 
         public PhoenixSwitcherLogic(Logger logger)
         {
@@ -120,10 +125,12 @@ namespace PhoenixSwitcher
         public void UpdateBundleFilesOnDrive()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files.");
-            try
+            Application.Current.Dispatcher.Invoke((Action)async delegate
             {
-                Application.Current.Dispatcher.Invoke((Action)async delegate
+                try
                 {
+                    OnBundleUpdateStarted?.Invoke(this);
+                    NumOngoingBundleUpdates++;
                     bIsUpdatingBundles = true;
                     Mouse.OverrideCursor = Cursors.Wait;
 
@@ -136,18 +143,19 @@ namespace PhoenixSwitcher
                     Mouse.OverrideCursor = null;
                     bIsUpdatingBundles = false;
                     _logger?.LogInfo($"PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle file.");
-                });
-            }
-            catch (Exception ex)
-            {
-                Application.Current.Dispatcher.Invoke(delegate
+                }
+                catch (Exception ex)
                 {
-                    Mouse.OverrideCursor = null;
-                    bIsUpdatingBundles = false;
                     _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
                     Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
-                });
-            }
+                }
+
+                NumOngoingBundleUpdates--;
+                bIsUpdatingBundles = false;
+                Mouse.OverrideCursor = null;
+                OnBundleUpdateFinished?.Invoke(this);
+            });
+            
         }
         private async Task UpdateBundleFiles_Internal()
         {
@@ -159,6 +167,12 @@ namespace PhoenixSwitcher
                     // Delay update until after process has finished.
                     _bExecuteDelayedBundleUpdate = true;
                     Helpers.ShowLocalizedOkMessageBox("ID_02_0016", "Phoenix setup was ongoing while bundle update was supposed to happen. Delaying update until after setup has completed.");
+                    return;
+                }
+                if (!HasEspConnection())
+                {
+                    Helpers.ShowLocalizedOkMessageBox("ID_02_0025", "PC needs to be connected to the ControllerBox to update the bundles.");
+                    OnFinishedEspSetup?.Invoke(this, false);
                     return;
                 }
 
@@ -295,9 +309,8 @@ namespace PhoenixSwitcher
         {
             if (switcherLogic != this) return;
 
-            NumActiveSetups++;
+            NumActiveSetups--;
             bIsPhoenixSetupOngoing = false;
-            OnProcessFinished?.Invoke(this);
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0008", "Process finished, resetting to start");
 
             _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
@@ -308,10 +321,10 @@ namespace PhoenixSwitcher
             RenameGMHIFileToBundleFile();
 
             CleanupDrive();
+            OnProcessFinished?.Invoke(this);
             if (_bExecuteDelayedBundleUpdate)
             {
-                // Execute delayed bundle update now that process has finished.
-                await Task.Run(() => UpdateBundleFilesOnDrive());
+                UpdateBundleFilesOnDrive();
                 _bExecuteDelayedBundleUpdate = false;
             }
             StatusDelegates.UpdateStatus(this, StatusLevel.Instruction, "ID_02_0005", "Select machine from list or use scanner.");
@@ -337,7 +350,7 @@ namespace PhoenixSwitcher
         private async Task ConnectDriveToPC()
         {
             int numTries = 0;
-            int waitTimeMs = 7000;
+            int waitTimeMs = 5000;
             _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> attempting to connect the drive to this pc.");
             while (!IsDriveConnectedToPC())
             {
@@ -345,6 +358,7 @@ namespace PhoenixSwitcher
                 _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> waiting {waitTimeMs}ms before checking if drive is connected.");
                 if (numTries > 10) throw new Exception($"Failed to find drive for EspController with ID: {EspID} and name: {DriveName}");
                 await Task.Delay(waitTimeMs);
+                numTries++;
             }
         }
         private async Task SwitchDriveConnection()

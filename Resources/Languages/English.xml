@@ -38,6 +38,7 @@
 	<LanguageEntry id="ID_02_0022">Missing USB connection to ControllerBox with name: </LanguageEntry>
 	<LanguageEntry id="ID_02_0023">Check USB Connection and press 'Retry'</LanguageEntry>
 	<LanguageEntry id="ID_02_0024">Attempting to conect to ControllerBox</LanguageEntry>
+	<LanguageEntry id="ID_02_0025">PC needs to be connected to the ControllerBox to update the bundles.</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
@@ -71,8 +72,10 @@
 	<LanguageEntry id="ID_04_0023">Cannot select a machine when ControllerBox is still initializing.</LanguageEntry>
 	<LanguageEntry id="ID_04_0024">Cannot select a machine when ControllerBox is not connected.</LanguageEntry>
 	<LanguageEntry id="ID_04_0025">Retry</LanguageEntry>
-	<LanguageEntry id="ID_02_0026">Cannot select a machine in multiselect mode when not all ControllerBoxes are ready.</LanguageEntry>
-	<LanguageEntry id="ID_02_0027">Cannot select a machine in multiselect mode when a setup is still ongoing.</LanguageEntry>
+	<LanguageEntry id="ID_04_0026">Cannot select a machine in multiselect mode when not all ControllerBoxes are ready.</LanguageEntry>
+	<LanguageEntry id="ID_04_0027">Cannot select a machine in multiselect mode when a setup is still ongoing.</LanguageEntry>
+	<LanguageEntry id="ID_04_0028">Cannot select a machine when bundle update is ongoing.</LanguageEntry>
+	<LanguageEntry id="ID_04_0029">Wait until all ControllerBoxes are initialized.</LanguageEntry>
 
 	<!-- StatusInstructionBar -->
 	<!-- Empty for now but will use ID_05_.... -->
