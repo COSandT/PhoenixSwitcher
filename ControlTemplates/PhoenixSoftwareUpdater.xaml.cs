@@ -16,12 +16,12 @@ namespace PhoenixSwitcher.ControlTemplates
     public partial class PhoenixSoftwareUpdater : UserControl
     {
         private PhoenixSoftwareUpdaterViewModel _viewModel = new PhoenixSoftwareUpdaterViewModel();
-        private PhoenixSwitcherLogic _phoenixSwitcher;
         private Logger _logger;
 
         private string _driveName;
         private string _boxName;
         private string _espID;
+        public PhoenixSwitcherLogic PhoenixSwitcher { get; private set; }
 
         public PhoenixSoftwareUpdater(MainWindow parent, string espID, string driveName, string boxName, Logger logger)
         {
@@ -33,28 +33,26 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger = logger;
             _espID = espID;
 
-            _phoenixSwitcher = new PhoenixSwitcherLogic(_logger);
-            InitPhoenixSwitcher();
+            PhoenixSwitcher = new PhoenixSwitcherLogic(_logger);
 
-            StatusBarControl.Init(_phoenixSwitcher, _logger);
-            MachineInfoWindowControl.Init(_phoenixSwitcher, _logger);
-            MachineListControl.Init(_phoenixSwitcher, parent.PCMMachineList, _logger);
+            StatusBarControl.Init(PhoenixSwitcher, _logger);
+            MachineInfoWindowControl.Init(PhoenixSwitcher, _logger);
+            MachineListControl.Init(PhoenixSwitcher, parent.PCMMachineList, _logger);
         }
         public void UpdateBundleFiles()
         {
-            _phoenixSwitcher.UpdateBundleFilesOnDrive();
+            PhoenixSwitcher.UpdateBundleFilesOnDrive();
         }
-
-        private void InitPhoenixSwitcher()
+        public async void InitPhoenixSwitcher()
         {
-            _phoenixSwitcher.Init(_espID, _driveName, _boxName);
+            await PhoenixSwitcher.Init(_espID, _driveName, _boxName);
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
                 , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
-                , 24, new Action(_phoenixSwitcher.UpdateBundleFilesOnDrive));
+                , 24, new Action(PhoenixSwitcher.UpdateBundleFilesOnDrive));
 
-            if (Helpers.GetHoursSinceLastUpdate() > 24) _phoenixSwitcher.UpdateBundleFilesOnDrive();
+            if (Helpers.GetHoursSinceLastUpdate() > 24) PhoenixSwitcher.UpdateBundleFilesOnDrive();
         }
     }
 }

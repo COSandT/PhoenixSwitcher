@@ -1,19 +1,21 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Input;
+using System.Reflection.PortableExecutable;
+using System.Windows;
 using System.Windows.Controls;
-
-using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
+using AdonisUI;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-
-using PhoenixSwitcher.Models;
-using PhoenixSwitcher.Windows;
-using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.ViewModels;
+using Org.BouncyCastle.Crypto.IO;
 using PhoenixSwitcher.ControlTemplates;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.Models;
+using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.Windows;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
@@ -44,6 +46,7 @@ namespace PhoenixSwitcher
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);
             _logger.LogInfo("MainWindow::Constructor -> Start initializing.");
 
+            Internal_UpdateTheme(settings.Theme);
             InitializeEspControllers();
             InitLanguageSettings();
 
@@ -63,7 +66,7 @@ namespace PhoenixSwitcher
             }
             SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
             _gridRows = (int)Math.Round(Math.Sqrt(activeControllers.Count));
-            _gridColumns = (int)Math.Ceiling((double)(activeControllers.Count) / (double)_gridRows);
+            _gridColumns = (int)Math.Ceiling((double)activeControllers.Count / (double)_gridRows);
             for (int i = 0; i < _gridRows; ++i)
             {
                 StackPanel panel = new StackPanel();
@@ -96,8 +99,11 @@ namespace PhoenixSwitcher
             TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
                 , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
                 , 24, new Action(UpdatePcmMachineList));
-            UpdatePcmMachineList();
-
+            UpdatePcmMachineList(); 
+            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+            {
+                updater.InitPhoenixSwitcher();
+            }
             Mouse.OverrideCursor = null;
         }
         private void SoftwareUpdaterGrid_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -141,10 +147,6 @@ namespace PhoenixSwitcher
 
 
         // Init
-        private bool ShouldUpdatePCMMachineList()
-        {
-            return Helpers.GetHoursSinceLastUpdate() > 24;
-        }
         public async void UpdatePcmMachineList()
         {
             StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
@@ -207,10 +209,7 @@ namespace PhoenixSwitcher
         }
         private void UpdateBundleFiles_Click(object sender, RoutedEventArgs e)
         {
-            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
-            {
-                updater.UpdateBundleFiles();
-            }
+            Internal_UpdateBundleFiles();
         }
         private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
         {
@@ -223,7 +222,15 @@ namespace PhoenixSwitcher
             aboutWindow.Topmost = true;
             aboutWindow.ShowDialog();
         }
+        private void SwitchThemeDark_Click(object sender, RoutedEventArgs e)
+        {
+            Internal_UpdateTheme("Dark");
+        }
 
+        private void SwitchThemeLight_Click(object sender, RoutedEventArgs e) 
+        {
+            Internal_UpdateTheme("Light");
+        }
 
         // Other
         private void OnLanguageChanged()
@@ -238,8 +245,9 @@ namespace PhoenixSwitcher
             _viewModel.UpdateText = Helpers.TryGetLocalizedText("ID_01_0007", "UpdateBundleFiles");
             _viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateBundleFiles");
             _viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateMachineList");
-            _viewModel.ConntectText = Helpers.TryGetLocalizedText("ID_01_0010", "Connect");
-            _viewModel.EspControllerText = Helpers.TryGetLocalizedText("ID_01_0011", "EspController");
+            _viewModel.ThemeText = Helpers.TryGetLocalizedText("ID_01_0010", "Theme");
+            _viewModel.DarkModeText = Helpers.TryGetLocalizedText("ID_01_0011", "Dark Mode");
+            _viewModel.LightModeText = Helpers.TryGetLocalizedText("ID_01_0012", "Light Mode");
 
             foreach (MenuItem item in LanguageSettings.Items)
             {
@@ -247,7 +255,6 @@ namespace PhoenixSwitcher
                 item.IsChecked = language == LocalizationManager.GetInstance().GetActiveLanguage();
             }
         }
-
         private void OnMachineListSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             XmlProjectSettings settings = Helpers.GetProjectSettings();
@@ -258,14 +265,54 @@ namespace PhoenixSwitcher
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
                 MachineList machineList = updater.MachineListControl;
-                var listItems = machineList.GetListItems();
-                
-                var targetItem = listItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == ((e.AddedItems[0] as MachineListItem)?.Tag as XmlMachinePCM)?.N17);
+                ObservableCollection<MachineListItem> listItems = machineList.GetListItems();
+
+                MachineListItem? targetItem = listItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == ((e.AddedItems[0] as MachineListItem)?.Tag as XmlMachinePCM)?.N17);
                 if (targetItem != null)
                 {
                     machineList.MachineListBox.SelectedItem = targetItem;
+                    machineList.MachineListBox.ScrollIntoView(targetItem);
+
+                    // Set it as selected in settings as well
+                    int idx = Helpers.GetEspSettingsIdxInfoFromID(updater.PhoenixSwitcher.EspID);
+                    if (idx != -1 && targetItem.Tag is XmlMachinePCM)
+                    {
+                        settings.EspControllers[idx].LastSelectedMachineN17 = ((XmlMachinePCM)targetItem.Tag).N17;
+                        settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
+                    }
                 }
             }
+        }
+
+        private void Internal_UpdateBundleFiles()
+        {
+            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+            {
+                updater.UpdateBundleFiles();
+            }
+        }
+        private void Internal_UpdateTheme(string theme)
+        {
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            Uri colorScheme;
+            switch (theme)
+            {
+                case "Light":
+                    colorScheme = ResourceLocator.LightColorScheme;
+                    settings.Theme = theme;
+                    DarkButton.IsChecked = false;
+                    LightButton.IsChecked = true;
+                    break;
+                case "Dark":
+                default:
+                    colorScheme = ResourceLocator.DarkColorScheme;
+                    settings.Theme = "Dark";
+                    DarkButton.IsChecked = true;
+                    LightButton.IsChecked = false;
+                    break;
+            }
+            ResourceLocator.SetColorScheme(Application.Current.Resources, colorScheme);
+            settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
         }
 
     }

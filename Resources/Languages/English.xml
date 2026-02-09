@@ -10,8 +10,9 @@
 	<LanguageEntry id="ID_01_0007">Update</LanguageEntry>
 	<LanguageEntry id="ID_01_0008">Update Bundle Files</LanguageEntry>
 	<LanguageEntry id="ID_01_0009">Update Machine List</LanguageEntry>
-	<LanguageEntry id="ID_01_0010">Connect</LanguageEntry>
-	<LanguageEntry id="ID_01_0011">EspController</LanguageEntry>
+	<LanguageEntry id="ID_01_0010">Theme</LanguageEntry>
+	<LanguageEntry id="ID_01_0011">Dark Mode</LanguageEntry>
+	<LanguageEntry id="ID_01_0012">Light Mode</LanguageEntry>
 	
 	<!-- Phoenix Switcher Logic -->
 	<LanguageEntry id="ID_02_0001">Invalid machine selected</LanguageEntry>

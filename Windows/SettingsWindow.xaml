@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PhoenixSwitcher.Windows"
         xmlns:adonisUI="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:viewlibrary="clr-namespace:CosntCommonViewLibrary.XmlEditor;assembly=CosntCommonViewLibrary"
+        xmlns:settingscontrol="clr-namespace:CosntCommonViewLibrary.SettingsControl;assembly=CosntCommonViewLibrary"
         mc:Ignorable="d"
         Title="{Binding WindowName}"  Height="720" Width="1280">
     <Window.Style>
@@ -25,14 +26,16 @@
                     <MenuItem Click="Save_Click" 
                         Header="{Binding SaveButtonText}" />
                 </MenuItem>
+                <MenuItem 
+                    Header="{Binding FileText}">
+                    <MenuItem Click="Save_Click" 
+                        Header="{Binding SaveButtonText}" />
+                </MenuItem>
             </Menu>
         </Border>
         <Border Grid.Row="1" BorderThickness="2"
             BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
-            <viewlibrary:XmlEditor 
-                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
-                XmlFile="{Binding XmlToEditPath}" 
-                Command="{Binding OnSaveCommand}" />
+            <settingscontrol:SettingsWindow TabItems="{Binding SettingsItemList}" />
         </Border>
     </Grid>
 </Window>

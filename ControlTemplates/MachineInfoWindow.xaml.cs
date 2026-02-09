@@ -131,6 +131,19 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.SeriesValueText = machine.SE;
             _viewModel.BundleValueText = Helpers.TryGetLocalizedText("ID_04_0020", "'No available Bundle'");
 
+            switch (machine.DT)
+            {
+                case "1":
+                    _viewModel.DisplayTypeValueText = $"{machine.DT} - Fred";
+                    break;
+                case "2":
+                    _viewModel.DisplayTypeValueText = $"{machine.DT}  - Phoenix";
+                    break;
+                default:
+                    _viewModel.DisplayTypeValueText = $"{machine.DT} - Unknown";
+                    break;
+            }
+
             if (machine.DT == 1.ToString())
             {
                _viewModel.StartButtonVisibility = Visibility.Hidden;

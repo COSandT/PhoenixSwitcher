@@ -10,6 +10,8 @@
              mc:Ignorable="d" d:DesignWidth="222.125" d:DesignHeight="628.637">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                 Color="Blue" />
     </UserControl.Resources>
     <UserControl.DataContext>
         <viewmodels:MachineListViewModel />
@@ -88,25 +90,29 @@
                             <Setter Property="BorderThickness" Value="2"/>
                             <Setter Property="Padding" Value="5,0,5,0"/>
                             <Setter Property="Margin" Value="0,0,0,1"/>
-                            <Style.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="15" />
-                                </Style>
-                            </Style.Resources>
-                            <Style.Triggers>
-                                <!-- Selected -->
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background"
-                                        Value="{DynamicResource {x:Static adonisUI:Brushes.AccentBrush}}"/>
-                                    <Setter Property="Foreground"
-                                        Value="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"/>
-                                </Trigger>
-                                <!-- Hover -->
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background"
-                                        Value="{DynamicResource {x:Static adonisUI:Brushes.Layer2BackgroundBrush}}"/>
-                                </Trigger>
-                            </Style.Triggers>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border x:Name="OuterBorder" CornerRadius="10" BorderThickness="2"
+                                            BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                                            <ContentPresenter
+                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <!-- Selected (active or inactive) -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentBrush}}"/>
+                                                <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentForegroundBrush}}"/>
+                                            </Trigger>
+                                            <!-- Hover -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource {x:Static adonisUI:Brushes.AccentHighlightBrush}}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>

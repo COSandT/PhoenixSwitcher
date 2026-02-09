@@ -69,7 +69,7 @@ namespace PhoenixSwitcher
         }
 
 
-        public async void Init(string espID, string driveName, string boxName)
+        public async Task Init(string espID, string driveName, string boxName)
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::Init -> Initializing switcher logic");
             DriveName = driveName;
@@ -98,17 +98,19 @@ namespace PhoenixSwitcher
                 }
                 await SetupEspController();
                 CleanupDrive();
-                OnFinishedEspSetup?.Invoke(this, true);
-                NumConnectedEspControllers++;
+
                 _bWasInitialized = true;
+                bIsInitializingEsp = false;
+                NumConnectedEspControllers++;
+                OnFinishedEspSetup?.Invoke(this, true);
             }
             catch (Exception ex)
             {
                 // exception here is already localized notmally.
                 Helpers.ShowLocalizedOkMessageBox("", ex.Message);
+                bIsInitializingEsp = false;
                 OnFinishedEspSetup?.Invoke(this, false);
             }
-            bIsInitializingEsp = false;
         }
 
         public bool HasEspConnection()

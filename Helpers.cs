@@ -10,7 +10,7 @@ namespace PhoenixSwitcher
     {
         public static XmlProjectSettings GetProjectSettings()
         {
-            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}//Settings//");
+            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}Settings\\");
             if (!projectSettings.Load())
             {
                 projectSettings.CreateBlank();
@@ -30,6 +30,16 @@ namespace PhoenixSwitcher
             XmlProjectSettings settings = GetProjectSettings();
             int daysBetweenUpdate = DateTime.Now.DayOfYear - settings.LastBundleUpdateDate.DayOfYear;
             return DateTime.Now.TimeOfDay.Hours - settings.LastBundleUpdateDate.TimeOfDay.Hours + (daysBetweenUpdate * 24);
+        }
+
+        public static int GetEspSettingsIdxInfoFromID(string id)
+        {
+            XmlProjectSettings settings = GetProjectSettings();
+            for (int i = 0; i < settings.EspControllers.Count; ++i)
+            {
+                if (settings.EspControllers[i].EspID == id) return i;
+            }
+            return -1;
         }
 
         public static string RemoveExtraZeroFromVersionName(string versionName)

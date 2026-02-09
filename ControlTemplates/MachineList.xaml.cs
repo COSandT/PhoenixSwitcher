@@ -1,17 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection.PortableExecutable;
+﻿using System.Windows.Input;
 using System.Windows.Controls;
-using System.Windows.Input;
-using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools;
+using System.Collections.ObjectModel;
+
 using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using Org.BouncyCastle.Crypto.IO;
-using PhoenixSwitcher.Delegates;
+
 using PhoenixSwitcher.Models;
+using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -24,6 +22,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private XmlMachinePCM? _selectedMachine = null;
         private XmlProductionDataPCM? _pcmMachineList;
         private Logger? _logger;
+        private bool _bIsUpdatingSelectedItem = false;
 
         public delegate void MachineSelectedHandler(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? selectedMachinePCMProductionData);
         public static event MachineSelectedHandler? OnMachineSelected;
@@ -49,6 +48,7 @@ namespace PhoenixSwitcher.ControlTemplates
             PhoenixSwitcherLogic.OnProcessCancelled += OnProcessCancelled;
             PhoenixSwitcherLogic.OnBundleUpdateStarted += OnBundleUpdateStarted;
             PhoenixSwitcherLogic.OnBundleUpdateFinished += OnBundleUpdateFinished;
+            PhoenixSwitcherLogic.OnFinishedEspSetup += OnFinishedEspSetup;
 
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
@@ -72,6 +72,11 @@ namespace PhoenixSwitcher.ControlTemplates
             {
                 _viewModel.bIsMachineListEnabled = true;
             }
+        }
+        private async void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
+        {
+            if (switcherLogic != _switcherLogic || !bSuccess) return;
+            await UpdateSelectedMachineFromSettings();
         }
 
 
@@ -113,34 +118,29 @@ namespace PhoenixSwitcher.ControlTemplates
                     _viewModel.ListViewItems.Add(item);
                 }
             }
-
+            await UpdateSelectedMachineFromSettings();
+        }
+        private async Task UpdateSelectedMachineFromSettings()
+        {
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             if (_switcherLogic != null)
             {
-                if (_switcherLogic.HasEspConnection())
-                {
-                    EspControllerInfo? esp = GetEspInfoFromID(_switcherLogic.EspID);
-                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
-                    if (esp != null)
-                    {
-                        await Internal_SelectMachineFromText(esp.LastSelectedMachineN17);
-                    }
-                }
-                else if (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers >= settings.EspControllers.Count)
-                {
-                    EspControllerInfo? esp = GetEspInfoFromID(_switcherLogic.EspID);
-                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0029", "Wait until all ControllerBoxes are initialized.");
-                    if (esp != null)
-                    {
-                        if (!await Internal_SelectMachineFromText(esp.LastSelectedMachineN17))
-                        {
-                            Internal_SelectMachine(null);
-                        }
-                    }
-                }
-                else if (_switcherLogic.bIsInitializingEsp)
+                if (_switcherLogic.bIsInitializingEsp)
                 {
                     StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Status, "ID_04_0022", "Initializing ControllerBox.");
+                }
+                else if (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers < settings.EspControllers.Count)
+                {
+                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0029", "Wait until all ControllerBoxes are initialized.");
+                }
+                else if (_switcherLogic.HasEspConnection())
+                {
+                    int idx = Helpers.GetEspSettingsIdxInfoFromID(_switcherLogic.EspID);
+                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
+                    if (idx != -1)
+                    {
+                        await Internal_SelectMachineFromText(settings.EspControllers[idx].LastSelectedMachineN17);
+                    }
                 }
             }
         }
@@ -175,7 +175,11 @@ namespace PhoenixSwitcher.ControlTemplates
         private async Task<bool> Internal_SelectMachineFromText(string text)
         {
             if (string.IsNullOrEmpty(text)) return false;
-            if (_pcmMachineList == null) await PhoenixRest.GetInstance().GetPCMMachineFile();
+            if (_pcmMachineList == null)
+            {
+                await PhoenixRest.GetInstance().GetPCMMachineFile();
+                if (_pcmMachineList == null) return false;
+            }
 
             XmlMachinePCM? foundMachine = null;
             if (text.Length == 17) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == text);
@@ -191,17 +195,7 @@ namespace PhoenixSwitcher.ControlTemplates
             else return false;
 
             Internal_SelectMachine(foundMachine);
-
-            // Update visual selection in the ListBox and scroll it into view.
-            if (foundMachine != null)
-            {
-                var targetItem = _viewModel.ListViewItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == foundMachine.N17);
-                if (targetItem != null)
-                {
-                    MachineListBox.SelectedItem = targetItem;
-                    MachineListBox.ScrollIntoView(targetItem);
-                }
-            }
+            Internal_UpdateVisualSelection(foundMachine);
 
             ScannedMachineText.Clear();
             ScannedMachineText.Focus();
@@ -209,25 +203,37 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void Internal_SelectMachine(XmlMachinePCM? machine)
         {
-            if (!Internal_CanSelectMachine()) return;
+            if (_bIsUpdatingSelectedItem) return;
+            _bIsUpdatingSelectedItem = true;
 
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            OnMachineSelected?.Invoke(settings.bShouldSelectPCMForAll ? null : _switcherLogic, machine);
-            if (_switcherLogic != null)
+            try
             {
-                EspControllerInfo? esp = GetEspInfoFromID(_switcherLogic.EspID);
-                if (esp != null)
+                if (!Internal_CanSelectMachine())
                 {
-                    esp.LastSelectedMachineN17 = machine != null ? machine.N17 : "";
-                    settings.TrySave($"{AppContext.BaseDirectory}//Settings//ProjectSettings.xml");
+                    _logger?.LogInfo($"MachineList::Internal_SelectMachine -> Unable to select machine.");
+                    return;
+                }
+
+                XmlProjectSettings settings = Helpers.GetProjectSettings();
+                OnMachineSelected?.Invoke(settings.bShouldSelectPCMForAll ? null : _switcherLogic, machine);
+                Internal_UpdateVisualSelection(machine);
+                if (_switcherLogic != null)
+                {
+                    int idx = Helpers.GetEspSettingsIdxInfoFromID(_switcherLogic.EspID);
+                    if (idx != -1)
+                    {
+                        settings.EspControllers[idx].LastSelectedMachineN17 = machine != null ? machine.N17 : "";
+                        settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
+                    }
+                }
+
+                if (machine != null && machine.DT == 1.ToString())
+                {
+                    StatusDelegates.UpdateStatus(settings.bShouldSelectPCMForAll ? null : _switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
                 }
             }
-
-            if (machine != null && machine.DT == 1.ToString())
-            {
-                StatusDelegates.UpdateStatus(settings.bShouldSelectPCMForAll ? null : _switcherLogic, StatusLevel.Instruction, "ID_04_0015", "Cannot update phoenix software for display type 1. Select new Machine.");
-            }
-
+            catch { }
+            _bIsUpdatingSelectedItem = false;
         }
         private bool Internal_CanSelectMachine()
         {
@@ -241,12 +247,8 @@ namespace PhoenixSwitcher.ControlTemplates
                 }
                 else if (!_switcherLogic.HasEspConnection())
                 {
+                    _switcherLogic.RetryInit();
                     Helpers.ShowLocalizedOkMessageBox("ID_04_0024", "Cannot select a new machine when ControllerBox is not connected.");
-                    return false;
-                }
-                else if (_switcherLogic.bIsPhoenixSetupOngoing)
-                {
-                    Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
                     return false;
                 }
                 if (_switcherLogic.bIsUpdatingBundles)
@@ -270,16 +272,20 @@ namespace PhoenixSwitcher.ControlTemplates
             }
             return true;
         }
-
-        private EspControllerInfo? GetEspInfoFromID(string id)
+        private void Internal_UpdateVisualSelection(XmlMachinePCM? machine)
         {
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            foreach (EspControllerInfo esp in settings.EspControllers)
+            // Update visual selection in the ListBox and scroll it into view.
+            if (machine != null)
             {
-                if (esp.EspID == id) return esp;
+                var targetItem = _viewModel.ListViewItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == machine.N17);
+                if (targetItem != null)
+                {
+                    MachineListBox.SelectedItem = targetItem;
+                    MachineListBox.ScrollIntoView(targetItem);
+                }
             }
-            return null;
         }
+
 
     }
 }

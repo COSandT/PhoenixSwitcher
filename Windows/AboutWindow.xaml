@@ -43,7 +43,7 @@
                     </Grid>
                 </Viewbox>
                 <Separator Grid.Row="1" Grid.Column="0" Height="5" Visibility="Hidden"/>
-                <Viewbox Grid.Row="2" Grid.ColumnSpan="3" MaxHeight="256" HorizontalAlignment="Left">
+                <Viewbox Grid.Row="2" Grid.ColumnSpan="3" MaxHeight="256" HorizontalAlignment="Center">
                     <Image VerticalAlignment="Top" Margin="5,0"
                         Source="/Resources/Images/CNH_COSnT_Icon.png" />
                 </Viewbox>
