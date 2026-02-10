@@ -38,7 +38,7 @@
 	<LanguageEntry id="ID_02_0021">Schijf wisselen.</LanguageEntry>
 	<LanguageEntry id="ID_02_0022">USB-verbinding met ControllerBox ontbreekt met naam: </LanguageEntry>
 	<LanguageEntry id="ID_02_0023">Controleer de USB-verbinding en druk op 'Retry'</LanguageEntry>
-	<LanguageEntry id="ID_02_0024">Poging om verbinding te maken met ControllerBox</LanguageEntry>
+	<LanguageEntry id="ID_02_0024">Poging om verbinding te maken met ControllerBox...</LanguageEntry>
 	<LanguageEntry id="ID_02_0025">De pc moet verbonden zijn met de ControllerBox om de bundels bij te werken.</LanguageEntry>
 
 	<!-- Machine List -->
@@ -69,7 +69,7 @@
 	<LanguageEntry id="ID_04_0019">Druk op 'Finish' wanneer u klaar bent of op 'Power On' voor succesverificatie.</LanguageEntry>
 	<LanguageEntry id="ID_04_0020">'No available Bundle'</LanguageEntry>
 	<LanguageEntry id="ID_04_0021">Kan geen machine selecteren terwijl de installatie bezig is.</LanguageEntry>
-	<LanguageEntry id="ID_04_0022">ControllerBox initialiseren.</LanguageEntry>
+	<LanguageEntry id="ID_04_0022">ControllerBox initialiseren...</LanguageEntry>
 	<LanguageEntry id="ID_04_0023">Kan geen machine selecteren terwijl de ControllerBox nog wordt geïnitialiseerd.</LanguageEntry>
 	<LanguageEntry id="ID_04_0024">Kan geen machine selecteren wanneer de ControllerBox niet is verbonden.</LanguageEntry>
 	<LanguageEntry id="ID_04_0025">Opnieuw proberen</LanguageEntry>

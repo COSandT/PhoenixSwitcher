@@ -38,7 +38,7 @@
 	<LanguageEntry id="ID_02_0021">Changement du lecteur.</LanguageEntry>
 	<LanguageEntry id="ID_02_0022">Connexion USB manquante vers la ControllerBox avec le nom : </LanguageEntry>
 	<LanguageEntry id="ID_02_0023">Vérifiez la connexion USB et appuyez sur 'Retry'</LanguageEntry>
-	<LanguageEntry id="ID_02_0024">Tentative de connexion à la ControllerBox</LanguageEntry>
+	<LanguageEntry id="ID_02_0024">Tentative de connexion à la ControllerBox...</LanguageEntry>
 	<LanguageEntry id="ID_02_0025">Le PC doit être connecté à la ControllerBox pour mettre à jour les bundles.</LanguageEntry>
 
 	<!-- Machine List -->
@@ -69,7 +69,7 @@
 	<LanguageEntry id="ID_04_0019">Appuyez sur 'Finish' si terminé ou sur 'Power On' pour vérifier le succès.</LanguageEntry>
 	<LanguageEntry id="ID_04_0020">'No available Bundle'</LanguageEntry>
 	<LanguageEntry id="ID_04_0021">Impossible de sélectionner une machine pendant qu’une configuration est en cours.</LanguageEntry>
-	<LanguageEntry id="ID_04_0022">Initialisation de la ControllerBox.</LanguageEntry>
+	<LanguageEntry id="ID_04_0022">Initialisation de la ControllerBox...</LanguageEntry>
 	<LanguageEntry id="ID_04_0023">Impossible de sélectionner une machine tant que la ControllerBox est en cours d’initialisation.</LanguageEntry>
 	<LanguageEntry id="ID_04_0024">Impossible de sélectionner une machine lorsque la ControllerBox n’est pas connectée.</LanguageEntry>
 	<LanguageEntry id="ID_04_0025">Réessayer</LanguageEntry>

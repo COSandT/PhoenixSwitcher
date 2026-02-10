@@ -211,6 +211,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 if (!Internal_CanSelectMachine())
                 {
                     _logger?.LogInfo($"MachineList::Internal_SelectMachine -> Unable to select machine.");
+                    _bIsUpdatingSelectedItem = false;
                     return;
                 }
 

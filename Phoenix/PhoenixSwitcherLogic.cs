@@ -342,8 +342,8 @@ namespace PhoenixSwitcher
             {
                 _logger?.LogError($"PhoenixSwitcherLogic::SetupEspController -> Unable to connect to EspController");
                 string part1 = Helpers.TryGetLocalizedText("ID_02_0022", "Missing USB connection to the box with name: ");
-                string part2 = Helpers.TryGetLocalizedText("ID_02_0023", "Check USB Connection and press retry");
-                StatusDelegates.UpdateStatus(this, StatusLevel.Error, "", part1 + BoxName + part2);
+                string part2 = Helpers.TryGetLocalizedText("ID_02_0023", "Check USB Connection and press 'Retry'.");
+                StatusDelegates.UpdateStatus(this, StatusLevel.Error, "", part1 + BoxName + " "+ part2);
                 throw new Exception($"{part1}{BoxName}, EspID: {EspID}, DriveName: {DriveName}");
             }
             _espController.SetAllRelays(false);

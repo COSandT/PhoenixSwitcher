@@ -77,6 +77,7 @@ namespace PhoenixSwitcher.ControlTemplates
             if (bSuccess)
             {
                 StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
+                _viewModel.RetryButtonVisibility = Visibility.Hidden;
             }
             else
             {
