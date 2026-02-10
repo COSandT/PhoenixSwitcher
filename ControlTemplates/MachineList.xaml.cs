@@ -1,14 +1,14 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using System.Reflection.PortableExecutable;
 using System.Windows.Controls;
-using System.Collections.ObjectModel;
-
-using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
+using System.Windows.Input;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-
-using PhoenixSwitcher.Models;
 using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.Models;
 using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher.ControlTemplates
@@ -43,7 +43,8 @@ namespace PhoenixSwitcher.ControlTemplates
             _switcherLogic = switcherLogic;
             _logger?.LogInfo($"MachineList::Init -> Start initializing MachineList.");
 
-            MainWindow.OnMachineListUpdated += UpdateMachineList;
+            MainWindow.OnMachineListUpdated += Internal_UpdateMachineList;
+            MachineInfoWindow.OnStartBundleProcess += OnProcessStarted;
             PhoenixSwitcherLogic.OnProcessFinished += OnProcessFinished;
             PhoenixSwitcherLogic.OnProcessCancelled += OnProcessCancelled;
             PhoenixSwitcherLogic.OnBundleUpdateStarted += OnBundleUpdateStarted;
@@ -57,32 +58,36 @@ namespace PhoenixSwitcher.ControlTemplates
             _logger?.LogInfo($"MachineList::Init -> Finished initializing MachineList.");
         }
         
-        private void OnBundleUpdateStarted(PhoenixSwitcherLogic switcherLogic)
+        // Delegate bound events
+        private async void OnBundleUpdateStarted(PhoenixSwitcherLogic switcherLogic)
         {
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if (switcherLogic == _switcherLogic || settings.bShouldSelectPCMForAll)
-            {
-                _viewModel.bIsMachineListEnabled = false;
-            }
+            _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic);
         }
-        private void OnBundleUpdateFinished(PhoenixSwitcherLogic switcherLogic)
+        private async void OnBundleUpdateFinished(PhoenixSwitcherLogic switcherLogic)
         {
             XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if ((!settings.bShouldSelectPCMForAll && switcherLogic == _switcherLogic) || PhoenixSwitcherLogic.NumOngoingBundleUpdates <= 0)
-            {
-                _viewModel.bIsMachineListEnabled = true;
-            }
+            _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic);
         }
         private async void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
         {
-            if (switcherLogic != _switcherLogic || !bSuccess) return;
-            await UpdateSelectedMachineFromSettings();
+            _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic);
+            if (_viewModel.bIsMachineListEnabled) await Internal_UpdateSelectedMachineFromSettings();
         }
-
-
-        public ObservableCollection<MachineListItem> GetListItems()
+        private async void OnProcessStarted(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? selectedMachine)
         {
-            return _viewModel.ListViewItems;
+            _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic!);
+        }
+        private async void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
+        {
+            _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic);
+            if (_viewModel.bIsMachineListEnabled) Internal_SelectMachine(_selectedMachine);
+        }
+        private async void OnProcessFinished(PhoenixSwitcherLogic switcherLogic)
+        {
+            _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic);
+            if (_switcherLogic != switcherLogic) return;
+            _selectedMachine = null;
+            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
         }
         private void OnLanguageChanged()
         {
@@ -90,19 +95,45 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
             _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
         }
-        private void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
+
+
+        public ObservableCollection<MachineListItem> GetListItems()
         {
-            if (_switcherLogic != switcherLogic) return;
-            Internal_SelectMachine(_selectedMachine);
-        }
-        private void OnProcessFinished(PhoenixSwitcherLogic switcherLogic)
-        {
-            if (_switcherLogic != switcherLogic) return;
-            _selectedMachine = null;
-            OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
+            return _viewModel.ListViewItems;
         }
 
-        private async void UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
+        // Xaml bound events
+        private async void OnScannedMachineText_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter) return;
+            string barcode = ScannedMachineText.Text.Trim();
+            await Internal_SelectMachineFromText(barcode);
+
+            e.Handled = true;
+        }
+        private void OnListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Invoke OnMachineSelected delegate to let others know which machine was selected.
+            _logger?.LogInfo($"MachineList::MachineSelected_Click -> A machine was selected. Let any listeners know which one.");
+            if (e.AddedItems.Count != 1) return;
+
+            XmlProjectSettings settings = Helpers.GetProjectSettings();
+            if ((_switcherLogic != null && (_switcherLogic.bIsPhoenixSetupOngoing || _switcherLogic.bIsInitializingEsp))
+                || (settings.bShouldSelectPCMForAll && (PhoenixSwitcherLogic.NumActiveSetups > 0 || PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())))
+            {
+                _logger?.LogInfo($"MachineList::MachineSelected_Click -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
+                //Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
+                return;
+            }
+
+            MachineListItem? item = (MachineListItem?)e.AddedItems[0];
+            _selectedMachine = (XmlMachinePCM?)item?.Tag;
+            Internal_SelectMachine(_selectedMachine);
+        }
+
+
+        // Internal Helpers
+        private async void Internal_UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
         {
             _pcmMachineList = pcmMachineList;
             if (_pcmMachineList != null)
@@ -118,9 +149,9 @@ namespace PhoenixSwitcher.ControlTemplates
                     _viewModel.ListViewItems.Add(item);
                 }
             }
-            await UpdateSelectedMachineFromSettings();
+            await Internal_UpdateSelectedMachineFromSettings();
         }
-        private async Task UpdateSelectedMachineFromSettings()
+        private async Task Internal_UpdateSelectedMachineFromSettings()
         {
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             if (_switcherLogic != null)
@@ -129,7 +160,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 {
                     StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Status, "ID_04_0022", "Initializing ControllerBox.");
                 }
-                else if (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers < settings.EspControllers.Count)
+                else if (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())
                 {
                     StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0029", "Wait until all ControllerBoxes are initialized.");
                 }
@@ -143,34 +174,6 @@ namespace PhoenixSwitcher.ControlTemplates
                     }
                 }
             }
-        }
-        private async void ScannedMachineText_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Enter) return;
-            string barcode = ScannedMachineText.Text.Trim();
-            await Internal_SelectMachineFromText(barcode);
-
-            e.Handled = true;
-        }
-
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Invoke OnMachineSelected delegate to let others know which machine was selected.
-            _logger?.LogInfo($"MachineList::MachineSelected_Click -> A machine was selected. Let any listeners know which one.");
-            if (e.AddedItems.Count != 1) return;
-
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if ((_switcherLogic != null && _switcherLogic.bIsPhoenixSetupOngoing)
-                || settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumActiveSetups > 0)
-            {
-                _logger?.LogInfo($"MachineList::MachineSelected_Click -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
-                Helpers.ShowLocalizedOkMessageBox("ID_04_0021", "Cannot select a new machine when setup is ongoing.");
-                return;
-            }
-
-            MachineListItem? item = (MachineListItem?)e.AddedItems[0];
-            _selectedMachine = (XmlMachinePCM?)item?.Tag;
-            Internal_SelectMachine(_selectedMachine);
         }
         private async Task<bool> Internal_SelectMachineFromText(string text)
         {
@@ -200,6 +203,30 @@ namespace PhoenixSwitcher.ControlTemplates
             ScannedMachineText.Clear();
             ScannedMachineText.Focus();
             return true;
+        }
+        private async Task<bool> Internal_ShouldMachineListBeActive(PhoenixSwitcherLogic switcherLogic)
+        {
+            try
+            {
+                XmlProjectSettings settings = Helpers.GetProjectSettings();
+                if (settings.bShouldSelectPCMForAll)
+                {
+                    return PhoenixSwitcherLogic.NumOngoingBundleUpdates <= 0
+                        && PhoenixSwitcherLogic.NumConnectedEspControllers >= Helpers.GetNumActiveEspController()
+                        && PhoenixSwitcherLogic.NumActiveSetups <= 0;
+                }
+                else if (switcherLogic == _switcherLogic)
+                {
+                    return switcherLogic.HasEspConnection() && !switcherLogic.bIsUpdatingBundles 
+                        && !switcherLogic.bIsPhoenixSetupOngoing && !switcherLogic.bIsInitializingEsp;
+                }
+                return _viewModel.bIsMachineListEnabled;
+            }
+            catch
+            {
+                await Task.Delay(250);
+                return await Internal_ShouldMachineListBeActive(switcherLogic);
+            }
         }
         private void Internal_SelectMachine(XmlMachinePCM? machine)
         {
@@ -260,7 +287,7 @@ namespace PhoenixSwitcher.ControlTemplates
             }
             if (settings.bShouldSelectPCMForAll)
             {
-                if (PhoenixSwitcherLogic.NumConnectedEspControllers < settings.EspControllers.Count)
+                if (PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())
                 {
                     Helpers.ShowLocalizedOkMessageBox("ID_04_0026", "Cannot select a new machine in multiselect mode when not all ControllerBoxes are ready.");
                     return false;

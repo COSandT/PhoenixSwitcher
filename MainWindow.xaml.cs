@@ -192,7 +192,6 @@ namespace PhoenixSwitcher
             SettingsWindow settingsWindow = new SettingsWindow(_logger);
 
             XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}//Settings//");
-            settingsWindow.SetXmlToEdit(projectSettings.SettingsFileFolderPath + projectSettings.SettingsFileName);
             settingsWindow.Topmost = true;
             settingsWindow.ShowDialog();
 

@@ -48,7 +48,7 @@
                 <Grid>
                     <TextBox
                         x:Name="ScannedMachineText"
-                        KeyUp="ScannedMachineText_KeyUp">
+                        KeyUp="OnScannedMachineText_KeyUp">
                     </TextBox>
                     <TextBlock
                         Text="{Binding SelectToScanText}"
@@ -79,7 +79,7 @@
                 Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}" >
                 <ListBox x:Name="MachineListBox" ItemsSource="{Binding ListViewItems}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    SelectionChanged="ListView_SelectionChanged"
+                    SelectionChanged="OnListView_SelectionChanged"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch">
                     <ListBox.ItemContainerStyle>

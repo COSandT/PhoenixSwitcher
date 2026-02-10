@@ -41,6 +41,16 @@ namespace PhoenixSwitcher
             }
             return -1;
         }
+        public static int GetNumActiveEspController()
+        {
+            XmlProjectSettings settings = GetProjectSettings();
+            int num = 0;
+            foreach (EspControllerInfo info in settings.EspControllers)
+            {
+                if (info.bIsActive) ++num;
+            }
+            return num;
+        }
 
         public static string RemoveExtraZeroFromVersionName(string versionName)
         {

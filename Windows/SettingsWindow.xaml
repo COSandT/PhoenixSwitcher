@@ -8,7 +8,7 @@
         xmlns:viewlibrary="clr-namespace:CosntCommonViewLibrary.XmlEditor;assembly=CosntCommonViewLibrary"
         xmlns:settingscontrol="clr-namespace:CosntCommonViewLibrary.SettingsControl;assembly=CosntCommonViewLibrary"
         mc:Ignorable="d"
-        Title="{Binding WindowName}"  Height="720" Width="1280">
+        Title="{Binding WindowName}"  Height="540" Width="540">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -17,23 +17,13 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" BorderThickness="2"
+        <Border Grid.Row="0" Margin="10,10,10,5" BorderThickness="2"
             BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer0BorderBrush}}">
-            <Menu
-                Background="{DynamicResource {x:Static adonisUI:Brushes.Layer0BackgroundBrush}}">
-                <MenuItem 
-                    Header="{Binding FileText}">
-                    <MenuItem Click="Save_Click" 
-                        Header="{Binding SaveButtonText}" />
-                </MenuItem>
-                <MenuItem 
-                    Header="{Binding FileText}">
-                    <MenuItem Click="Save_Click" 
-                        Header="{Binding SaveButtonText}" />
-                </MenuItem>
-            </Menu>
+            <Button Click="Save_Click" HorizontalAlignment="Left" MinWidth="100">
+                <TextBlock Text="{Binding SaveButtonText}"/>
+            </Button>
         </Border>
-        <Border Grid.Row="1" BorderThickness="2"
+        <Border Grid.Row="1" Margin="10,5,10,10" BorderThickness="2"
             BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
             <settingscontrol:SettingsWindow TabItems="{Binding SettingsItemList}" />
         </Border>
