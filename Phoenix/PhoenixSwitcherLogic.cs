@@ -53,8 +53,12 @@ namespace PhoenixSwitcher
         public delegate void ProcessFinishedBundleUpdate(PhoenixSwitcherLogic switcherLogic);
         public static event ProcessFinishedBundleUpdate? OnBundleUpdateFinished;
 
-        public PhoenixSwitcherLogic(Logger logger)
+        public PhoenixSwitcherLogic(Logger logger, string espID, string driveName, string boxName)
         {
+            DriveName = driveName;
+            BoxName = boxName;
+            EspID = espID;
+
             _logger = logger;
             _logger?.LogInfo($"PhoenixSwitcherLogic::Constructor -> Start");
 
@@ -69,12 +73,9 @@ namespace PhoenixSwitcher
         }
 
 
-        public async Task Init(string espID, string driveName, string boxName)
+        public async Task Init()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::Init -> Initializing switcher logic");
-            DriveName = driveName;
-            BoxName = boxName;
-            EspID = espID;
             await Internal_Init();
         }
         public async void RetryInit()
@@ -107,7 +108,7 @@ namespace PhoenixSwitcher
             catch (Exception ex)
             {
                 // exception here is already localized notmally.
-                Helpers.ShowLocalizedOkMessageBox("", ex.Message);
+                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "", ex.Message);
                 bIsInitializingEsp = false;
                 OnFinishedEspSetup?.Invoke(this, false);
             }
@@ -149,7 +150,7 @@ namespace PhoenixSwitcher
                 catch (Exception ex)
                 {
                     _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
-                    Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
                 }
 
                 NumOngoingBundleUpdates--;
@@ -168,12 +169,12 @@ namespace PhoenixSwitcher
                     // Proecess is still running when bundle update is supposed to happen.
                     // Delay update until after process has finished.
                     _bExecuteDelayedBundleUpdate = true;
-                    Helpers.ShowLocalizedOkMessageBox("ID_02_0016", "Phoenix setup was ongoing while bundle update was supposed to happen. Delaying update until after setup has completed.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0016", "Phoenix setup was ongoing while bundle update was supposed to happen. Delaying update until after setup has completed.");
                     return;
                 }
                 if (!HasEspConnection())
                 {
-                    Helpers.ShowLocalizedOkMessageBox("ID_02_0025", "PC needs to be connected to the ControllerBox to update the bundles.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0025", "PC needs to be connected to the ControllerBox to update the bundles.");
                     OnFinishedEspSetup?.Invoke(this, false);
                     return;
                 }
@@ -233,7 +234,7 @@ namespace PhoenixSwitcher
                 Application.Current.Dispatcher.Invoke(delegate
                 {
                     _logger?.LogError($"PhoenixSwitcherLogic::UpdateBundleFiles -> Failed to update bundle files exception: {ex.Message}");
-                    Helpers.ShowLocalizedOkMessageBox("ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
                 });
             }
         }
@@ -245,7 +246,7 @@ namespace PhoenixSwitcher
             {
                 OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> No EspController connected, cannot start.");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
+                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
                 StatusDelegates.UpdateStatus(this, StatusLevel.Error, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
                 return;
             }
@@ -257,7 +258,7 @@ namespace PhoenixSwitcher
             {
                 OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Selected a machine with invalid data.");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0001", "Invalid machine selected");
+                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0001", "Invalid machine selected");
                 return;
             }
 
@@ -265,7 +266,7 @@ namespace PhoenixSwitcher
             {
                 OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Is updating bundles please wait until done.");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0017", "Bundles are being updated please wait.");
+                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0017", "Bundles are being updated please wait.");
                 return;
             }
 
@@ -279,7 +280,7 @@ namespace PhoenixSwitcher
             {
                 OnProcessCancelled?.Invoke(this);
                 _logger?.LogWarning($"PhoenixSwitcherLogic::StartProcess -> Failed to setup phoenix file from selected bundle.");
-                Helpers.ShowLocalizedOkMessageBox("ID_02_0003", "Failed to find matching bundle files for selected vehicle. Try updating bundle files.");
+                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0003", "Failed to find matching bundle files for selected vehicle. Try updating bundle files.");
                 return;
             }
 
@@ -411,7 +412,7 @@ namespace PhoenixSwitcher
                 Application.Current.Dispatcher.Invoke(delegate
                 {
                     // The exceptions here is already a localized messege.
-                    Helpers.ShowLocalizedOkMessageBox("", ex.Message);
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "", ex.Message);
                 });
             }
         }
@@ -472,9 +473,5 @@ namespace PhoenixSwitcher
             return true;
         }
 
-        internal void Init()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

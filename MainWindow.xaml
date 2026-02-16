@@ -29,6 +29,15 @@
                         Header="{Binding ProgramSettingsText}" />
                     <MenuItem x:Name="LanguageSettings"
                         Header="{Binding LanguageSettingsText}" />
+                    <MenuItem Margin="2,0"
+                        Header="{Binding ThemeText}">
+                        <MenuItem Click="SwitchThemeDark_Click"
+                            x:Name="DarkButton"
+                            Header="{Binding DarkModeText}" />
+                        <MenuItem Click="SwitchThemeLight_Click" 
+                            x:Name="LightButton"
+                            Header="{Binding LightModeText}" />
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Margin="2,0"
                     Header="{Binding UpdateText}">
@@ -36,15 +45,6 @@
                         Header="{Binding UpdateBundleFilesText}" />
                     <MenuItem Click="UpdateMachineList_Click" 
                         Header="{Binding UpdateMachineListText}" />
-                </MenuItem>
-                <MenuItem Margin="2,0"
-                    Header="{Binding ThemeText}">
-                    <MenuItem Click="SwitchThemeDark_Click"
-                        x:Name="DarkButton"
-                        Header="{Binding DarkModeText}" />
-                    <MenuItem Click="SwitchThemeLight_Click" 
-                        x:Name="LightButton"
-                        Header="{Binding LightModeText}" />
                 </MenuItem>
                 <MenuItem Margin="2,0"
                     Header="{Binding HelpText}">

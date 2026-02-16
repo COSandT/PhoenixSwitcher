@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reflection.PortableExecutable;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CosntCommonLibrary.Settings;
@@ -270,18 +271,18 @@ namespace PhoenixSwitcher.ControlTemplates
             {
                 if (_switcherLogic.bIsPhoenixSetupOngoing)
                 {
-                    Helpers.ShowLocalizedOkMessageBox("ID_04_0023", "Cannot select a new machine when ControllerBox is still initializing.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0023", "Cannot select a new machine when ControllerBox is still initializing.");
                     return false;
                 }
                 else if (!_switcherLogic.HasEspConnection())
                 {
                     _switcherLogic.RetryInit();
-                    Helpers.ShowLocalizedOkMessageBox("ID_04_0024", "Cannot select a new machine when ControllerBox is not connected.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0024", "Cannot select a new machine when ControllerBox is not connected.");
                     return false;
                 }
                 if (_switcherLogic.bIsUpdatingBundles)
                 {
-                    Helpers.ShowLocalizedOkMessageBox("ID_04_0028", "Cannot select a machine when bundle update is ongoing.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0028", "Cannot select a machine when bundle update is ongoing.");
                     return false;
                 }
             }
@@ -289,12 +290,12 @@ namespace PhoenixSwitcher.ControlTemplates
             {
                 if (PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())
                 {
-                    Helpers.ShowLocalizedOkMessageBox("ID_04_0026", "Cannot select a new machine in multiselect mode when not all ControllerBoxes are ready.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0026", "Cannot select a new machine in multiselect mode when not all ControllerBoxes are ready.");
                     return false;
                 }
                 else if (PhoenixSwitcherLogic.NumActiveSetups > 0)
                 {
-                    Helpers.ShowLocalizedOkMessageBox("ID_04_0027", "Cannot select a machine in multiselect mode when a setup is still ongoing.");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0027", "Cannot select a machine in multiselect mode when a setup is still ongoing.");
                     return false;
                 }
             }

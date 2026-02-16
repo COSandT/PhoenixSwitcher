@@ -19,6 +19,7 @@ namespace PhoenixSwitcher.ViewModels
         public string FinishButtonText { get; set; } = "";
 
         // Selected Machine Info
+        public string ControllerBoxName { get; set; } = "";
         public string SelectedMachineHeaderText { get; set; } = "";
 
         // Machine Number Long

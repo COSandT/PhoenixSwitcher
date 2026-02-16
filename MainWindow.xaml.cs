@@ -158,12 +158,20 @@ namespace PhoenixSwitcher
                 {
                     _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
                     PCMMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
-                    if (PCMMachineList == null) throw new Exception("pcm machine list is null.");
+                    if (PCMMachineList == null || PCMMachineList.Machines.Count <= 0) throw new Exception("pcm machine list is null.");
                     OnMachineListUpdated?.Invoke(PCMMachineList);
+                    PCMMachineList.TrySave($"{AppContext.BaseDirectory}Settings\\LastSuccessfulPCMMachineList.xml");
                 }
                 catch (Exception ex)
                 {
-                    Helpers.ShowLocalizedOkMessageBox("ID_03_0013", "Failed to update pcm machine list. Look at logs for reason.");
+                    XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>("LastSuccessfulPCMMachineList.xml", $"{AppContext.BaseDirectory}Settings\\");
+                    machineListSettings.Load();
+                    if (machineListSettings?.Settings?.Machines.Count > 0)
+                    {
+                        PCMMachineList = machineListSettings.Settings;
+                        OnMachineListUpdated?.Invoke(PCMMachineList);
+                    }
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0013", "Failed to update pcm machine list. Will try to use backup list.");
                     _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}");
                 }
                 Mouse.OverrideCursor = null;

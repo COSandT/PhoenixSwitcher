@@ -63,7 +63,7 @@ namespace PhoenixSwitcher.Windows
             _logger?.LogInfo("SettingsWindow::OnWindowClosing -> Settings window is closing");
             if (!_bHaveSettingsChanged) return;
 
-            MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox("ID_06_0004", "Do you want to save changes?");
+            MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox(this, "ID_06_0004", "Do you want to save changes?");
             if (result == MessageBoxResult.Yes) Internal_SaveSettings();
         }
 
@@ -92,7 +92,7 @@ namespace PhoenixSwitcher.Windows
             _logger?.LogInfo("SettingsWindow::Save_Click -> Attempting to save settings");
             _settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
             _bHaveSettingsChanged = false;
-            Helpers.ShowLocalizedOkMessageBox("ID_06_0005", "File has saved. Restart is required to apply changes.");
+            Helpers.ShowLocalizedOkMessageBox(this, "ID_06_0005", "File has saved. Restart is required to apply changes.");
         }
     }
 }

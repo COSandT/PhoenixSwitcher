@@ -1,8 +1,11 @@
-﻿using AdonisUI.Controls;
+﻿using System.Windows;
+using AdonisUI.Controls;
 
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace PhoenixSwitcher
 {
@@ -73,31 +76,31 @@ namespace PhoenixSwitcher
             return result.Substring(0, result.Length - 1);
         }
 
-        public static MessageBoxResult ShowLocalizedYesNoMessageBox(string localizedTextId, string fallbackText)
+        public static MessageBoxResult ShowLocalizedYesNoMessageBox(Window owningWindow, string localizedTextId, string fallbackText)
         {
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0002", "yes"), MessageBoxResult.Yes));
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0003", "no"), MessageBoxResult.No));
             model.Caption = TryGetLocalizedText("ID_01_0001", "Phoenix Software Updater");
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
-            return MessageBox.Show(model);
+            return MessageBox.Show(owningWindow, model);
         }
-        public static MessageBoxResult ShowLocalizedOkMessageBox(string localizedTextId, string fallbackText)
+        public static MessageBoxResult ShowLocalizedOkMessageBox(Window owningWindow, string localizedTextId, string fallbackText)
         {
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0001", "ok"), MessageBoxResult.OK));
             model.Caption = TryGetLocalizedText("ID_01_0001", "Phoenix Software Updater");
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
-            return MessageBox.Show(model);
+            return MessageBox.Show(owningWindow, model);
         }
-        public static MessageBoxResult ShowLocalizedOkCancelMessageBox(string localizedTextId, string fallbackText)
+        public static MessageBoxResult ShowLocalizedOkCancelMessageBox(Window owningWindow, string localizedTextId, string fallbackText)
         {
             MessageBoxModel model = new MessageBoxModel();
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0001", "ok"), MessageBoxResult.OK));
             model.Buttons = model.Buttons.Append(new MessageBoxButtonModel(TryGetLocalizedText("ID_08_0004", "cancel"), MessageBoxResult.Cancel));
             model.Caption = TryGetLocalizedText("ID_01_0001", "Phoenix Software Updater");
             model.Text = TryGetLocalizedText(localizedTextId, fallbackText);
-            return MessageBox.Show(model);
+            return MessageBox.Show(owningWindow, model);
         }
     }
 }

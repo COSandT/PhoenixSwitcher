@@ -60,7 +60,9 @@ namespace PhoenixSwitcher.ControlTemplates
             MachineList.OnMachineSelected += UpdateSelectedMachine;
 
             _logger?.LogInfo($"MachineInfoWindow::Init -> Finished initializing MachineInfoWindow.");
+            _viewModel.ControllerBoxName = switcherLogic.BoxName;
         }
+
 
         // Bound delegate events
         private void ProcessStarted(PhoenixSwitcherLogic switcherLogic)
@@ -94,6 +96,7 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.TestButtonText = Helpers.TryGetLocalizedText("ID_04_0016", "Power On");
             _viewModel.ShutDownPhoenixText = Helpers.TryGetLocalizedText("ID_04_0017", "Power Off");
 
+            //_viewModel.SelectedMachineHeaderText = $"{_switcherLogic?.BoxName} | {Helpers.TryGetLocalizedText("ID_04_0003", "Machine Info")}";
             _viewModel.SelectedMachineHeaderText = Helpers.TryGetLocalizedText("ID_04_0003", "Machine Info");
             _viewModel.MachineTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0004", "MachineType: ");
             _viewModel.MachineN17DescriptionText = Helpers.TryGetLocalizedText("ID_04_0005", "Machine Num Long: ");
@@ -164,7 +167,7 @@ namespace PhoenixSwitcher.ControlTemplates
             if (_viewModel.BundleValueText == "'not found'")
             {
                 StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
-                Helpers.ShowLocalizedOkMessageBox("ID_04_0014", "Unable to find bundle for machine. Try other machine.");
+                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
                 return;
             }
 
@@ -209,7 +212,7 @@ namespace PhoenixSwitcher.ControlTemplates
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             if (!settings.bShouldSelectPCMForAll)
             {
-                MessageBoxResult result = Helpers.ShowLocalizedYesNoMessageBox("ID_04_0013", "Do you want to setup another screen for this machine?");
+                MessageBoxResult result = Helpers.ShowLocalizedYesNoMessageBox(Application.Current.MainWindow, "ID_04_0013", "Do you want to setup another screen for this machine?");
                 // Still call finish to reset everything properly but immediatly call UpdateSelectedMachine to fill in the info again.
                 if (result == MessageBoxResult.Yes) UpdateSelectedMachine(_switcherLogic, machine);
             }

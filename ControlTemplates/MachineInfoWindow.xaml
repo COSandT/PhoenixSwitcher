@@ -22,16 +22,29 @@
             <Grid
                 Grid.Row="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="18*"/>
-                    <RowDefinition Height="82*"/>
+                    <RowDefinition Height="15*"/>
+                    <RowDefinition Height="75*"/>
                 </Grid.RowDefinitions>
-                <Border Grid.Row="0" BorderThickness="2"
-                    Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
-                    BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
-                    <Viewbox Margin="5,5,10,5">
-                        <TextBlock Text="{Binding SelectedMachineHeaderText}" FontWeight="DemiBold" />
-                    </Viewbox>
-                </Border>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0"  BorderThickness="2"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                        <Viewbox Margin="5,5,10,5">
+                            <TextBlock Text="{Binding ControllerBoxName}" FontWeight="DemiBold" />
+                        </Viewbox>
+                    </Border>
+                    <Border Grid.Column="1"  BorderThickness="2"
+                        Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
+                        BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">
+                        <Viewbox Margin="5,5,10,5">
+                            <TextBlock Text="{Binding SelectedMachineHeaderText}" FontWeight="DemiBold" />
+                            </Viewbox>
+                    </Border>
+                </Grid>
                 <Border Grid.Row="1" BorderThickness="2"
                     Background="{DynamicResource {x:Static adonisUI:Brushes.Layer1BackgroundBrush}}"
                     BorderBrush="{DynamicResource {x:Static adonisUI:Brushes.Layer1BorderBrush}}">

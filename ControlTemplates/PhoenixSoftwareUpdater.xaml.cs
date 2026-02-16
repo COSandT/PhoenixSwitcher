@@ -18,22 +18,15 @@ namespace PhoenixSwitcher.ControlTemplates
         private PhoenixSoftwareUpdaterViewModel _viewModel = new PhoenixSoftwareUpdaterViewModel();
         private Logger _logger;
 
-        private string _driveName;
-        private string _boxName;
-        private string _espID;
         public PhoenixSwitcherLogic PhoenixSwitcher { get; private set; }
 
         public PhoenixSoftwareUpdater(MainWindow parent, string espID, string driveName, string boxName, Logger logger)
         {
             InitializeComponent();
             this.DataContext = _viewModel;
-
-            _driveName = driveName;
-            _boxName = boxName;
             _logger = logger;
-            _espID = espID;
 
-            PhoenixSwitcher = new PhoenixSwitcherLogic(_logger);
+            PhoenixSwitcher = new PhoenixSwitcherLogic(_logger, espID, driveName, boxName);
 
             StatusBarControl.Init(PhoenixSwitcher, _logger);
             MachineInfoWindowControl.Init(PhoenixSwitcher, _logger);
@@ -45,7 +38,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         public async void InitPhoenixSwitcher()
         {
-            await PhoenixSwitcher.Init(_espID, _driveName, _boxName);
+            await PhoenixSwitcher.Init();
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
