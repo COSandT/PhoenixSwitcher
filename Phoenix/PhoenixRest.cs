@@ -92,7 +92,7 @@ namespace PhoenixSwitcher
             }
             catch { }
         }
-        public Task<XmlProductionDataPCM?> GetPCMMachineFile(string department = "roix")
+        public Task<XmlProductionDataPCM?> GetPCMMachineFile(string department = "croix")
         {
             try
             {

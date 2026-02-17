@@ -46,6 +46,7 @@
 	<LanguageEntry id="ID_03_0002">-- Selecteer om te scannen --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Kan PCM-app-instellingen niet ophalen, terugkeren zonder de machinelijst te laden.</LanguageEntry>
 	<LanguageEntry id="ID_03_0004">PCM-machinelijst wordt bijgewerkt, even geduld...</LanguageEntry>
+	<LanguageEntry id="ID_03_0005">Bijwerken van de PCM-machinelijst is mislukt. Er wordt geprobeerd de back-uplijst te gebruiken.</LanguageEntry>
 	
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Start</LanguageEntry>

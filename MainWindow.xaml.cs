@@ -1,22 +1,23 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Windows;
 using System.Diagnostics;
-using System.Reflection.PortableExecutable;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
+
 using AdonisUI;
+
+using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools;
-using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using Org.BouncyCastle.Crypto.IO;
-using PhoenixSwitcher.ControlTemplates;
-using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.Models;
-using PhoenixSwitcher.ViewModels;
-using PhoenixSwitcher.Windows;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
+
+using PhoenixSwitcher.Models;
+using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.ControlTemplates;
 
 namespace PhoenixSwitcher
 {
@@ -171,8 +172,8 @@ namespace PhoenixSwitcher
                         PCMMachineList = machineListSettings.Settings;
                         OnMachineListUpdated?.Invoke(PCMMachineList);
                     }
-                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0013", "Failed to update pcm machine list. Will try to use backup list.");
-                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}");
+                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
                 }
                 Mouse.OverrideCursor = null;
                 _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");

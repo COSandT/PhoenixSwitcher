@@ -27,7 +27,7 @@
 	<LanguageEntry id="ID_02_0010">Changement de la connexion du lecteur</LanguageEntry>
 	<LanguageEntry id="ID_02_0011">Vérification de la connexion du lecteur au PC</LanguageEntry>
 	<LanguageEntry id="ID_02_0012">Basculement de l’alimentation vers Phoenix</LanguageEntry>
-	<LanguageEntry id="ID_02_0013">Échec de la mise à jour de la liste des machines PCM. Consultez les journaux pour la raison.</LanguageEntry>
+	<LanguageEntry id="ID_02_0013"></LanguageEntry>
 	<LanguageEntry id="ID_02_0014">Impossible de mettre à jour le logiciel Phoenix pour le type d’affichage 1. Veuillez sélectionner une nouvelle machine.</LanguageEntry>
 	<LanguageEntry id="ID_02_0015">Échec de la mise à jour des bundles. Consultez les journaux pour plus de détails.</LanguageEntry>
 	<LanguageEntry id="ID_02_0016">La configuration Phoenix était en cours lorsque la mise à jour des bundles devait avoir lieu. Mise à jour reportée jusqu’à la fin de la configuration.</LanguageEntry>
@@ -46,6 +46,8 @@
 	<LanguageEntry id="ID_03_0002">-- Sélectionner pour analyser --</LanguageEntry>
 	<LanguageEntry id="ID_03_0003">Impossible d’obtenir les paramètres de l’application PCM, retour sans charger la liste des machines.</LanguageEntry>
 	<LanguageEntry id="ID_03_0004">Mise à jour de la liste des machines PCM, veuillez patienter...</LanguageEntry>
+	<LanguageEntry id="ID_03_0005">Échec de la mise à jour de la liste des machines PCM. Tentative d’utilisation de la liste de secours.</LanguageEntry>
+
 
 	<!-- MachineInfoWindow -->
 	<LanguageEntry id="ID_04_0001">Démarrer</LanguageEntry>
