@@ -13,7 +13,7 @@ namespace PhoenixSwitcher
     {
         public static XmlProjectSettings GetProjectSettings()
         {
-            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}Settings\\");
+            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings\\");
             if (!projectSettings.Load())
             {
                 projectSettings.CreateBlank();

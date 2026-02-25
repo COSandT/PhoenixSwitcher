@@ -82,7 +82,7 @@ namespace PhoenixSwitcher
                     if (activeControllers.Count <= index) break;
 
                     EspControllerInfo espController = activeControllers[index];
-                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController.EspID, espController.DriveName, espController.BoxName, _logger);
+                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController, _logger);
                     _softwareUpdaters.Add(updater);
                     panel.Children.Add(updater);
                     await Task.Delay(1000);
@@ -103,7 +103,7 @@ namespace PhoenixSwitcher
             UpdatePcmMachineList(); 
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
-                updater.InitPhoenixSwitcher();
+                await updater.InitPhoenixSwitcher();
             }
             Mouse.OverrideCursor = null;
         }
@@ -161,19 +161,20 @@ namespace PhoenixSwitcher
                     PCMMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
                     if (PCMMachineList == null || PCMMachineList.Machines.Count <= 0) throw new Exception("pcm machine list is null.");
                     OnMachineListUpdated?.Invoke(PCMMachineList);
-                    PCMMachineList.TrySave($"{AppContext.BaseDirectory}Settings\\LastSuccessfulPCMMachineList.xml");
+                    PCMMachineList.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\LastSuccessfulPCMMachineList.xml");
                 }
                 catch (Exception ex)
                 {
-                    XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>("LastSuccessfulPCMMachineList.xml", $"{AppContext.BaseDirectory}Settings\\");
+                    StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0005", "Failed to update pcm machine list.");
+                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
+                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
+                    XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>("LastSuccessfulPCMMachineList.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings\\");
                     machineListSettings.Load();
                     if (machineListSettings?.Settings?.Machines.Count > 0)
                     {
                         PCMMachineList = machineListSettings.Settings;
                         OnMachineListUpdated?.Invoke(PCMMachineList);
                     }
-                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
-                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
                 }
                 Mouse.OverrideCursor = null;
                 _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
@@ -200,7 +201,7 @@ namespace PhoenixSwitcher
             _logger?.LogInfo("MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
             SettingsWindow settingsWindow = new SettingsWindow(_logger);
 
-            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"{AppContext.BaseDirectory}//Settings//");
+            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings");
             settingsWindow.Topmost = true;
             settingsWindow.ShowDialog();
 
@@ -276,17 +277,18 @@ namespace PhoenixSwitcher
                 ObservableCollection<MachineListItem> listItems = machineList.GetListItems();
 
                 MachineListItem? targetItem = listItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == ((e.AddedItems[0] as MachineListItem)?.Tag as XmlMachinePCM)?.N17);
-                if (targetItem != null)
+                if (targetItem != null && targetItem.Tag is XmlMachinePCM)
                 {
                     machineList.MachineListBox.SelectedItem = targetItem;
                     machineList.MachineListBox.ScrollIntoView(targetItem);
 
                     // Set it as selected in settings as well
-                    int idx = Helpers.GetEspSettingsIdxInfoFromID(updater.PhoenixSwitcher.EspID);
-                    if (idx != -1 && targetItem.Tag is XmlMachinePCM)
+                    foreach (EspControllerInfo espInfo in settings.EspControllers)
                     {
-                        settings.EspControllers[idx].LastSelectedMachineN17 = ((XmlMachinePCM)targetItem.Tag).N17;
-                        settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
+                        if (espInfo != updater.PhoenixSwitcher.EspInfo) continue;
+                        espInfo.LastSelectedMachineN17 = ((XmlMachinePCM)targetItem.Tag).N17;
+                        settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
+                        break;
                     }
                 }
             }
@@ -320,7 +322,7 @@ namespace PhoenixSwitcher
                     break;
             }
             ResourceLocator.SetColorScheme(Application.Current.Resources, colorScheme);
-            settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
+            settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
         }
 
     }

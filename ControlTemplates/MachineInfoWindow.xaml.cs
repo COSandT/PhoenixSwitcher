@@ -60,7 +60,7 @@ namespace PhoenixSwitcher.ControlTemplates
             MachineList.OnMachineSelected += UpdateSelectedMachine;
 
             _logger?.LogInfo($"MachineInfoWindow::Init -> Finished initializing MachineInfoWindow.");
-            _viewModel.ControllerBoxName = switcherLogic.BoxName;
+            _viewModel.ControllerBoxName = switcherLogic.EspInfo.BoxName;
         }
 
 
@@ -164,10 +164,11 @@ namespace PhoenixSwitcher.ControlTemplates
                 if (bundle != null && bundle.Bundle != null) _selectedMachineInfo.Bundle_version = _viewModel.BundleValueText = bundle.Bundle;
             }
 
-            if (_viewModel.BundleValueText == "'not found'")
+            if (string.IsNullOrEmpty(_viewModel.BundleValueText) 
+                || _viewModel.BundleValueText.Contains("'No available Bundle'"))
             {
                 StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
-                Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
+                //Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
                 return;
             }
 
@@ -225,7 +226,5 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.RetryButtonVisibility = Visibility.Hidden;
             Mouse.OverrideCursor = null;
         }
-
-
     }
 }

@@ -54,8 +54,8 @@ namespace PhoenixSwitcher.ControlTemplates
         public void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaStatusId, string fallbackStatusText)
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            _logger?.LogInfo($"StatusInstructionBar::UpdateNewStatus -> Recieved new status:");
             _status = new Status(locaStatusId, fallbackStatusText);
+            _logger?.LogInfo($"StatusInstructionBar::UpdateNewStatus -> Recieved new status: {fallbackStatusText}");
             switch (level)
             {
                 case StatusLevel.Instruction:

@@ -71,20 +71,13 @@
     <None Update="Resources\Settings\ApplicationSettings.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Settings\LanguageSettings.xml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\Settings\ProjectSettings.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E" />
-  </Target>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E" />
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;" />
   </Target>
 
 </Project>

@@ -20,13 +20,13 @@ namespace PhoenixSwitcher.ControlTemplates
 
         public PhoenixSwitcherLogic PhoenixSwitcher { get; private set; }
 
-        public PhoenixSoftwareUpdater(MainWindow parent, string espID, string driveName, string boxName, Logger logger)
+        public PhoenixSoftwareUpdater(MainWindow parent, EspControllerInfo controllerInfo, Logger logger)
         {
             InitializeComponent();
             this.DataContext = _viewModel;
             _logger = logger;
 
-            PhoenixSwitcher = new PhoenixSwitcherLogic(_logger, espID, driveName, boxName);
+            PhoenixSwitcher = new PhoenixSwitcherLogic(_logger, controllerInfo);
 
             StatusBarControl.Init(PhoenixSwitcher, _logger);
             MachineInfoWindowControl.Init(PhoenixSwitcher, _logger);
@@ -36,7 +36,7 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             PhoenixSwitcher.UpdateBundleFilesOnDrive();
         }
-        public async void InitPhoenixSwitcher()
+        public async Task InitPhoenixSwitcher()
         {
             await PhoenixSwitcher.Init();
 

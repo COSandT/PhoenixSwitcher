@@ -1,15 +1,16 @@
-﻿using System.Collections.ObjectModel;
-using System.Reflection.PortableExecutable;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
-using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
+
 using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Tools;
+using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.Delegates;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+
 using PhoenixSwitcher.Models;
+using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher.ControlTemplates
@@ -167,43 +168,47 @@ namespace PhoenixSwitcher.ControlTemplates
                 }
                 else if (_switcherLogic.HasEspConnection())
                 {
-                    int idx = Helpers.GetEspSettingsIdxInfoFromID(_switcherLogic.EspID);
                     StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
-                    if (idx != -1)
-                    {
-                        await Internal_SelectMachineFromText(settings.EspControllers[idx].LastSelectedMachineN17);
-                    }
+                    await Internal_SelectMachineFromText(_switcherLogic.EspInfo.LastSelectedMachineN17);
                 }
             }
         }
         private async Task<bool> Internal_SelectMachineFromText(string text)
         {
-            if (string.IsNullOrEmpty(text)) return false;
-            if (_pcmMachineList == null)
+            try
             {
-                await PhoenixRest.GetInstance().GetPCMMachineFile();
-                if (_pcmMachineList == null) return false;
-            }
-
-            XmlMachinePCM? foundMachine = null;
-            if (text.Length == 17) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == text);
-            else if (text.Length == 10) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
-            else if (text.Length < 10)
-            {
-                while (text.Length < 10)
+                if (string.IsNullOrEmpty(text)) return false;
+                if (_pcmMachineList == null)
                 {
-                    text = $"0{text}";
+                    await PhoenixRest.GetInstance().GetPCMMachineFile();
+                    if (_pcmMachineList == null) return false;
                 }
-                foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
+
+                XmlMachinePCM? foundMachine = null;
+                if (text.Length == 17) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == text);
+                else if (text.Length == 10) foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
+                else if (text.Length < 10)
+                {
+                    while (text.Length < 10)
+                    {
+                        text = $"0{text}";
+                    }
+                    foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
+                }
+                else return false;
+
+                Internal_SelectMachine(foundMachine);
+                Internal_UpdateVisualSelection(foundMachine);
+
+                ScannedMachineText.Clear();
+                ScannedMachineText.Focus();
+                return true;
             }
-            else return false;
-
-            Internal_SelectMachine(foundMachine);
-            Internal_UpdateVisualSelection(foundMachine);
-
-            ScannedMachineText.Clear();
-            ScannedMachineText.Focus();
-            return true;
+            catch
+            {
+                return false;
+            }
+            
         }
         private async Task<bool> Internal_ShouldMachineListBeActive(PhoenixSwitcherLogic switcherLogic)
         {
@@ -248,11 +253,11 @@ namespace PhoenixSwitcher.ControlTemplates
                 Internal_UpdateVisualSelection(machine);
                 if (_switcherLogic != null)
                 {
-                    int idx = Helpers.GetEspSettingsIdxInfoFromID(_switcherLogic.EspID);
-                    if (idx != -1)
+                    foreach (EspControllerInfo espInfo in settings.EspControllers)
                     {
-                        settings.EspControllers[idx].LastSelectedMachineN17 = machine != null ? machine.N17 : "";
-                        settings.TrySave($"{AppContext.BaseDirectory}Settings\\ProjectSettings.xml");
+                        if (espInfo != _switcherLogic.EspInfo) continue;
+                        espInfo.LastSelectedMachineN17 = machine != null ? machine.N17 : "";
+                        settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
                     }
                 }
 
@@ -276,7 +281,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 }
                 else if (!_switcherLogic.HasEspConnection())
                 {
-                    _switcherLogic.RetryInit();
+                    _ = _switcherLogic.RetryInit();
                     Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0024", "Cannot select a new machine when ControllerBox is not connected.");
                     return false;
                 }
