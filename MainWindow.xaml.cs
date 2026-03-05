@@ -43,6 +43,7 @@ namespace PhoenixSwitcher
             InitializeComponent();
             this.DataContext = _viewModel;
 
+            LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);
             _logger.LogInfo("MainWindow::Constructor -> Start initializing.");

@@ -57,16 +57,16 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Update="Resources\Languages\Dutch.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Languages\English.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Languages\French.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Languages\Polish.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Settings\ApplicationSettings.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -77,7 +77,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;" />
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E" />
   </Target>
 
 </Project>
