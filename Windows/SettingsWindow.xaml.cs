@@ -72,10 +72,20 @@ namespace PhoenixSwitcher.Windows
             _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_06_0001", "Phoenix Switcher - Settings Window");
             _viewModel.FileText = Helpers.TryGetLocalizedText("ID_06_0002", "File");
             _viewModel.SaveButtonText = Helpers.TryGetLocalizedText("ID_06_0003", "Save");
+            _viewModel.AddButtonText = Helpers.TryGetLocalizedText("ID_06_0006", "Add");
         }
         private void Save_Click(object? sender, RoutedEventArgs? e)
         {
             Internal_SaveSettings();
+        }
+        private void AddControllerBox_Click(object? sender, RoutedEventArgs? e)
+        {
+            EspControllerInfo espInfo = new EspControllerInfo();
+            _settings.EspControllers.Add(espInfo);
+
+            TabbItemModelReference modelRef = new TabbItemModelReference { ModelReference = espInfo, Title = "NewBox" };
+            _viewModel.SettingsItemList.Add(modelRef);
+            _bHaveSettingsChanged = true;
         }
 
 

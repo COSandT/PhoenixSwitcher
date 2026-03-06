@@ -11,6 +11,7 @@ namespace PhoenixSwitcher.ViewModels
         public string WindowName { get; set; } = "";
         public string FileText { get; set; } = "";
         public string SaveButtonText { get; set; } = "";
+        public string AddButtonText { get; set; } = "";
         public ObservableCollection<TabbItemModelReference> SettingsItemList { get; } = new ObservableCollection<TabbItemModelReference>();
     }
 }

@@ -186,9 +186,9 @@ namespace PhoenixSwitcher.ControlTemplates
         private void TestProcess_Click(object sender, RoutedEventArgs e)
         {
             OnTest?.Invoke(_switcherLogic, true);
-            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
-            _viewModel.FinishButtonVisibility = Visibility.Hidden;
             _viewModel.TestButtonVisibility = Visibility.Hidden;
+            _viewModel.FinishButtonVisibility = Visibility.Hidden;
+            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
             StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0018", "Press power off once done.");
         }
         private void ShutDownPhoenixProcess_Click(object sender, RoutedEventArgs e)
@@ -202,15 +202,21 @@ namespace PhoenixSwitcher.ControlTemplates
         private void FinishProcess_Click(object sender, RoutedEventArgs e)
         {
             _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke finish process event. And update button visibility");
-            _selectedMachineInfo.TimeStamp = DateTime.Now;
-            PhoenixRest.GetInstance().PostMachineResults(_selectedMachineInfo);
+            try
+            {
+                // operators shouldnt care about machine results on server and shouldnt have to wait on it.
+                // executing this on other thread to not block operator working
+                _selectedMachineInfo.TimeStamp = DateTime.Now;
+                Task.Run(() => PhoenixRest.GetInstance().PostMachineResults(_selectedMachineInfo));
+            }
+            catch { }
 
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
             _viewModel.TestButtonVisibility = Visibility.Hidden;
-            XmlMachinePCM? machine = _selectedMachine;
             OnProcessFinished?.Invoke(_switcherLogic);
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
+            XmlMachinePCM? machine = _selectedMachine;
             if (!settings.bShouldSelectPCMForAll)
             {
                 MessageBoxResult result = Helpers.ShowLocalizedYesNoMessageBox(Application.Current.MainWindow, "ID_04_0013", "Do you want to setup another screen for this machine?");

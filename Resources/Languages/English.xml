@@ -88,6 +88,7 @@
 	<LanguageEntry id="ID_06_0003">Save</LanguageEntry>
 	<LanguageEntry id="ID_06_0004">Do you want to save any changes?</LanguageEntry>
 	<LanguageEntry id="ID_06_0005">File has saved. Restart is required to apply changes.</LanguageEntry>
+	<LanguageEntry id="ID_06_0006">Add Box</LanguageEntry>
 	
 	<!-- About Window -->
 	<LanguageEntry id="ID_07_0001">Phoenix Software Updater - About</LanguageEntry>
