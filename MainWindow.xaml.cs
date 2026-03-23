@@ -18,6 +18,7 @@ using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.ControlTemplates;
+using CosntCommonLibrary.Tools.Usb;
 
 namespace PhoenixSwitcher
 {
@@ -42,7 +43,6 @@ namespace PhoenixSwitcher
         {
             InitializeComponent();
             this.DataContext = _viewModel;
-
             LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);

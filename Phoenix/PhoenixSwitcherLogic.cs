@@ -292,11 +292,12 @@ namespace PhoenixSwitcher
 
                 NumActiveSetups++;
                 bIsPhoenixSetupOngoing = true;
-
                 XmlProjectSettings settings = Helpers.GetProjectSettings();
                 if (settings.ShouldSwitchDriveBeforePower)
                 {
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0021", "Switching drive.");
+
+                    if (!UsbEjectTool.SafeRemove(_drive)) _logger?.LogWarning("Failed to safe eject. switching drive unsafely.");
                     await SwitchDriveConnection();
                     await Task.Delay(settings.DriveSwitchWaitTimeSec * 1000);
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
@@ -308,6 +309,7 @@ namespace PhoenixSwitcher
                     SwitchPowerToPhoenix(this, true);
                     await Task.Delay(settings.DriveSwitchWaitTimeSec * 1000);
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0021", "Switching drive.");
+                    if (!UsbEjectTool.SafeRemove(_drive)) _logger?.LogWarning("Failed to safe eject. switching drive unsafely."); 
                     await SwitchDriveConnection();
                 }
 
