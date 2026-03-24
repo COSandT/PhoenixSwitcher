@@ -46,6 +46,8 @@ namespace PhoenixSwitcher
             LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);
+            _logger.LogInfo("\n\n\n\n--------------------------------------");
+            _logger.LogInfo("PhoenixSwitcher: Startup program.");
             _logger.LogInfo("MainWindow::Constructor -> Start initializing.");
 
             Internal_UpdateTheme(settings.Theme);
@@ -56,6 +58,7 @@ namespace PhoenixSwitcher
         }
         private async void InitializeEspControllers()
         {
+            _logger.LogInfo("MainWindow::InitializeEspControllers -> Start initializing.");
             Mouse.OverrideCursor = Cursors.Wait;
             XmlProjectSettings settings = Helpers.GetProjectSettings();
 
@@ -66,6 +69,7 @@ namespace PhoenixSwitcher
                 if (!espController.bIsActive) continue;
                 activeControllers.Add(espController);
             }
+            _logger.LogInfo($"MainWindow::InitializeEspControllers -> settings contains {activeControllers.Count} espcontrollers.");
             SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
             _gridRows = (int)Math.Round(Math.Sqrt(activeControllers.Count));
             _gridColumns = (int)Math.Ceiling((double)activeControllers.Count / (double)_gridRows);
@@ -84,6 +88,8 @@ namespace PhoenixSwitcher
 
                     EspControllerInfo espController = activeControllers[index];
                     PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController, _logger);
+                    string info = $"DriveName: {espController.DriveName}, ComID: {espController.COMPortID}, EspID: {espController.EspID}";
+                    _logger.LogInfo($"MainWindow::InitializeEspControllers -> Generating window for controller with info: {info}");
                     _softwareUpdaters.Add(updater);
                     panel.Children.Add(updater);
                     await Task.Delay(1000);
@@ -130,7 +136,6 @@ namespace PhoenixSwitcher
         }
         private void UpdateGridSize()
         {
-            
             foreach (StackPanel panel in SoftwareUpdaterGrid.Children)
             {
                 panel.MaxHeight = GridBorder.ActualHeight / _gridRows;

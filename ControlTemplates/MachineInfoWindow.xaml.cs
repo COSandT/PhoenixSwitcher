@@ -179,12 +179,13 @@ namespace PhoenixSwitcher.ControlTemplates
         // Button press events
         private void StartProcess_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke start bundle process event.");
+            _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> StartProcess button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
             OnStartBundleProcess?.Invoke(_switcherLogic, _selectedMachineInfo);
             _viewModel.StartButtonVisibility = Visibility.Hidden;
         }
         private void TestProcess_Click(object sender, RoutedEventArgs e)
         {
+            _logger?.LogInfo($"MachineInfoWindow::TestProcess_Click -> TurnOnPower button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
             OnTest?.Invoke(_switcherLogic, true);
             _viewModel.TestButtonVisibility = Visibility.Hidden;
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
@@ -193,6 +194,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void ShutDownPhoenixProcess_Click(object sender, RoutedEventArgs e)
         {
+            _logger?.LogInfo($"MachineInfoWindow::ShutDownPhoenixProcess_Click -> ShutOffPower button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
             OnShutOffPower?.Invoke(_switcherLogic, false);
             _viewModel.TestButtonVisibility = Visibility.Visible;
             _viewModel.FinishButtonVisibility = Visibility.Visible;
@@ -201,12 +203,13 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void FinishProcess_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> Invoke finish process event. And update button visibility");
+            _logger?.LogInfo($"MachineInfoWindow::FinishProcess_Click -> FinishProcess button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
             try
             {
                 // operators shouldnt care about machine results on server and shouldnt have to wait on it.
                 // executing this on other thread to not block operator working
                 _selectedMachineInfo.TimeStamp = DateTime.Now;
+                _logger?.LogInfo($"MachineInfoWindow::FinishProcess_Click -> Posting Machine results to server: {_switcherLogic?.EspInfo.BoxName}");
                 Task.Run(() => PhoenixRest.GetInstance().PostMachineResults(_selectedMachineInfo));
             }
             catch { }
@@ -227,6 +230,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void RetryEspSetup_Click(object sender, RoutedEventArgs e)
         {
+            _logger?.LogInfo($"MachineInfoWindow::RetryEspSetup_Click -> RetryEspSetup button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
             Mouse.OverrideCursor = Cursors.Wait;
             _switcherLogic?.RetryInit();
             _viewModel.RetryButtonVisibility = Visibility.Hidden;

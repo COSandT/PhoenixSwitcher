@@ -72,12 +72,12 @@ namespace PhoenixSwitcher
 
         public async Task Init()
         {
-            _logger?.LogInfo($"PhoenixSwitcherLogic::Init -> Initializing switcher logic");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::Init -> Initializing switcher logic for EspID: {EspInfo.EspID}");
             await Internal_Init();
         }
         public async Task RetryInit()
         {
-            _logger?.LogInfo($"PhoenixSwitcherLogic::RetryInit -> Initializing switcher logic");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::RetryInit -> Initializing switcher logic for EspID: {EspInfo.EspID}");
             if (!EspInfo.IsValid()) return;
             await Internal_Init();
         }
@@ -90,10 +90,12 @@ namespace PhoenixSwitcher
                 StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0024", "Attempting to connect to ControllerBox");
                 if (HasEspConnection())
                 {
+                    _logger?.LogWarning($"PhoenixSwitcherLogic::Internal_Init -> There Already is an existing connection. Closing the connection before attempting clean reconnect.");
                     NumConnectedEspControllers--;
                     _espController.Disconnect();
                     _bWasInitialized = false;
                 }
+                _logger?.LogInfo($"PhoenixSwitcherLogic::Internal_Init -> Attempting to connect to ControllerBox: {EspInfo.EspID}");
                 await SetupEspController();
                 CleanupDrive();
 
@@ -104,6 +106,7 @@ namespace PhoenixSwitcher
             }
             catch (Exception ex)
             {
+                _logger?.LogError($"PhoenixSwitcherLogic::Internal_Init -> Failed to connect to ControllerBox: {EspInfo.EspID}");
                 // exception here is already localized notmally.
                 Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "", ex.Message);
                 bIsInitializingEsp = false;
@@ -114,17 +117,20 @@ namespace PhoenixSwitcher
         public async Task<bool> GetEspConnection()
         {
             if (HasEspConnection()) return true;
+            _logger?.LogInfo($"PhoenixSwitcherLogic::GetEspConnection -> Retry to init connection for Box: {EspInfo.EspID}. and recheck connection after");
             await Internal_Init();
             return HasEspConnection();
         }
         public bool HasEspConnection()
         {
+            _logger?.LogInfo($"PhoenixSwitcherLogic::HasEspConnection -> Check if Box: {EspInfo.EspID} has proper connection.");
             bool result = _espController != null && _espController.IsConnected && _espController.Ping() != -1;
             if (!result && _bWasInitialized)
             {
                 NumConnectedEspControllers--;
                 _bWasInitialized = false;
             }
+            _logger?.LogInfo($"PhoenixSwitcherLogic::HasEspConnection -> Has connection result: {result}. For box: {EspInfo.EspID} ");
             return result;
         }
 
@@ -334,11 +340,11 @@ namespace PhoenixSwitcher
             NumActiveSetups--;
             bIsPhoenixSetupOngoing = false;
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0008", "Process finished, resetting to start");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
             Mouse.OverrideCursor = Cursors.Wait;
 
             try
             {
-                _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
                 SwitchPowerToPhoenix(this, false);
                 await ConnectDriveToPC();
 
@@ -352,6 +358,7 @@ namespace PhoenixSwitcher
 
             if (_bExecuteDelayedBundleUpdate)
             {
+                _logger?.LogInfo($"PhoenixSwitcherLogic::FinishProcess -> Executing delayed bundle update.");
                 UpdateBundleFilesOnDrive();
                 _bExecuteDelayedBundleUpdate = false;
             }
@@ -362,14 +369,15 @@ namespace PhoenixSwitcher
         private async Task SetupEspController()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Start setup for Esp32Controller");
-            _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Attempting to connect.");
             bool result = false;
             if (EspInfo.COMPortID > 0)
             {
+                _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Attempting to connect using ComportID: {EspInfo.COMPortID}");
                 for (int i = 0; i < 5; ++i)
                 {
                     result = _espController.Connect(EspInfo.COMPortID);
                     if (result) break;
+                    _logger?.LogWarning($"PhoenixSwitcherLogic::SetupEspController -> Failed connect retry attempt: {i}");
                     await Task.Delay(1000);
                 }
             }
@@ -415,8 +423,10 @@ namespace PhoenixSwitcher
         private bool IsDriveConnectedToPC()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::IsDriveConnectedToPC -> Checking if drive is connected to pc.");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::IsDriveConnectedToPC -> Drivename we are looking for: {EspInfo.DriveName}");
             _drive = _usbTool.GetDrive(EspInfo.DriveName).DriveLetter;
             _phoenixFilePath = _drive + _phoenixFileName;
+            _logger?.LogInfo($"PhoenixSwitcherLogic::IsDriveConnectedToPC -> Resulting found path: {_phoenixFilePath}");
             return !string.IsNullOrEmpty(_drive);
         }
         private async void SwitchPowerToPhoenix(PhoenixSwitcherLogic? switcherLogic, bool result)
@@ -424,6 +434,7 @@ namespace PhoenixSwitcher
             if (switcherLogic != this) return;
             _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Use relais to switch power of phoenix on/off");
             if (!await GetEspConnection()) return;
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Switch Relais to: {result}");
             _espController.SetRelay2(result);
         }
 
@@ -431,8 +442,10 @@ namespace PhoenixSwitcher
         {
             try
             {
+                _logger?.LogInfo($"PhoenixSwitcherLogic::CleanupDrive -> Cleaning up drive for next use.");
                 RenameGMHIFileToBundleFile();
 
+                _logger?.LogInfo($"PhoenixSwitcherLogic::CleanupDrive -> Removing any files generated by phoenix screen that are no longer used.");
                 // Remove any folders/files that are not bundle files
                 List<string> foldersOnDrive = Directory.GetDirectories(_drive).ToList();
                 foreach (string folder in foldersOnDrive)
@@ -440,12 +453,14 @@ namespace PhoenixSwitcher
                     if (!folder.Contains("PCMBUNDLE_"))
                     {
                         Directory.Delete(folder, true);
+                        _logger?.LogInfo($"PhoenixSwitcherLogic::CleanupDrive -> Deleted file: {folder}");
                     }
                 }
             }
             catch (Exception ex)
             {
                 // The exceptions here is already a localized messege.
+                _logger?.LogError($"PhoenixSwitcherLogic::CleanupDrive -> Failed to cleanup drive properly.");
                 Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "", ex.Message);
             }
         }

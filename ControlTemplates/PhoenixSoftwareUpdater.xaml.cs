@@ -39,12 +39,12 @@ namespace PhoenixSwitcher.ControlTemplates
         public async Task InitPhoenixSwitcher()
         {
             await PhoenixSwitcher.Init();
-
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
                 , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
                 , 24, new Action(PhoenixSwitcher.UpdateBundleFilesOnDrive));
 
+            if (!PhoenixSwitcher.HasEspConnection()) return;
             if (Helpers.GetHoursSinceLastUpdate() > 24) PhoenixSwitcher.UpdateBundleFilesOnDrive();
         }
     }
