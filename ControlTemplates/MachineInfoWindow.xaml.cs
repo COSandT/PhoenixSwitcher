@@ -109,9 +109,9 @@ namespace PhoenixSwitcher.ControlTemplates
         public async void UpdateSelectedMachine(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? machine)
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            _logger?.LogInfo($"MachineInfoWindow::SetMachineInfoFromBundle -> Set selected bundle.");
             if (machine == null)
             {
+                _logger?.LogInfo($"MachineInfoWindow::UpdateSelectedMachine -> passed machine was null clearing values.");
                 _viewModel.StartButtonVisibility = Visibility.Hidden;
                 _selectedMachineInfo = new PhoenixSwitcherDone();
                 _selectedMachine = null;
@@ -126,6 +126,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 return;
             }
 
+            _logger?.LogInfo($"MachineInfoWindow::UpdateSelectedMachine -> Set selected machine info.");
             _selectedMachine = machine;
             _selectedMachineInfo.Vin = _viewModel.MachineN17ValueText = machine.N17;
             _selectedMachineInfo.Vin_9char = _viewModel.MachineN9ValueText = machine.No;
@@ -150,7 +151,8 @@ namespace PhoenixSwitcher.ControlTemplates
 
             if (machine.DT == 1.ToString())
             {
-               _viewModel.StartButtonVisibility = Visibility.Hidden;
+                _logger?.LogWarning($"MachineInfoWindow::UpdateSelectedMachine -> Wrong ScreenType not showing bundle and start button and returning early.");
+                _viewModel.StartButtonVisibility = Visibility.Hidden;
                 return;
             }
 
@@ -167,11 +169,12 @@ namespace PhoenixSwitcher.ControlTemplates
             if (string.IsNullOrEmpty(_viewModel.BundleValueText) 
                 || _viewModel.BundleValueText.Contains("'No available Bundle'"))
             {
+                _logger?.LogWarning($"MachineInfoWindow::UpdateSelectedMachine -> No bundle found for selected machine.");
                 StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
                 //Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
                 return;
             }
-
+            _logger?.LogInfo($"MachineInfoWindow::UpdateSelectedMachine -> Showing Start button.");
             _viewModel.StartButtonVisibility = Visibility.Visible;
             StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
         }

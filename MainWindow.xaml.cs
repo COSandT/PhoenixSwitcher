@@ -56,6 +56,15 @@ namespace PhoenixSwitcher
 
             _logger.LogInfo("MainWindow::Constructor -> Finished initializing.");
         }
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            //close logic here
+            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+            {
+                updater.PhoenixSwitcher?.Disconnect();
+            }
+            base.OnClosing(e);
+        }
         private async void InitializeEspControllers()
         {
             _logger.LogInfo("MainWindow::InitializeEspControllers -> Start initializing.");

@@ -95,7 +95,7 @@ namespace PhoenixSwitcher
                     _espController.Disconnect();
                     _bWasInitialized = false;
                 }
-                _logger?.LogInfo($"PhoenixSwitcherLogic::Internal_Init -> Attempting to connect to ControllerBox: {EspInfo.EspID}");
+                _logger?.LogInfo($"PhoenixSwitcherLogic::Internal_Init -> Attempting to connect to Box: {EspInfo.BoxName}");
                 await SetupEspController();
                 CleanupDrive();
 
@@ -106,7 +106,7 @@ namespace PhoenixSwitcher
             }
             catch (Exception ex)
             {
-                _logger?.LogError($"PhoenixSwitcherLogic::Internal_Init -> Failed to connect to ControllerBox: {EspInfo.EspID}");
+                _logger?.LogError($"PhoenixSwitcherLogic::Internal_Init -> Failed to connect to Box: {EspInfo.BoxName}");
                 // exception here is already localized notmally.
                 Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "", ex.Message);
                 bIsInitializingEsp = false;
@@ -117,14 +117,14 @@ namespace PhoenixSwitcher
         public async Task<bool> GetEspConnection()
         {
             if (HasEspConnection()) return true;
-            _logger?.LogInfo($"PhoenixSwitcherLogic::GetEspConnection -> Retry to init connection for Box: {EspInfo.EspID}. and recheck connection after");
+            _logger?.LogWarning($"PhoenixSwitcherLogic::GetEspConnection -> Retry to init connection for Box: {EspInfo.EspID}. and recheck connection after");
             await Internal_Init();
             return HasEspConnection();
         }
         public bool HasEspConnection()
         {
             _logger?.LogInfo($"PhoenixSwitcherLogic::HasEspConnection -> Check if Box: {EspInfo.EspID} has proper connection.");
-            bool result = _espController != null && _espController.IsConnected && _espController.Ping() != -1;
+            bool result = _espController != null && _espController.IsConnected;
             if (!result && _bWasInitialized)
             {
                 NumConnectedEspControllers--;
@@ -132,6 +132,11 @@ namespace PhoenixSwitcher
             }
             _logger?.LogInfo($"PhoenixSwitcherLogic::HasEspConnection -> Has connection result: {result}. For box: {EspInfo.EspID} ");
             return result;
+        }
+
+        public void Disconnect()
+        {
+            _espController.Disconnect();
         }
 
         public void UpdateBundleFilesOnDrive()
@@ -259,7 +264,6 @@ namespace PhoenixSwitcher
                     StatusDelegates.UpdateStatus(this, StatusLevel.Error, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
                     return;
                 }
-                _logger?.LogInfo($"ESP PING: {_espController.Ping()}");
                 StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
 
                 _logger?.LogInfo($"PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
@@ -368,7 +372,7 @@ namespace PhoenixSwitcher
         // Helpers
         private async Task SetupEspController()
         {
-            _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Start setup for Esp32Controller");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Start setup for Esp32Controller for box: {EspInfo.BoxName}");
             bool result = false;
             if (EspInfo.COMPortID > 0)
             {
@@ -381,7 +385,11 @@ namespace PhoenixSwitcher
                     await Task.Delay(1000);
                 }
             }
-            else await _espController.Connect(EspInfo.EspID);
+            else
+            {
+                _logger?.LogWarning($"PhoenixSwitcherLogic::SetupEspController -> Attempting to connect without ComportID");
+                await _espController.Connect(EspInfo.EspID);
+            }
 
             if (!_espController.IsConnected)
             {
@@ -391,6 +399,8 @@ namespace PhoenixSwitcher
                 StatusDelegates.UpdateStatus(this, StatusLevel.Error, "", part1 + EspInfo.BoxName + " " + part2);
                 throw new Exception($"{part1}{EspInfo.BoxName}, EspID: {EspInfo.EspID}, DriveName: {EspInfo.DriveName}");
             }
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Connection successfull for Box: {EspInfo.BoxName}");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SetupEspController -> Switching all Esp32 relais to false for Box: {EspInfo.BoxName}");
             _espController.SetAllRelays(false);
             await ConnectDriveToPC();
         }
@@ -398,24 +408,21 @@ namespace PhoenixSwitcher
         {
             int numTries = 0;
             int waitTimeMs = 5000;
-            _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> attempting to connect the drive to this pc.");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> attempting to switch usb drive connection to this pc.");
             while (!IsDriveConnectedToPC())
             {
                 await SwitchDriveConnection();
                 _logger?.LogInfo($"PhoenixSwitcherLogic::ConnectDriveToPC -> waiting {waitTimeMs}ms before checking if drive is connected.");
-                if (numTries > 4) throw new Exception($"Failed to find drive for EspController with ID: {EspInfo.EspID} and name: {EspInfo.DriveName}");
+                if (numTries > 3) throw new Exception($"Failed to find drive for EspController with ID: {EspInfo.EspID} and name: {EspInfo.DriveName}");
                 await Task.Delay(waitTimeMs);
                 numTries++;
             }
         }
         private async Task SwitchDriveConnection()
         {
-            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Use relais to switch what device the drive is connected to.");
-            if (!HasEspConnection())
-            {
-                await Internal_Init();
-                if (!HasEspConnection()) return;
-            }
+            if (!await GetEspConnection()) return;
+
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Use relais to switch what device the usb drive is connected to.");
             _espController.SetRelay1(true);
             await Task.Delay(500);
             _espController.SetRelay1(false);
