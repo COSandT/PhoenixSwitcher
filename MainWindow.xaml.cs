@@ -59,6 +59,7 @@ namespace PhoenixSwitcher
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             //close logic here
+            _logger.LogInfo("MainWindow::OnClosing -> Mainwindow is closing.");
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
                 updater.PhoenixSwitcher?.Disconnect();
@@ -297,14 +298,18 @@ namespace PhoenixSwitcher
                     machineList.MachineListBox.SelectedItem = targetItem;
                     machineList.MachineListBox.ScrollIntoView(targetItem);
 
-                    // Set it as selected in settings as well
-                    foreach (EspControllerInfo espInfo in settings.EspControllers)
-                    {
-                        if (espInfo != updater.PhoenixSwitcher.EspInfo) continue;
-                        espInfo.LastSelectedMachineN17 = ((XmlMachinePCM)targetItem.Tag).N17;
-                        settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
-                        break;
-                    }
+                    // Disabled LastSelectedMachine handling for now.
+                    // Noticed operator only uses scan and sometimes doesnt select the scanwindow before scanning.
+                    // And does not always check if the selected machine is the correct one.
+                    // So sometime they end up installing the wrong software.
+                    //// Set it as selected in settings as well
+                    //foreach (EspControllerInfo espInfo in settings.EspControllers)
+                    //{
+                    //    if (espInfo != updater.PhoenixSwitcher.EspInfo) continue;
+                    //    espInfo.LastSelectedMachineN17 = ((XmlMachinePCM)targetItem.Tag).N17;
+                    //    settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
+                    //    break;
+                    //}
                 }
             }
         }

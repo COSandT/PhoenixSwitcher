@@ -73,7 +73,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private async void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
         {
             _viewModel.bIsMachineListEnabled = await Internal_ShouldMachineListBeActive(switcherLogic);
-            if (_viewModel.bIsMachineListEnabled) await Internal_UpdateSelectedMachineFromSettings();
+            //if (_viewModel.bIsMachineListEnabled) await Internal_UpdateSelectedMachineFromSettings();
         }
         private async void OnProcessStarted(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? selectedMachine)
         {
@@ -90,6 +90,7 @@ namespace PhoenixSwitcher.ControlTemplates
             if (_switcherLogic != switcherLogic) return;
             _selectedMachine = null;
             OnMachineSelected?.Invoke(_switcherLogic, _selectedMachine);
+            ScannedMachineText.Focus();
         }
         private void OnLanguageChanged()
         {
@@ -135,7 +136,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
 
         // Internal Helpers
-        private async void Internal_UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
+        private void Internal_UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
         {
             _pcmMachineList = pcmMachineList;
             if (_pcmMachineList != null)
@@ -151,28 +152,34 @@ namespace PhoenixSwitcher.ControlTemplates
                     _viewModel.ListViewItems.Add(item);
                 }
             }
-            await Internal_UpdateSelectedMachineFromSettings();
+            //await Internal_UpdateSelectedMachineFromSettings();
         }
-        private async Task Internal_UpdateSelectedMachineFromSettings()
-        {
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if (_switcherLogic != null)
-            {
-                if (_switcherLogic.bIsInitializingEsp)
-                {
-                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Status, "ID_04_0022", "Initializing ControllerBox.");
-                }
-                else if (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())
-                {
-                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0029", "Wait until all ControllerBoxes are initialized.");
-                }
-                else if (_switcherLogic.HasEspConnection())
-                {
-                    StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");
-                    await Internal_SelectMachineFromText(_switcherLogic.EspInfo.LastSelectedMachineN17);
-                }
-            }
-        }
+
+        // Disabled LastSelectedMachine handling for now.
+        // Noticed operator only uses scan and sometimes doesnt select the scanwindow before scanning.
+        // And does not always check if the selected machine is the correct one.
+        // So sometime they end up installing the wrong software.
+        
+        //private async Task Internal_UpdateSelectedMachineFromSettings()
+        //{
+        //    XmlProjectSettings settings = Helpers.GetProjectSettings();
+        //    if (_switcherLogic != null)
+        //    {
+        //        if (_switcherLogic.bIsInitializingEsp)
+        //        {
+        //            StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Status, "ID_04_0022", "Initializing ControllerBox.");
+        //        }
+        //        else if (settings.bShouldSelectPCMForAll && PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())
+        //        {
+        //            StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0029", "Wait until all ControllerBoxes are initialized.");
+        //        }
+        //        else if (_switcherLogic.HasEspConnection())
+        //        {
+        //            StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0011", "Select machine from list or use scanner.");                   
+        //            //await Internal_SelectMachineFromText(_switcherLogic.EspInfo.LastSelectedMachineN17);
+        //        }
+        //    }
+        //}
         private async Task<bool> Internal_SelectMachineFromText(string text)
         {
             try

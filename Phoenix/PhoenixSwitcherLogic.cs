@@ -136,6 +136,7 @@ namespace PhoenixSwitcher
 
         public void Disconnect()
         {
+            _logger?.LogInfo($"PhoenixSwitcherLogic::Disconnect -> Disconnecting EspController for Box: {EspInfo.BoxName}");
             _espController.Disconnect();
         }
 
