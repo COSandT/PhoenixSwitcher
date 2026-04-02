@@ -1,9 +1,9 @@
 ﻿using System.Windows.Media;
 using System.Windows.Controls;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
+using CosntCommonLibrary.Tools.Logging;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -89,7 +89,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
         private void UpdateStatusText()
         {
-            _logger?.LogInfo($"StatusInstructionBar::UpdateStatusText -> Updating Status text for all status levels");
+            //_logger?.LogInfo($"StatusInstructionBar::UpdateStatusText -> Updating Status text for all status levels");
             _viewModel.MainStatusText = Helpers.TryGetLocalizedText(_status.LocalizedTextID, _status.FallbackText);
         }
     }

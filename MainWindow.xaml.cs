@@ -7,9 +7,9 @@ using System.Collections.ObjectModel;
 using AdonisUI;
 
 using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
@@ -18,7 +18,6 @@ using PhoenixSwitcher.Windows;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.ControlTemplates;
-using CosntCommonLibrary.Tools.Usb;
 
 namespace PhoenixSwitcher
 {

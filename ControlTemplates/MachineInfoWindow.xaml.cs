@@ -3,8 +3,8 @@ using System.Windows.Input;
 using System.Windows.Controls;
 
 using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 

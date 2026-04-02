@@ -4,8 +4,8 @@ using System.Windows.Controls;
 using System.Collections.ObjectModel;
 
 using CosntCommonLibrary.Xml;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 

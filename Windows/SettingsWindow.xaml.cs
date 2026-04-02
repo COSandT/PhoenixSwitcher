@@ -1,11 +1,12 @@
-﻿using System.Reflection;
-using System.Windows;
+﻿using System.Windows;
+
 using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.Tools;
-using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using CosntCommonViewLibrary.SettingsControl.Models;
+using CosntCommonLibrary.Tools.Logging;
 using CosntCommonViewLibrary.XmlEditorV2;
+using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonViewLibrary.XmlEditorV2.Models;
+using CosntCommonViewLibrary.SettingsControl.Models;
+
 using PhoenixSwitcher.ViewModels;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 

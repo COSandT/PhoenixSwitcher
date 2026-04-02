@@ -1,19 +1,16 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Input;
+
 using CosntCommonLibrary.Esp32;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools;
 using CosntCommonLibrary.Tools.Usb;
+using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using Microsoft.IdentityModel.Tokens;
-using PhoenixSwitcher.ControlTemplates;
-using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.ViewModels;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+
 using PhoenixSwitcher.Windows;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.ControlTemplates;
 
 namespace PhoenixSwitcher
 {
@@ -423,10 +420,13 @@ namespace PhoenixSwitcher
         {
             if (!await GetEspConnection()) return;
 
-            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Use relais to switch what device the usb drive is connected to.");
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Set Relais 1 to true to start drive switch.");
             _espController.SetRelay1(true);
-            await Task.Delay(500);
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Wait 750ms before switching Relais 1 to false again.");
+            await Task.Delay(750);
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Set Relais 1 to false to complete the drive switch.");
             _espController.SetRelay1(false);
+            _logger?.LogInfo($"PhoenixSwitcherLogic::SwitchDriveConnection -> Drive switch finished.");
         }
         private bool IsDriveConnectedToPC()
         {
