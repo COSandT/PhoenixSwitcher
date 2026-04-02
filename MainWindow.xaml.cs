@@ -42,8 +42,10 @@ namespace PhoenixSwitcher
         {
             InitializeComponent();
             this.DataContext = _viewModel;
-            LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
+
             XmlProjectSettings settings = Helpers.GetProjectSettings();
+            LogManager.Initialize(settings.LogDirectory, settings.LogFileName); // TODO: remove the _logger everywhere and just use the logmanager.
+            LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
             _logger = new Logger(settings.LogFileName, settings.LogDirectory);
             _logger.LogInfo("\n\n\n\n--------------------------------------");
             _logger.LogInfo("PhoenixSwitcher: Startup program.");

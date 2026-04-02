@@ -104,7 +104,7 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.DisplayTypeDescriptionText = Helpers.TryGetLocalizedText("ID_04_0007", "DisplayType: ");
             _viewModel.BundleDescriptionText = Helpers.TryGetLocalizedText("ID_04_0008", "Bundle: ");
             _viewModel.VANDescriptionText = Helpers.TryGetLocalizedText("ID_04_0009", "VAN: ");
-            _viewModel.SeriesDescriptionText = Helpers.TryGetLocalizedText("ID_04_00010", "Series: ");
+            _viewModel.SeriesDescriptionText = Helpers.TryGetLocalizedText("ID_04_0010", "Series: ");
         }
         public async void UpdateSelectedMachine(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? machine)
         {
