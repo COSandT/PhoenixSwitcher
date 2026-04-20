@@ -1,23 +1,21 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Input;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
-using System.Collections.ObjectModel;
-
+using System.Windows.Input;
 using AdonisUI;
-
-using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Tools.Logging;
+using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
-
-using PhoenixSwitcher.Models;
-using PhoenixSwitcher.Windows;
-using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.ControlTemplates;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.Models;
+using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.Windows;
+using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
 {
@@ -25,7 +23,7 @@ namespace PhoenixSwitcher
     {
         private List<PhoenixSoftwareUpdater> _softwareUpdaters = new List<PhoenixSoftwareUpdater>();
         private MainWindowViewModel _viewModel = new MainWindowViewModel();
-        private Logger _logger;
+        private LogManager? _logManager;
 
         private int _gridColumns;
         private int _gridRows;
@@ -44,23 +42,36 @@ namespace PhoenixSwitcher
             this.DataContext = _viewModel;
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
-            LogManager.Initialize(settings.LogDirectory, settings.LogFileName); // TODO: remove the _logger everywhere and just use the logmanager.
+            LogManager.Initialize(settings.LogDirectory, settings.LogFileName);
             LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
-            _logger = new Logger(settings.LogFileName, settings.LogDirectory);
-            _logger.LogInfo("\n\n\n\n--------------------------------------");
-            _logger.LogInfo("PhoenixSwitcher: Startup program.");
-            _logger.LogInfo("MainWindow::Constructor -> Start initializing.");
+
+
+            AssemblyName ExecutingAssemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName ?? "");
+            string Major = "0", Minor = "0", Build = "0", Revision = "0";
+            if (ExecutingAssemblyName.Version != null)
+            {
+                Major = ExecutingAssemblyName.Version.Major.ToString();
+                Minor = ExecutingAssemblyName.Version.Minor.ToString();
+                Build = ExecutingAssemblyName.Version.Build.ToString();
+                Revision = ExecutingAssemblyName.Version.Revision.ToString();
+            }
+            string version = $"Version: {Major}.{Minor}.{Build}.{Revision}";
+            _logManager = LogManager.GetInstance();
+            _logManager?.Log(LogLevel.Info, "********************************\n\n\n");
+            _logManager?.Log(LogLevel.Info, "________________________________");
+            _logManager?.Log(LogLevel.Info, $"PhoenixSwitcher {version}");
+            _logManager?.Log(LogLevel.Info, "MainWindow::Constructor -> Start initializing.");
 
             Internal_UpdateTheme(settings.Theme);
             InitializeEspControllers();
             InitLanguageSettings();
 
-            _logger.LogInfo("MainWindow::Constructor -> Finished initializing.");
+            _logManager?.Log(LogLevel.Info, "MainWindow::Constructor -> Finished initializing.");
         }
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             //close logic here
-            _logger.LogInfo("MainWindow::OnClosing -> Mainwindow is closing.");
+            _logManager?.Log(LogLevel.Info, "MainWindow::OnClosing -> Mainwindow is closing.");
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
                 updater.PhoenixSwitcher?.Disconnect();
@@ -69,7 +80,7 @@ namespace PhoenixSwitcher
         }
         private async void InitializeEspControllers()
         {
-            _logger.LogInfo("MainWindow::InitializeEspControllers -> Start initializing.");
+            _logManager?.Log(LogLevel.Info, "MainWindow::InitializeEspControllers -> Start initializing.");
             Mouse.OverrideCursor = Cursors.Wait;
             XmlProjectSettings settings = Helpers.GetProjectSettings();
 
@@ -80,7 +91,7 @@ namespace PhoenixSwitcher
                 if (!espController.bIsActive) continue;
                 activeControllers.Add(espController);
             }
-            _logger.LogInfo($"MainWindow::InitializeEspControllers -> settings contains {activeControllers.Count} espcontrollers.");
+            _logManager?.Log(LogLevel.Info, $"MainWindow::InitializeEspControllers -> settings contains {activeControllers.Count} espcontrollers.");
             SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
             _gridRows = (int)Math.Round(Math.Sqrt(activeControllers.Count));
             _gridColumns = (int)Math.Ceiling((double)activeControllers.Count / (double)_gridRows);
@@ -98,9 +109,9 @@ namespace PhoenixSwitcher
                     if (activeControllers.Count <= index) break;
 
                     EspControllerInfo espController = activeControllers[index];
-                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController, _logger);
+                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController);
                     string info = $"DriveName: {espController.DriveName}, ComID: {espController.COMPortID}, EspID: {espController.EspID}";
-                    _logger.LogInfo($"MainWindow::InitializeEspControllers -> Generating window for controller with info: {info}");
+                    _logManager?.Log(LogLevel.Info, $"MainWindow::InitializeEspControllers -> Generating window for controller with info: {info}");
                     _softwareUpdaters.Add(updater);
                     panel.Children.Add(updater);
                     await Task.Delay(1000);
@@ -168,13 +179,13 @@ namespace PhoenixSwitcher
         public async void UpdatePcmMachineList()
         {
             StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
-            _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Started updating pcm machine list.");
+            _logManager?.Log(LogLevel.Info, $"MachineList::UpdatePcmMachineList -> Started updating pcm machine list.");
             await Application.Current.Dispatcher.Invoke(async delegate
             {
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
-                    _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
+                    _logManager?.Log(LogLevel.Info, $"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
                     PCMMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
                     if (PCMMachineList == null || PCMMachineList.Machines.Count <= 0) throw new Exception("pcm machine list is null.");
                     OnMachineListUpdated?.Invoke(PCMMachineList);
@@ -183,7 +194,7 @@ namespace PhoenixSwitcher
                 catch (Exception ex)
                 {
                     StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0005", "Failed to update pcm machine list.");
-                    _logger?.LogError($"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
+                    _logManager?.Log(LogLevel.Error, $"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
                     Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
                     XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>("LastSuccessfulPCMMachineList.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings\\");
                     machineListSettings.Load();
@@ -194,7 +205,7 @@ namespace PhoenixSwitcher
                     }
                 }
                 Mouse.OverrideCursor = null;
-                _logger?.LogInfo($"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
+                _logManager?.Log(LogLevel.Info, $"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
             });
         }
         private void InitLanguageSettings()
@@ -215,8 +226,8 @@ namespace PhoenixSwitcher
         // Click Events
         private void ChangeSettings_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo("MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
-            SettingsWindow settingsWindow = new SettingsWindow(_logger);
+            _logManager?.Log(LogLevel.Info, "MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
+            SettingsWindow settingsWindow = new SettingsWindow();
 
             XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings");
             settingsWindow.Topmost = true;
@@ -243,7 +254,7 @@ namespace PhoenixSwitcher
         }
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo("MainWindow::About_Click -> About button clicked, opening the about window.");
+            _logManager?.Log(LogLevel.Info, "MainWindow::About_Click -> About button clicked, opening the about window.");
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.Topmost = true;
             aboutWindow.ShowDialog();
@@ -261,7 +272,7 @@ namespace PhoenixSwitcher
         // Other
         private void OnLanguageChanged()
         {
-            _logger?.LogInfo("MainWindow::OnLanguageChanged -> Updating localized text to newly selected language.");
+            _logManager?.Log(LogLevel.Info, "MainWindow::OnLanguageChanged -> Updating localized text to newly selected language.");
             _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoenix Switcher");
             _viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0002", "Settings");
             _viewModel.ProgramSettingsText = Helpers.TryGetLocalizedText("ID_01_0003", "Program Settings");

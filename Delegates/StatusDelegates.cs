@@ -10,9 +10,12 @@ namespace PhoenixSwitcher.Delegates
     }
     public class StatusDelegates
     {
-        public delegate void UpdateStatusTextHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaTextId, string fallbackText);
+        public delegate void UpdateLocaStatusTextHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaTextId, string fallbackText);
+        public static event UpdateLocaStatusTextHandler? OnLocaStatusTextUpdated;
+        public delegate void UpdateStatusTextHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string text);
         public static event UpdateStatusTextHandler? OnStatusTextUpdated;
-        public static void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaTextId, string fallbackText) { OnStatusTextUpdated?.Invoke(switcherLogic, level, locaTextId, fallbackText); }
+        public static void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaTextId, string fallbackText) { OnLocaStatusTextUpdated?.Invoke(switcherLogic, level, locaTextId, fallbackText); }
+        public static void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string text) { OnStatusTextUpdated?.Invoke(switcherLogic, level, text); }
 
 
         public delegate void UpdateStatusPercentageHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, int newPercentage);

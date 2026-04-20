@@ -19,16 +19,14 @@ namespace PhoenixSwitcher.Windows
     {
         private SettingsWindowViewModel _viewModel = new SettingsWindowViewModel();
         private XmlProjectSettings _settings;
-        private Logger? _logger;
 
         private bool _bHaveSettingsChanged = false;
 
-        public SettingsWindow(Logger? logger)
+        public SettingsWindow()
         {
             InitializeComponent();
             this.DataContext = _viewModel;
-            _logger = logger;
-            _logger?.LogInfo("SettingsWindow::Constructor -> Setting up settings window");
+            LogManager.GetInstance()?.Log(LogLevel.Info, "SettingsWindow::Constructor -> Setting up settings window");
 
             _settings = Helpers.GetProjectSettings();
             Internal_AddSettings();
@@ -61,7 +59,7 @@ namespace PhoenixSwitcher.Windows
 
         private void OnWindowClosing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            _logger?.LogInfo("SettingsWindow::OnWindowClosing -> Settings window is closing");
+            LogManager.GetInstance()?.Log(LogLevel.Info, "SettingsWindow::OnWindowClosing -> Settings window is closing");
             if (!_bHaveSettingsChanged) return;
 
             MessageBoxResult result =  Helpers.ShowLocalizedYesNoMessageBox(this, "ID_06_0004", "Do you want to save changes?");
@@ -100,7 +98,7 @@ namespace PhoenixSwitcher.Windows
         }
         private void Internal_SaveSettings()
         {
-            _logger?.LogInfo("SettingsWindow::Save_Click -> Attempting to save settings");
+            LogManager.GetInstance()?.Log(LogLevel.Info, "SettingsWindow::Save_Click -> Attempting to save settings");
             _settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
             _bHaveSettingsChanged = false;
             Helpers.ShowLocalizedOkMessageBox(this, "ID_06_0005", "File has saved. Restart is required to apply changes.");

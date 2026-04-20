@@ -40,6 +40,7 @@
 	<LanguageEntry id="ID_02_0023">Controleer de USB-verbinding en druk op 'Retry'</LanguageEntry>
 	<LanguageEntry id="ID_02_0024">Poging om verbinding te maken met ControllerBox...</LanguageEntry>
 	<LanguageEntry id="ID_02_0025">De pc moet verbonden zijn met de ControllerBox om de bundels bij te werken.</LanguageEntry>
+	<LanguageEntry id="ID_02_0026">Kan drive niet correct omschakelen, terug naar start</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machinelijst</LanguageEntry>

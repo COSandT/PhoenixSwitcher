@@ -23,7 +23,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private PhoenixSwitcherDone _selectedMachineInfo = new PhoenixSwitcherDone();
         private PhoenixSwitcherLogic? _switcherLogic = null;
         private XmlMachinePCM? _selectedMachine = new XmlMachinePCM();
-        private Logger? _logger;
+        private LogManager? _logManager;
 
 
         public delegate void StartBundleProcessHandler(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? selectedMachine);
@@ -43,14 +43,15 @@ namespace PhoenixSwitcher.ControlTemplates
             InitializeComponent();
             this.DataContext = _viewModel;
         }
-        public void Init(PhoenixSwitcherLogic switcherLogic, Logger logger)
+        public void Init(PhoenixSwitcherLogic switcherLogic)
         {
-            _logger = logger;
+            _logManager = LogManager.GetInstance();
             _switcherLogic = switcherLogic;
-            _logger?.LogInfo($"MachineInfoWindow::Init -> Start initializing MachineInfoWindow.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::Init -> Start initializing MachineInfoWindow.");
 
             PhoenixSwitcherLogic.OnProcessStarted += ProcessStarted;
             PhoenixSwitcherLogic.OnFinishedEspSetup += OnFinishedEspSetup;
+            PhoenixSwitcherLogic.OnProcessCancelled += OnProcessCancelled;
 
             // Setup localization for window.
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
@@ -59,7 +60,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
             MachineList.OnMachineSelected += UpdateSelectedMachine;
 
-            _logger?.LogInfo($"MachineInfoWindow::Init -> Finished initializing MachineInfoWindow.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::Init -> Finished initializing MachineInfoWindow.");
             _viewModel.ControllerBoxName = switcherLogic.EspInfo.BoxName;
         }
 
@@ -69,10 +70,20 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             if (_switcherLogic != switcherLogic) return;
 
-            _logger?.LogInfo($"MachineInfoWindow::ProcessStarted -> Update button visibility for started process");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::ProcessStarted -> Update button visibility for started process");
             _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
             _viewModel.StartButtonVisibility = Visibility.Hidden;
         }
+        private void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
+        {
+            if (_switcherLogic != switcherLogic) return;
+
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::ProcessStarted -> Update button visibility for cancelled process");
+            _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Hidden;
+            _viewModel.FinishButtonVisibility = Visibility.Hidden;
+            _viewModel.TestButtonVisibility = Visibility.Hidden;
+        }
+
         private void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
         {
             if (switcherLogic != _switcherLogic) return;
@@ -87,9 +98,10 @@ namespace PhoenixSwitcher.ControlTemplates
             }
         }
 
+
         private void OnLanguageChanged()
         {
-            _logger?.LogInfo($"MachineInfoWindow::OnLanguageChanged -> Updating text to match newly selected language.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"MachineInfoWindow::OnLanguageChanged -> Updating text to match newly selected language.");
             _viewModel.StartButtonText = Helpers.TryGetLocalizedText("ID_04_0001", "Start");
             _viewModel.FinishButtonText = Helpers.TryGetLocalizedText("ID_04_0002", "Finish");
             _viewModel.RetryButtonText = Helpers.TryGetLocalizedText("ID_04_0025", "Retry");
@@ -111,7 +123,7 @@ namespace PhoenixSwitcher.ControlTemplates
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             if (machine == null)
             {
-                _logger?.LogInfo($"MachineInfoWindow::UpdateSelectedMachine -> passed machine was null clearing values.");
+                LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::UpdateSelectedMachine -> passed machine was null clearing values.");
                 _viewModel.StartButtonVisibility = Visibility.Hidden;
                 _selectedMachineInfo = new PhoenixSwitcherDone();
                 _selectedMachine = null;
@@ -126,7 +138,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 return;
             }
 
-            _logger?.LogInfo($"MachineInfoWindow::UpdateSelectedMachine -> Set selected machine info.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::UpdateSelectedMachine -> Set selected machine info.");
             _selectedMachine = machine;
             _selectedMachineInfo.Vin = _viewModel.MachineN17ValueText = machine.N17;
             _selectedMachineInfo.Vin_9char = _viewModel.MachineN9ValueText = machine.No;
@@ -151,7 +163,7 @@ namespace PhoenixSwitcher.ControlTemplates
 
             if (machine.DT == 1.ToString())
             {
-                _logger?.LogWarning($"MachineInfoWindow::UpdateSelectedMachine -> Wrong ScreenType not showing bundle and start button and returning early.");
+                LogManager.GetInstance()?.Log(LogLevel.Warn, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::UpdateSelectedMachine -> Wrong ScreenType not showing bundle and start button and returning early.");
                 _viewModel.StartButtonVisibility = Visibility.Hidden;
                 return;
             }
@@ -169,12 +181,12 @@ namespace PhoenixSwitcher.ControlTemplates
             if (string.IsNullOrEmpty(_viewModel.BundleValueText) 
                 || _viewModel.BundleValueText.Contains("'No available Bundle'"))
             {
-                _logger?.LogWarning($"MachineInfoWindow::UpdateSelectedMachine -> No bundle found for selected machine.");
+                LogManager.GetInstance()?.Log(LogLevel.Warn, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::UpdateSelectedMachine -> No bundle found for selected machine.");
                 StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
                 //Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0014", "Unable to find bundle for machine. Try other machine.");
                 return;
             }
-            _logger?.LogInfo($"MachineInfoWindow::UpdateSelectedMachine -> Showing Start button.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::UpdateSelectedMachine -> Showing Start button.");
             _viewModel.StartButtonVisibility = Visibility.Visible;
             StatusDelegates.UpdateStatus(_switcherLogic, StatusLevel.Instruction, "ID_04_0012", "Press start to start the setup process on the 'Phoenix Screen'");
         }
@@ -182,13 +194,13 @@ namespace PhoenixSwitcher.ControlTemplates
         // Button press events
         private void StartProcess_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::StartProcess_Click -> StartProcess button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::StartProcess_Click -> StartProcess button was pressed.");
             OnStartBundleProcess?.Invoke(_switcherLogic, _selectedMachineInfo);
             _viewModel.StartButtonVisibility = Visibility.Hidden;
         }
         private void TestProcess_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::TestProcess_Click -> TurnOnPower button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::TestProcess_Click -> TurnOnPower button was pressed.");
             OnTest?.Invoke(_switcherLogic, true);
             _viewModel.TestButtonVisibility = Visibility.Hidden;
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
@@ -197,7 +209,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void ShutDownPhoenixProcess_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::ShutDownPhoenixProcess_Click -> ShutOffPower button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::ShutDownPhoenixProcess_Click -> ShutOffPower button was pressed");
             OnShutOffPower?.Invoke(_switcherLogic, false);
             _viewModel.TestButtonVisibility = Visibility.Visible;
             _viewModel.FinishButtonVisibility = Visibility.Visible;
@@ -206,13 +218,13 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void FinishProcess_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::FinishProcess_Click -> FinishProcess button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::FinishProcess_Click -> FinishProcess button was pressed");
             try
             {
                 // operators shouldnt care about machine results on server and shouldnt have to wait on it.
                 // executing this on other thread to not block operator working
                 _selectedMachineInfo.TimeStamp = DateTime.Now;
-                _logger?.LogInfo($"MachineInfoWindow::FinishProcess_Click -> Posting Machine results to server: {_switcherLogic?.EspInfo.BoxName}");
+                LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::FinishProcess_Click -> Posting Machine results to server.");
                 Task.Run(() => PhoenixRest.GetInstance().PostMachineResults(_selectedMachineInfo));
             }
             catch { }
@@ -233,7 +245,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void RetryEspSetup_Click(object sender, RoutedEventArgs e)
         {
-            _logger?.LogInfo($"MachineInfoWindow::RetryEspSetup_Click -> RetryEspSetup button was pressed for Box: {_switcherLogic?.EspInfo.BoxName}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineInfoWindow::RetryEspSetup_Click -> RetryEspSetup button was pressed.");
             Mouse.OverrideCursor = Cursors.Wait;
             _switcherLogic?.RetryInit();
             _viewModel.RetryButtonVisibility = Visibility.Hidden;

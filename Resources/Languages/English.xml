@@ -40,6 +40,7 @@
 	<LanguageEntry id="ID_02_0023">Check USB Connection and press 'Retry'</LanguageEntry>
 	<LanguageEntry id="ID_02_0024">Attempting to conect to ControllerBox...</LanguageEntry>
 	<LanguageEntry id="ID_02_0025">PC needs to be connected to the ControllerBox to update the bundles.</LanguageEntry>
+	<LanguageEntry id="ID_02_0026">Failed to switch drives properly going back to Start</LanguageEntry>
 
 	<!-- Machine List -->
 	<LanguageEntry id="ID_03_0001">Machine List</LanguageEntry>
