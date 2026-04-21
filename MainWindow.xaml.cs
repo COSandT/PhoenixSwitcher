@@ -117,7 +117,7 @@ namespace PhoenixSwitcher
                     await Task.Delay(1000);
                     updater.HorizontalAlignment = HorizontalAlignment.Stretch;
                     updater.VerticalAlignment = VerticalAlignment.Stretch;
-                    updater.MachineListControl.MachineListBox.SelectionChanged += OnMachineListSelectionChanged;
+                    //updater.MachineListControl.MachineListBox.SelectionChanged += OnMachineListSelectionChanged;
                 }
             }
 
@@ -305,7 +305,8 @@ namespace PhoenixSwitcher
                 ObservableCollection<MachineListItem> listItems = machineList.GetListItems();
 
                 MachineListItem? targetItem = listItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == ((e.AddedItems[0] as MachineListItem)?.Tag as XmlMachinePCM)?.N17);
-                if (targetItem != null && targetItem.Tag is XmlMachinePCM)
+                if (targetItem != null && targetItem.Tag is XmlMachinePCM
+                    && machineList.MachineListBox.SelectedItem != targetItem)
                 {
                     machineList.MachineListBox.SelectedItem = targetItem;
                     machineList.MachineListBox.ScrollIntoView(targetItem);

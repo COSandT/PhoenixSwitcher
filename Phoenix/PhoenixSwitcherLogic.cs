@@ -24,6 +24,7 @@ namespace PhoenixSwitcher
         private string _drive = string.Empty;
         private bool _bExecuteDelayedBundleUpdate = false;
         private bool _bWasInitialized = false;
+        private string _boxText;
 
         public EspControllerInfo EspInfo { get; private set; }
 
@@ -53,8 +54,9 @@ namespace PhoenixSwitcher
         public PhoenixSwitcherLogic(EspControllerInfo controllerInfo)
         {
             EspInfo = controllerInfo;
+            _boxText = $"Box: {EspInfo.BoxName}\t";
             _logManager = LogManager.GetInstance();
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Constructor -> Start");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::Constructor -> Start");
 
             _espController = new Esp32Controller();
             _usbTool = new UsbTool();
@@ -64,17 +66,17 @@ namespace PhoenixSwitcher
             MachineInfoWindow.OnProcessFinished += FinishProcess;
             MachineInfoWindow.OnTest += SwitchPowerToPhoenix;
             OnProcessCancelled += OnCancelled;
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Constructor -> End");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::Constructor -> End");
         }
 
         public async Task Init()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Init -> Initializing switcher logic.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::Init -> Initializing switcher logic.");
             await Internal_Init();
         }
         public async Task RetryInit()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::RetryInit -> Initializing switcher logic.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::RetryInit -> Initializing switcher logic.");
             Disconnect();
             await Internal_Init();
         }
@@ -85,7 +87,7 @@ namespace PhoenixSwitcher
             try
             {
                 StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0024", "Attempting to connect to ControllerBox");
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Internal_Init -> Attempting to connect to box");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::Internal_Init -> Attempting to connect to box");
                 await SetupEspController();
                 CleanupDrive();
 
@@ -96,7 +98,7 @@ namespace PhoenixSwitcher
             }
             catch (Exception ex)
             {
-                _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Internal_Init -> Failed to connect to box");
+                _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::Internal_Init -> Failed to connect to box");
                 // exception here is already localized notmally.
                 Helpers.ShowOkMessageBox(Application.Current.MainWindow, ex.Message);
                 bIsInitializingEsp = false;
@@ -105,14 +107,14 @@ namespace PhoenixSwitcher
         }
         public bool HasEspConnection()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tHasEspConnection -> Check if box has proper connection.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}HasEspConnection -> Check if box has proper connection.");
             bool result = _espController != null && _espController.IsConnected;
             if (!result && _bWasInitialized)
             {
                 NumConnectedEspControllers--;
                 _bWasInitialized = false;
             }
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tHasEspConnection -> Has connection result: {result}.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}HasEspConnection -> Has connection result: {result}.");
             return result;
         }
 
@@ -120,7 +122,7 @@ namespace PhoenixSwitcher
         {
             if (HasEspConnection())
             {
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Disconnect -> Disconnecting EspController");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::Disconnect -> Disconnecting EspController");
                 _espController.Disconnect();
                 NumConnectedEspControllers--;
                 _bWasInitialized = false;
@@ -129,7 +131,7 @@ namespace PhoenixSwitcher
 
         public void UpdateBundleFilesOnDrive()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::UpdateBundleFiles -> Started updating bundle files.");
             Application.Current.Dispatcher.Invoke((Action)async delegate
             {
                 UpdateWindow updatingWindow = new UpdateWindow();
@@ -147,12 +149,12 @@ namespace PhoenixSwitcher
 
                     Mouse.OverrideCursor = null;
                     bIsUpdatingBundles = false;
-                    _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle file.");
+                    _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::UpdateBundleFiles -> Finished updating bundle file.");
                 }
                 catch (Exception ex)
                 {
                     updatingWindow.Close();
-                    _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
+                    _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::UpdateBundleFiles -> Exception occurred: {ex.Message}");
                     Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0015", "Failed to update the bundles. look at logs for what went wrong");
                 }
 
@@ -194,7 +196,7 @@ namespace PhoenixSwitcher
             List<string> bundleFoldersOnDrive = Directory.GetDirectories(_drive).ToList();
 
             //remove the bundles that are on both as they do not need to be added or removed.
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::UpdateBundleFiles -> Checking which bundles need an update.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::UpdateBundleFiles -> Checking which bundles need an update.");
             for (int i = bundleFoldersOnPC.Count - 1; i >= 0; --i)
             {
                 for (int j = bundleFoldersOnDrive.Count - 1; j >= 0; --j)
@@ -208,13 +210,13 @@ namespace PhoenixSwitcher
                 }
             }
 
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::UpdateBundleFiles -> Attempt to delete old bundles still on drive.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::UpdateBundleFiles -> Attempt to delete old bundles still on drive.");
             foreach (string oldBundleFolder in bundleFoldersOnDrive)
             {
                 Directory.Delete(oldBundleFolder, true);
             }
 
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::UpdateBundleFiles -> Attempt to download new bundles not on drive yet.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::UpdateBundleFiles -> Attempt to download new bundles not on drive yet.");
             foreach (string newBundleFolder in bundleFoldersOnPC)
             {
                 string targetPath = _drive + Path.GetFileName(newBundleFolder);
@@ -248,14 +250,14 @@ namespace PhoenixSwitcher
                 if (!HasEspConnection())
                 {
                     OnProcessCancelled?.Invoke(this);
-                    _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::StartProcess -> No EspController connected, cannot start.");
+                    _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> No EspController connected, cannot start.");
                     //Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
                     StatusDelegates.UpdateStatus(this, StatusLevel.Error, "ID_02_0023", "EspController connection has not been established yet. Wait or retry connecting.");
                     return;
                 }
                 StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0006", "Process started setting up everything to setup 'Phoenix screen'");
 
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Start the phoenix process for selected bundle.");
                 if (machine == null)
                 {
                     OnProcessCancelled?.Invoke(this);
@@ -290,14 +292,18 @@ namespace PhoenixSwitcher
                 if (settings.ShouldSwitchDriveBeforePower)
                 {
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0021", "Switching drive.");
-                    if (!UsbEjectTool.SafeRemove(_drive)) _logManager?.Log(LogLevel.Warn, "Failed to safe eject. switching drive unsafely.");
+                    _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Attempt to safe eject before drive switch");
+                    if (!UsbEjectTool.SafeRemove(_drive)) _logManager?.Log(LogLevel.Warn, "{_boxText}PhoenixSwitcherLogic::StartProcess -> Failed to safe eject. switching drive unsafely.");
                     if (!await SwitchDriveConnection())
                     {
                         OnProcessCancelled?.Invoke(this);
                         Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_02_0026", "Failed to switch drives properly going back to Start");
                         return;
                     }
+
+                    _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Waiting until drive has switched before supplying power to phoenix.");
                     await Task.Delay(settings.DriveSwitchWaitTimeSec * 1000);
+
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
                     SwitchPowerToPhoenix(this, true);
                 }
@@ -305,9 +311,13 @@ namespace PhoenixSwitcher
                 {
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0018", "Switching power to Phoenix PCM");
                     SwitchPowerToPhoenix(this, true);
+
+                    _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Waiting until phoenix has started before switching drive.");
                     await Task.Delay(settings.DriveSwitchWaitTimeSec * 1000);
+
                     StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0021", "Switching drive.");
-                    if (!UsbEjectTool.SafeRemove(_drive)) _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::Failed to safe eject. switching drive unsafely."); 
+                    _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Attempt to safe eject before drive switch");
+                    if (!UsbEjectTool.SafeRemove(_drive)) _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Failed to safe eject. switching drive unsafely."); 
                     if (!await SwitchDriveConnection())
                     {
                         SwitchPowerToPhoenix(this, false);
@@ -319,7 +329,7 @@ namespace PhoenixSwitcher
 
                 // Wait with showing finished button atleast until the drive is no longer connected.
                 // User cannot complete process before the drive has switched properly.
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::StartProcess -> Invoking process started delegate once drive has properly switched.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::StartProcess -> Invoking process started delegate once drive has properly switched.");
 
                 OnProcessStarted?.Invoke(this);
                 Mouse.OverrideCursor = null;
@@ -337,7 +347,7 @@ namespace PhoenixSwitcher
             NumActiveSetups--;
             bIsPhoenixSetupOngoing = false;
             StatusDelegates.UpdateStatus(this, StatusLevel.Status, "ID_02_0008", "Process finished, resetting to start");
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::FinishProcess -> Phoenix process has finished. Switch drive back. and reset state back to start.");
             Mouse.OverrideCursor = Cursors.Wait;
 
             try
@@ -353,11 +363,11 @@ namespace PhoenixSwitcher
 
             if (_bExecuteDelayedBundleUpdate)
             {
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::FinishProcess -> Executing delayed bundle update.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::FinishProcess -> Executing delayed bundle update.");
                 UpdateBundleFilesOnDrive();
                 _bExecuteDelayedBundleUpdate = false;
             }
-            StatusDelegates.UpdateStatus(this, StatusLevel.Instruction, "ID_02_0005", "Select machine from list or use scanner.");
+            //StatusDelegates.UpdateStatus(this, StatusLevel.Instruction, "ID_02_0005", "Select machine from list or use scanner.");
         }
 
         private void OnCancelled(PhoenixSwitcherLogic switcherLogic)
@@ -371,103 +381,104 @@ namespace PhoenixSwitcher
         // Helpers
         private async Task SetupEspController()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Start setup for Esp32Controller.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Start setup for Esp32Controller.");
             if (EspInfo.COMPortID > 0)
             {
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Attempting to connect using ComportID: {EspInfo.COMPortID}");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Attempting to connect using ComportID: {EspInfo.COMPortID}");
                 for (int i = 0; i < 5; ++i)
                 {
                     if (_espController.Connect(EspInfo.COMPortID)) break;
-                    _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Failed connect retry attempt: {i + 1}");
+                    _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Failed connect retry attempt: {i + 1}");
                     await Task.Delay(500);
                 }
             }
             else
             {
-                _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Attempting to connect without ComportID");
+                _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Attempting to connect without ComportID");
                 await _espController.Connect(EspInfo.EspID);
             }
 
             if (!_espController.IsConnected)
             {
-                _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Failed to connect via COMPortID. Checking if we can find EspController without.");
+                _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Failed to connect via COMPortID. Checking if we can find EspController without.");
                 if (!await _espController.Connect(EspInfo.EspID))
                 {
-                    _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Unable to connect to EspController");
+                    _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Unable to connect to EspController");
                     string part1 = Helpers.TryGetLocalizedText("ID_02_0022", "Missing USB connection to the box with name: ");
                     string part2 = Helpers.TryGetLocalizedText("ID_02_0023", "Check USB Connection and press 'Retry'.");
                     StatusDelegates.UpdateStatus(this, StatusLevel.Error, $"{part1}{EspInfo.BoxName}{part2}");
                     throw new Exception($"{part1}{EspInfo.BoxName}, EspID: {EspInfo.EspID}, DriveName: {EspInfo.DriveName}");
                 }
             }
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Connection successfull");
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetupEspController -> Switching all Esp32 relais to false");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Connection successfull");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Switching all Esp32 relais to false");
             _espController.SetAllRelays(false);
             await ConnectDriveToPC();
         }
         private async Task<bool> ConnectDriveToPC()
         {
             int waitTimeMs = 5000;
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ConnectDriveToPC -> attempting to switch usb drive connection to this pc.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::ConnectDriveToPC -> attempting to switch usb drive connection to this pc.");
             for (int tries = 0; tries < 3; ++tries)
             {
                 if (IsDriveConnectedToPC()) return true;
 
-                _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ConnectDriveToPC -> Drive was not connected to PC. Attempting to switch drive connection. Try: {tries + 1}");
+                _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::ConnectDriveToPC -> Drive was not connected to PC. Attempting to switch drive connection. Try: {tries + 1}");
                 await SwitchDriveConnection();
-                _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ConnectDriveToPC -> Waiting {waitTimeMs}ms before checking if drive is connected.");
+                _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::ConnectDriveToPC -> Waiting {waitTimeMs}ms before checking if drive is connected.");
                 await Task.Delay(waitTimeMs);
             }
-            _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ConnectDriveToPC -> Failed to find drive.");
+            _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::ConnectDriveToPC -> Failed to find drive.");
             return false;
         }
         private async Task<bool> SwitchDriveConnection()
         {
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchDriveConnection -> Check box connection first.");
             if (!HasEspConnection()) return false;
 
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SwitchDriveConnection -> Set Relais 1 to true to start drive switch.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchDriveConnection -> Set Relais 1 to true to start drive switch.");
             if (_espController?.SetRelay1(true) == -1) return false;
 
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SwitchDriveConnection -> Wait 500ms before switching Relais 1 to false again.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchDriveConnection -> Wait 500ms before switching Relais 1 to false again.");
             await Task.Delay(500);
 
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SwitchDriveConnection -> Set Relais 1 to false to complete the drive switch.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchDriveConnection -> Set Relais 1 to false to complete the drive switch.");
             if (_espController?.SetRelay1(false) == -1) return false;
 
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SwitchDriveConnection -> Drive switch finished.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchDriveConnection -> Drive switch finished.");
             return true;
         }
         
         private bool IsDriveConnectedToPC()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::IsDriveConnectedToPC -> Checking if drive is connected to pc.");
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::IsDriveConnectedToPC -> Drivename we are looking for: {EspInfo.DriveName}");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::IsDriveConnectedToPC -> Checking if drive is connected to pc.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::IsDriveConnectedToPC -> Drivename we are looking for: {EspInfo.DriveName}");
             _drive = _usbTool.GetDrive(EspInfo.DriveName).DriveLetter;
             _phoenixFilePath = _drive + _phoenixFileName;
             if (string.IsNullOrEmpty(_drive))
             {
-                _logManager?.Log(LogLevel.Warn, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::IsDriveConnectedToPC -> Failed to find drive.");
+                _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::IsDriveConnectedToPC -> Failed to find drive.");
                 return false;
             }
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::IsDriveConnectedToPC -> Resulting found drive: {_drive}");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::IsDriveConnectedToPC -> Resulting found drive: {_drive}");
             return true;
         }
         private void SwitchPowerToPhoenix(PhoenixSwitcherLogic? switcherLogic, bool result)
         {
             if (switcherLogic != this) return;
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SwitchPowerToPhoenix -> Use relais to switch power of phoenix on/off");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Use relais to switch power of phoenix on/off");
             if (!HasEspConnection()) return;
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SwitchPowerToPhoenix -> Switch Relais to: {result}");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::SwitchPowerToPhoenix -> Switch Relais to: {result}");
             _espController?.SetRelay2(result);
         }
         private void CleanupDrive()
         {
             try
             {
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::CleanupDrive -> Cleaning up drive for next use.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::CleanupDrive -> Cleaning up drive for next use.");
                 RenameGMHIFileToBundleFile();
 
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::CleanupDrive -> Removing any files generated by phoenix screen that are no longer used.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::CleanupDrive -> Removing any files generated by phoenix screen that are no longer used.");
                 // Remove any folders/files that are not bundle files
                 List<string> foldersOnDrive = Directory.GetDirectories(_drive).ToList();
                 foreach (string folder in foldersOnDrive)
@@ -475,41 +486,41 @@ namespace PhoenixSwitcher
                     if (!folder.Contains("PCMBUNDLE_"))
                     {
                         Directory.Delete(folder, true);
-                        _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::CleanupDrive -> Deleted file: {folder}");
+                        _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::CleanupDrive -> Deleted file: {folder}");
                     }
                 }
             }
             catch (Exception ex)
             {
                 // The exceptions here is already a localized messege.
-                _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::CleanupDrive -> Failed to cleanup drive properly.");
+                _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::CleanupDrive -> Failed to cleanup drive properly.");
                 _logManager?.LogEntireException(ex);
                 Helpers.ShowOkMessageBox(Application.Current.MainWindow, ex.Message);
             }
         }
         private void RenameGMHIFileToBundleFile()
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::RenameGMHIFileToBundleFile -> resetting potential phoenix file back to its bundle file name.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::RenameGMHIFileToBundleFile -> resetting potential phoenix file back to its bundle file name.");
             // if there is none do not care.
             if (!Directory.Exists(_drive))
             {
-                _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Failed to find drive: {_drive}, driveName: {EspInfo.DriveName}");
+                _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Failed to find drive: {_drive}, driveName: {EspInfo.DriveName}");
                 throw new Exception(Helpers.TryGetLocalizedText("ID_02_0004", "Could not find drive with DriveName: ") + EspInfo.DriveName);
             }
             if (!Directory.Exists(_phoenixFilePath))
             {
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> No phoenix file found returning.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> No phoenix file found returning.");
                 return;
             }
 
             // Find the BundleManifest.xml file.
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::RenameGMHIFileToBundleFile -> Look for bundle manifest file which contains the bundle version name.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::RenameGMHIFileToBundleFile -> Look for bundle manifest file which contains the bundle version name.");
             List<string> files = Directory.GetFiles(_phoenixFilePath).ToList();
             foreach (string file in files)
             {
                 if (!file.Contains("BundleManifest")) continue;
 
-                _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Found bundle manifest file.");
+                _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Found bundle manifest file.");
                 // Get bundle version from filename.
                 string fileName = Path.GetFileNameWithoutExtension(file);
                 int startidx = fileName.LastIndexOf("_") + 1;
@@ -517,7 +528,7 @@ namespace PhoenixSwitcher
                 try
                 {
                     // Rename file directory to bundle version.
-                    _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Change name to original bundle name.");
+                    _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::ResetPhoenixFileToBundleFile -> Change name to original bundle name.");
                     fileName = Helpers.RemoveExtraZeroFromVersionName(fileName);
                     Directory.Move(_phoenixFilePath, _drive + "PCMBUNDLE_" + fileName);
                 }
@@ -527,23 +538,23 @@ namespace PhoenixSwitcher
         }
         private bool RenameBundleFileToGMHIFile(string bundleFileName)
         {
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::RenameBundleFileToGMHIFile -> Try change selected bundle filename to Phoenix filename");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::RenameBundleFileToGMHIFile -> Try change selected bundle filename to Phoenix filename");
             // if there is none do not care.
             if (!Directory.Exists(_drive))
             {
-                _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Drive with bundles not found.");
+                _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Drive with bundles not found.");
                 return false;
             }
 
             string filePath = _drive + "PCMBUNDLE_" + bundleFileName;
             if (!Directory.Exists(filePath))
             {
-                _logManager?.Log(LogLevel.Error, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Bundle with name: {bundleFileName} does not exist.");
+                _logManager?.Log(LogLevel.Error, $"{_boxText}PhoenixSwitcherLogic::SetPhoenixFileFromBundleFile -> Bundle with name: {bundleFileName} does not exist.");
                 return false;
             }
 
             Directory.Move(filePath, _phoenixFilePath);
-            _logManager?.Log(LogLevel.Info, $"Box: {EspInfo.BoxName}\tPhoenixSwitcherLogic::RenameBundleFileToGMHIFile -> Changing bundle: {bundleFileName} to Phoenix filename.");
+            _logManager?.Log(LogLevel.Info, $"{_boxText}PhoenixSwitcherLogic::RenameBundleFileToGMHIFile -> Changing bundle: {bundleFileName} to Phoenix filename.");
             return true;
         }
     }
