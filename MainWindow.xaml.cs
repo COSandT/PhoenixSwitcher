@@ -179,13 +179,13 @@ namespace PhoenixSwitcher
         public async void UpdatePcmMachineList()
         {
             StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
-            _logManager?.Log(LogLevel.Info, $"MachineList::UpdatePcmMachineList -> Started updating pcm machine list.");
+            _logManager?.Log(LogLevel.Info, $"MainWindow::UpdatePcmMachineList -> Started updating pcm machine list.");
             await Application.Current.Dispatcher.Invoke(async delegate
             {
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
-                    _logManager?.Log(LogLevel.Info, $"MachineList::UpdatePcmMachineList -> Getting machine file from RestAPI");
+                    _logManager?.Log(LogLevel.Info, $"MainWindow::UpdatePcmMachineList -> Getting machine file from RestAPI");
                     PCMMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
                     if (PCMMachineList == null || PCMMachineList.Machines.Count <= 0) throw new Exception("pcm machine list is null.");
                     OnMachineListUpdated?.Invoke(PCMMachineList);
@@ -194,7 +194,7 @@ namespace PhoenixSwitcher
                 catch (Exception ex)
                 {
                     StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0005", "Failed to update pcm machine list.");
-                    _logManager?.Log(LogLevel.Error, $"MachineList::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
+                    _logManager?.Log(LogLevel.Error, $"MainWindow::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
                     Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
                     XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>("LastSuccessfulPCMMachineList.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings\\");
                     machineListSettings.Load();
@@ -205,7 +205,7 @@ namespace PhoenixSwitcher
                     }
                 }
                 Mouse.OverrideCursor = null;
-                _logManager?.Log(LogLevel.Info, $"MachineList::UpdatePcmMachineList -> Finished updating pcm machine list");
+                _logManager?.Log(LogLevel.Info, $"MainWindow::UpdatePcmMachineList -> Finished updating pcm machine list");
             });
         }
         private void InitLanguageSettings()
@@ -309,19 +309,6 @@ namespace PhoenixSwitcher
                 {
                     machineList.MachineListBox.SelectedItem = targetItem;
                     machineList.MachineListBox.ScrollIntoView(targetItem);
-
-                    // Disabled LastSelectedMachine handling for now.
-                    // Noticed operator only uses scan and sometimes doesnt select the scanwindow before scanning.
-                    // And does not always check if the selected machine is the correct one.
-                    // So sometime they end up installing the wrong software.
-                    //// Set it as selected in settings as well
-                    //foreach (EspControllerInfo espInfo in settings.EspControllers)
-                    //{
-                    //    if (espInfo != updater.PhoenixSwitcher.EspInfo) continue;
-                    //    espInfo.LastSelectedMachineN17 = ((XmlMachinePCM)targetItem.Tag).N17;
-                    //    settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
-                    //    break;
-                    //}
                 }
             }
         }

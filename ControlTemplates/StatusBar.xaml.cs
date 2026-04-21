@@ -38,7 +38,7 @@ namespace PhoenixSwitcher.ControlTemplates
         public void Init(PhoenixSwitcherLogic? switcherLogic)
         {
             _switcherLogic = switcherLogic;
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"StatusInstructionBar::Init -> Initializing StatusInstructionBar.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tStatusBar::Init -> Initializing StatusInstructionBar.");
 
             StatusDelegates.OnLocaStatusTextUpdated += UpdateStatus;
             StatusDelegates.OnStatusPercentageUpdated += UpdateStatusPercentage;
@@ -46,14 +46,14 @@ namespace PhoenixSwitcher.ControlTemplates
 
             // Setup localization for window.
             LocalizationManager.GetInstance().OnActiveLanguageChanged += UpdateStatusText;
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"StatusInstructionBar::Init -> Finished initializing StatusInstructionBar.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tStatusBar::Init -> Finished initializing StatusInstructionBar.");
         }
 
         public void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaStatusId, string fallbackStatusText)
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             _status = new Status(locaStatusId, fallbackStatusText);
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"StatusInstructionBar::UpdateNewStatus -> Recieved new status: {fallbackStatusText}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tStatusBar::UpdateNewStatus -> Recieved new status: {fallbackStatusText}");
             switch (level)
             {
                 case StatusLevel.Instruction:
@@ -73,7 +73,7 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             _status = new Status("", text);
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"StatusInstructionBar::UpdateNewStatus -> Recieved new status: {text}");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tStatusBar::UpdateNewStatus -> Recieved new status: {text}");
             switch (level)
             {
                 case StatusLevel.Instruction:
@@ -92,7 +92,7 @@ namespace PhoenixSwitcher.ControlTemplates
         public void UpdateStatusPercentage(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, int newPercentage)
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"StatusInstructionBar::UpdateStatusPercentage -> Updating status percentage for specified sstatus level.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tStatusBar::UpdateStatusPercentage -> Updating status percentage for specified sstatus level.");
             int clampedPercentage = Math.Clamp(newPercentage, 0, 100);
             _viewModel.MainStatusPercentage = clampedPercentage;
         }
@@ -100,7 +100,7 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             if (_switcherLogic != switcherLogic && switcherLogic != null) return;
             // When we clear a status we also want to clear all the status messages of lower level.
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"StatusInstructionBar::ClearStatus -> Clear status message of specified level and lower levels.");
+            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tStatusBar::ClearStatus -> Clear status message of specified level and lower levels.");
             _viewModel.MainStatusPercentage = 0;
             _viewModel.MainStatusText = string.Empty;
         }

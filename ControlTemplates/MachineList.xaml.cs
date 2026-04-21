@@ -43,7 +43,7 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             _switcherLogic = switcherLogic;
             _logManager = LogManager.GetInstance();
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::Init -> Start initializing MachineList.");
+            _logManager?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::Init -> Start initializing MachineList.");
 
             MainWindow.OnMachineListUpdated += Internal_UpdateMachineList;
             MachineInfoWindow.OnStartBundleProcess += OnProcessStarted;
@@ -56,8 +56,7 @@ namespace PhoenixSwitcher.ControlTemplates
             LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
             OnLanguageChanged();
 
-            //ListScrollViewer.ScrollChanged += OnScrollViewerChanged;
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::Init -> Finished initializing MachineList.");
+            _logManager?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::Init -> Finished initializing MachineList.");
         }
         
         // Delegate bound events
@@ -94,7 +93,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private void OnLanguageChanged()
         {
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::OnLanguageChanged -> Updating text to match newly selected language.");
+            _logManager?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::OnLanguageChanged -> Updating text to match newly selected language.");
             _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
             _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
         }
@@ -117,14 +116,14 @@ namespace PhoenixSwitcher.ControlTemplates
         private async void OnListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Invoke OnMachineSelected delegate to let others know which machine was selected.
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::MachineSelected_Click -> A machine was selected. Let any listeners know which one.");
+            _logManager?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::MachineSelected_Click -> A machine was selected. Let any listeners know which one.");
             if (e.AddedItems.Count != 1) return;
 
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             if ((_switcherLogic != null && (_switcherLogic.bIsPhoenixSetupOngoing || _switcherLogic.bIsInitializingEsp))
                 || (settings.bShouldSelectPCMForAll && (PhoenixSwitcherLogic.NumActiveSetups > 0 || PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())))
             {
-                LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::MachineSelected_Click -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
+                _logManager?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::MachineSelected_Click -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
                 return;
             }
 
@@ -141,7 +140,7 @@ namespace PhoenixSwitcher.ControlTemplates
             if (_pcmMachineList != null)
             {
                 _viewModel.ListViewItems.Clear();
-                LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::UpdatePcmMachineList -> Filling in listview.");
+                _logManager?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::UpdatePcmMachineList -> Filling in listview.");
                 foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
                 {
                     MachineListItem item = new MachineListItem();
@@ -223,7 +222,7 @@ namespace PhoenixSwitcher.ControlTemplates
             {
                 if (!await Internal_CanSelectMachine())
                 {
-                    LogManager.GetInstance()?.Log(LogLevel.Info, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::Internal_SelectMachine -> Unable to select machine.");
+                    _logManager?.Log(LogLevel.Warn, $"Box: {_switcherLogic?.EspInfo.BoxName}\tMachineList::Internal_SelectMachine -> Unable to select machine.");
                     _bIsUpdatingSelectedItem = false;
                     return;
                 }
