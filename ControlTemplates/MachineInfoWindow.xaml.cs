@@ -29,10 +29,10 @@ namespace PhoenixSwitcher.ControlTemplates
         public delegate void StartBundleProcessHandler(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? selectedMachine);
         public static event StartBundleProcessHandler? OnStartBundleProcess;
 
-        public delegate void TestProcessHandler(PhoenixSwitcherLogic? switcherLogic, bool power = true);
+        public delegate void TestProcessHandler(PhoenixSwitcherLogic? switcherLogic);
         public static event TestProcessHandler? OnTest;
 
-        public delegate void ShutOffPowerProcessHandler(PhoenixSwitcherLogic? switcherLogic, bool power = false);
+        public delegate void ShutOffPowerProcessHandler(PhoenixSwitcherLogic? switcherLogic);
         public static event ShutOffPowerProcessHandler? OnShutOffPower;
 
         public delegate void FinishedProcessHandler(PhoenixSwitcherLogic? switcherLogic);
@@ -83,6 +83,7 @@ namespace PhoenixSwitcher.ControlTemplates
             _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Hidden;
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
             _viewModel.TestButtonVisibility = Visibility.Hidden;
+            _viewModel.StartButtonVisibility = Visibility.Hidden;
         }
 
         private void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
@@ -202,7 +203,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private void TestProcess_Click(object sender, RoutedEventArgs e)
         {
            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineInfoWindow::TestProcess_Click -> TurnOnPower button was pressed.");
-            OnTest?.Invoke(_switcherLogic, true);
+            OnTest?.Invoke(_switcherLogic);
             _viewModel.TestButtonVisibility = Visibility.Hidden;
             _viewModel.FinishButtonVisibility = Visibility.Hidden;
             _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Visible;
@@ -211,7 +212,7 @@ namespace PhoenixSwitcher.ControlTemplates
         private void ShutDownPhoenixProcess_Click(object sender, RoutedEventArgs e)
         {
            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineInfoWindow::ShutDownPhoenixProcess_Click -> ShutOffPower button was pressed");
-            OnShutOffPower?.Invoke(_switcherLogic, false);
+            OnShutOffPower?.Invoke(_switcherLogic);
             _viewModel.TestButtonVisibility = Visibility.Visible;
             _viewModel.FinishButtonVisibility = Visibility.Visible;
             _viewModel.ShutDownPhoenixButtonVisibility = Visibility.Hidden;
@@ -242,7 +243,6 @@ namespace PhoenixSwitcher.ControlTemplates
                 // Still call finish to reset everything properly but immediatly call UpdateSelectedMachine to fill in the info again.
                 if (result == MessageBoxResult.Yes) UpdateSelectedMachine(_switcherLogic, machine);
             }
-
         }
         private void RetryEspSetup_Click(object sender, RoutedEventArgs e)
         {
