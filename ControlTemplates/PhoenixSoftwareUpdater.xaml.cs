@@ -1,6 +1,5 @@
 ﻿using System.Windows.Controls;
 
-using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 
 using PhoenixSwitcher.ViewModels;
@@ -14,7 +13,7 @@ namespace PhoenixSwitcher.ControlTemplates
     /// </summary>
     public partial class PhoenixSoftwareUpdater : UserControl
     {
-        private PhoenixSoftwareUpdaterViewModel _viewModel = new PhoenixSoftwareUpdaterViewModel();
+        private readonly PhoenixSoftwareUpdaterViewModel _viewModel = new PhoenixSoftwareUpdaterViewModel();
 
         public PhoenixSwitcherLogic PhoenixSwitcher { get; private set; }
 
@@ -33,7 +32,7 @@ namespace PhoenixSwitcher.ControlTemplates
         {
             PhoenixSwitcher.UpdateBundleFilesOnDrive();
         }
-        public async Task InitPhoenixSwitcher()
+        public async void InitPhoenixSwitcher()
         {
             await PhoenixSwitcher.Init();
             XmlProjectSettings settings = Helpers.GetProjectSettings();

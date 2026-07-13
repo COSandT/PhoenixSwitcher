@@ -21,9 +21,9 @@ namespace PhoenixSwitcher
 {
     public partial class MainWindow : Window
     {
-        private List<PhoenixSoftwareUpdater> _softwareUpdaters = new List<PhoenixSoftwareUpdater>();
-        private MainWindowViewModel _viewModel = new MainWindowViewModel();
-        private LogManager? _logManager;
+        private readonly List<PhoenixSoftwareUpdater> _softwareUpdaters = new List<PhoenixSoftwareUpdater>();
+        private readonly MainWindowViewModel _viewModel = new MainWindowViewModel();
+        private readonly LogManager? _logManager;
 
         private int _gridColumns;
         private int _gridRows;
@@ -78,7 +78,7 @@ namespace PhoenixSwitcher
             }
             base.OnClosing(e);
         }
-        private async void InitializeEspControllers()
+        private void InitializeEspControllers()
         {
             _logManager?.Log(LogLevel.Info, "MainWindow::InitializeEspControllers -> Start initializing.");
             Mouse.OverrideCursor = Cursors.Wait;
@@ -114,7 +114,7 @@ namespace PhoenixSwitcher
                     _logManager?.Log(LogLevel.Info, $"MainWindow::InitializeEspControllers -> Generating window for controller with info: {info}");
                     _softwareUpdaters.Add(updater);
                     panel.Children.Add(updater);
-                    await Task.Delay(1000);
+                    Task.Delay(1000);
                     updater.HorizontalAlignment = HorizontalAlignment.Stretch;
                     updater.VerticalAlignment = VerticalAlignment.Stretch;
                     //updater.MachineListControl.MachineListBox.SelectionChanged += OnMachineListSelectionChanged;
@@ -122,7 +122,7 @@ namespace PhoenixSwitcher
             }
 
             // Slight delay giving the stackpanels time to load so their height is set.
-            await Task.Delay(500);
+            Task.Delay(500);
             UpdateGridSize();
             SoftwareUpdaterGrid.Visibility = Visibility.Visible;
 
@@ -132,7 +132,7 @@ namespace PhoenixSwitcher
             UpdatePcmMachineList(); 
             foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
             {
-                await updater.InitPhoenixSwitcher();
+                updater.InitPhoenixSwitcher();
             }
             Mouse.OverrideCursor = null;
         }
@@ -227,9 +227,9 @@ namespace PhoenixSwitcher
         private void ChangeSettings_Click(object sender, RoutedEventArgs e)
         {
             _logManager?.Log(LogLevel.Info, "MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
-            SettingsWindow settingsWindow = new SettingsWindow();
 
-            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings");
+            //XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings");
+            SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.Topmost = true;
             settingsWindow.ShowDialog();
 

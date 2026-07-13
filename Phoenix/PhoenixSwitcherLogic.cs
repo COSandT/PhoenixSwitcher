@@ -510,7 +510,7 @@ namespace PhoenixSwitcher
                     try
                     {
                         // Do not delete PCMBUNDLE folders.
-                        if (folder.Contains("PCMBUNDLE_")) continue;
+                        if (folder.Contains("PCMBUNDLE_") || folder.Contains(_phoenixFileName)) continue;
 
                         // Do not delete system folders. Let windows deal with this.
                         if (folder.Contains("System Volume Information")

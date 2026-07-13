@@ -19,7 +19,7 @@ namespace PhoenixSwitcher.ControlTemplates
     /// </summary>
     public partial class MachineInfoWindow : UserControl
     {
-        private MachineInfoWindowViewModel _viewModel = new MachineInfoWindowViewModel();
+        private readonly MachineInfoWindowViewModel _viewModel = new MachineInfoWindowViewModel();
         private PhoenixSwitcherDone _selectedMachineInfo = new PhoenixSwitcherDone();
         private PhoenixSwitcherLogic? _switcherLogic = null;
         private XmlMachinePCM? _selectedMachine = new XmlMachinePCM();

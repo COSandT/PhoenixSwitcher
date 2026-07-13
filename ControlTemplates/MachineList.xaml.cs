@@ -24,7 +24,6 @@ namespace PhoenixSwitcher.ControlTemplates
 
         private XmlMachinePCM? _selectedMachine = null;
         private XmlProductionDataPCM? _pcmMachineList;
-        private bool _bIsUpdatingSelectedItem = false;
 
         public delegate void MachineSelectedHandler(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? selectedMachinePCMProductionData);
         public static event MachineSelectedHandler? OnMachineSelected;
@@ -232,7 +231,7 @@ namespace PhoenixSwitcher.ControlTemplates
                 OnMachineSelected?.Invoke(settings.bShouldSelectPCMForAll ? null : _switcherLogic, machine);
 
                 Internal_UpdateVisualSelection(machine);
-                Internal_SaveSelectionSetting(machine);
+                //Internal_SaveSelectionSetting(machine);
 
                 if (machine != null && machine.DT == 1.ToString())
                 {
@@ -274,7 +273,7 @@ namespace PhoenixSwitcher.ControlTemplates
         }
         private bool Internal_CanSelectMachine(bool showMessage)
         {
-            string fallbackText = string.Empty;
+            string fallbackText;
             XmlProjectSettings settings = Helpers.GetProjectSettings();
             _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_CanSelectMachine -> Checking if we can select machine.");
             if (_switcherLogic != null)
