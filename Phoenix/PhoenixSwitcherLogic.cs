@@ -412,7 +412,7 @@ namespace PhoenixSwitcher
             else
             {
                 _logManager?.Log(LogLevel.Warn, $"{_boxText}PhoenixSwitcherLogic::SetupEspController -> Attempting to connect without ComportID");
-                await _espController.Connect(EspInfo.EspID);
+                _espController.Connect(int.Parse(EspInfo.EspID));
             }
 
             if (!_espController.IsConnected)
