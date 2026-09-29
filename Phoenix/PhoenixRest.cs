@@ -7,15 +7,16 @@ using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Rest;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+using RestClient = RestSharp.RestClient;
 
-namespace PhoenixSwitcher
+namespace PhoenixSwitcher.Phoenix
 {
     public class PhoenixRest
     {
         private static PhoenixRest? _instance;
         private static readonly object _lock = new object();
 
-        private RestClient _restClient = new RestClient();
+        private readonly RestClient _restClient = new RestClient();
         private string _baseServerURL = "";
         public static PhoenixRest GetInstance()
         {
@@ -37,13 +38,12 @@ namespace PhoenixSwitcher
             _baseServerURL = projectSettings.RestAPIBaseURL;
             _restClient = new RestClient();
         }
-
         public async Task<bool> IsApiRunning()
         {
             try
             {
-                var result = await _restClient.GetAsync<string>(_baseServerURL + "state/");
-                if (result == "Running") return true;
+                string? result = await _restClient.GetAsync<string>("http://10.240.17.7:5063/state");
+				if (result == "Running") return true;
                 return false;
             }
             catch
@@ -51,7 +51,6 @@ namespace PhoenixSwitcher
                 return false;
             }
         }
-
         public async Task<BundleSelection?> GetPcmAppSettings(string machineType, string pcmType, string pcmGen, string displayType, string department = "croix")
         {
             try
@@ -68,7 +67,6 @@ namespace PhoenixSwitcher
                 return new BundleSelection();
             }
         }
-
         public async Task<List<FileDetail>?> GetBundleFiles()
         {
             try
@@ -80,7 +78,6 @@ namespace PhoenixSwitcher
                 return new List<FileDetail>();
             }
         }
-
         public async void PostMachineResults(PhoenixSwitcherDone machineResult)
         {
             try

@@ -1,347 +1,428 @@
-﻿using System.Collections.ObjectModel;
-using System.Reflection.PortableExecutable;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
-using CosntCommonLibrary.Settings;
-using CosntCommonLibrary.SQL.Models.PcmAppSetting;
-using CosntCommonLibrary.Tools.Logging;
+using System.Windows.Controls;
+using System.Collections.ObjectModel;
+
 using CosntCommonLibrary.Xml;
+using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.Delegates;
+using CosntCommonLibrary.SQL.Models.PcmAppSetting;
+
 using PhoenixSwitcher.Models;
+using PhoenixSwitcher.Phoenix;
+using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
 
-    public partial class MachineList : UserControl
-    {
+    public partial class MachineList : UserControl, IDisposable
+	{
         private readonly MachineListViewModel _viewModel = new MachineListViewModel();
         private PhoenixSwitcherLogic? _switcherLogic = null;
         private LogManager? _logManager;
-        private string _boxText = string.Empty;
 
+        private XmlProductionDataPCM? _pcmMachineList = null;
         private XmlMachinePCM? _selectedMachine = null;
-        private XmlProductionDataPCM? _pcmMachineList;
 
-        public delegate void MachineSelectedHandler(PhoenixSwitcherLogic? switcherLogic, XmlMachinePCM? selectedMachinePCMProductionData);
-        public static event MachineSelectedHandler? OnMachineSelected;
+		private bool _isInitialized;
+		private bool _isDisposed;
+
+		public static event Action<PhoenixSwitcherLogic?, XmlMachinePCM?>? OnMachineSelected;
 
         public MachineList()
         {
             InitializeComponent();
             this.DataContext = _viewModel;
+		}
+		private void RegisterEvents()
+		{
+			LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
+			MainWindow.OnMachineListUpdated += Internal_UpdateMachineList;
+			MachineInfoWindow.OnStartBundleProcess += OnProcessStarted;
 
-            // Setup localization for window.
-            LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
-            // Call once to setup initial language.
-            OnLanguageChanged();
-        }
-        public void Init(PhoenixSwitcherLogic switcherLogic, XmlProductionDataPCM? pcmMachineList)
-        {
-            _switcherLogic = switcherLogic;
-            _boxText = $"Box: {_switcherLogic?.EspInfo.BoxName}\t";
-            _logManager = LogManager.GetInstance();
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Init -> Start initializing MachineList.");
+			PhoenixSwitcherLogic.OnProcessFinished += OnProcessFinished;
+			PhoenixSwitcherLogic.OnProcessCancelled += OnProcessCancelled;
+			PhoenixSwitcherLogic.OnBundleUpdateStarted += OnBundleUpdateStarted;
+			PhoenixSwitcherLogic.OnBundleUpdateFinished += OnBundleUpdateFinished;
+			PhoenixSwitcherLogic.OnFinishedEspSetup += OnFinishedEspSetup;
+		}
+		private void UnregisterEvents()
+		{
+			LocalizationManager.GetInstance().OnActiveLanguageChanged -= OnLanguageChanged;
+			MainWindow.OnMachineListUpdated -= Internal_UpdateMachineList;
+			MachineInfoWindow.OnStartBundleProcess -= OnProcessStarted;
 
-            MainWindow.OnMachineListUpdated += Internal_UpdateMachineList;
-            MachineInfoWindow.OnStartBundleProcess += OnProcessStarted;
-            PhoenixSwitcherLogic.OnProcessFinished += OnProcessFinished;
-            PhoenixSwitcherLogic.OnProcessCancelled += OnProcessCancelled;
-            PhoenixSwitcherLogic.OnBundleUpdateStarted += OnBundleUpdateStarted;
-            PhoenixSwitcherLogic.OnBundleUpdateFinished += OnBundleUpdateFinished;
-            PhoenixSwitcherLogic.OnFinishedEspSetup += OnFinishedEspSetup;
+			PhoenixSwitcherLogic.OnProcessFinished -= OnProcessFinished;
+			PhoenixSwitcherLogic.OnProcessCancelled -= OnProcessCancelled;
+			PhoenixSwitcherLogic.OnBundleUpdateStarted -= OnBundleUpdateStarted;
+			PhoenixSwitcherLogic.OnBundleUpdateFinished -= OnBundleUpdateFinished;
+			PhoenixSwitcherLogic.OnFinishedEspSetup -= OnFinishedEspSetup;
 
-            LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
-            OnLanguageChanged();
+			_isInitialized = false;
+		}
+		public ObservableCollection<MachineListItem> GetListItems()
+		{
+			return _viewModel.ListViewItems;
+		}
 
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Init -> Finished initializing MachineList.");
-        }
-        
-        // Delegate bound events
-        private void OnBundleUpdateStarted(PhoenixSwitcherLogic switcherLogic)
-        {
-            _viewModel.bIsMachineListEnabled = Internal_ShouldMachineListBeActive(switcherLogic);
-        }
-        private void OnBundleUpdateFinished(PhoenixSwitcherLogic switcherLogic)
-        {
-            _viewModel.bIsMachineListEnabled = Internal_ShouldMachineListBeActive(switcherLogic);
-        }
-        private void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
-        {
-            _viewModel.bIsMachineListEnabled = Internal_ShouldMachineListBeActive(switcherLogic);
-        }
-        private void OnProcessStarted(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? selectedMachine)
-        {
-            _viewModel.bIsMachineListEnabled = Internal_ShouldMachineListBeActive(switcherLogic!);
-        }
-        private void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
-        {
-            _viewModel.bIsMachineListEnabled = Internal_ShouldMachineListBeActive(switcherLogic);
-            if (_viewModel.bIsMachineListEnabled)
-            {
-                _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::OnProcessCancelled -> Selecting reselect same machine after cancel");
-                Internal_SelectMachine(_selectedMachine);
-            }
-        }
-        private void OnProcessFinished(PhoenixSwitcherLogic switcherLogic)
-        {
-            _viewModel.bIsMachineListEnabled = Internal_ShouldMachineListBeActive(switcherLogic);
-            if (_switcherLogic != switcherLogic) return;
+		// **********
+		// Initialize
+		public void Init(PhoenixSwitcherLogic switcherLogic, XmlProductionDataPCM? pcmMachineList)
+		{
+			if (_isDisposed) return; 
+			Log(LogLevel.Info, "Init -> Start initializing MachineList.");
 
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::OnProcessFinished -> Selecting 'Null' machine to clear out info after finish.");
-            _selectedMachine = null;
-            OnMachineSelected?.Invoke(_switcherLogic, null);
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::OnProcessFinished -> Put focus on ScanBox.");
-            ScannedMachineText.Focus();
-        }
-        private void OnLanguageChanged()
-        {
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::OnLanguageChanged -> Updating text to match newly selected language.");
-            _viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
-            _viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
-        }
+			_switcherLogic = switcherLogic;
+			_pcmMachineList = pcmMachineList;
+			_logManager = LogManager.GetInstance();
+			if (_isInitialized) UnregisterEvents();
+
+			RegisterEvents();
+			UpdateLocalizedText();
+
+			if (_pcmMachineList != null) UpdateMachineList(_pcmMachineList);
+			_isInitialized = true;
+			Log(LogLevel.Info, "Init -> Finished initializing MachineList.");
+		}
 
 
-        public ObservableCollection<MachineListItem> GetListItems()
-        {
-            return _viewModel.ListViewItems;
-        }
+        // ************
+        // Localization
+		private void OnLanguageChanged()
+		{
+			if (_isDisposed) return;
 
-        // Xaml bound events
-        private async void OnScannedMachineText_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key != Key.Enter) return;
-
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::OnScannedMachineText_KeyUp -> Calling selectMachine using barcode.");
-            string barcode = ScannedMachineText.Text.Trim();
-            await Internal_SelectMachineFromText(barcode);
-
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Clearning ScanBox and refocus on it.");
-            ScannedMachineText.Clear();
-            ScannedMachineText.Focus();
-
-            e.Handled = true;
-        }
-        private void OnListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Was item selected.
-            if (e.AddedItems.Count != 1) return;
-
-            // Is item already selected.
-            MachineListItem? item = (MachineListItem?)e.AddedItems[0];
-            XmlMachinePCM? selected = (XmlMachinePCM?)item?.Tag;
-            if (selected?.N17 == _selectedMachine?.N17)
-            {
-                _logManager?.Log(LogLevel.Warn, $"MachineList::OnListView_SelectionChanged -> Machine is already selected.");
-                return;
-            }
-
-            //// Can select item.
-            //if (!Internal_CanSelectMachine(false))
-            //{
-            //    _logManager?.Log(LogLevel.Warn, $"{_boxText}MachineList::OnListView_SelectionChanged -> Cannot select a new machine when setup is ongoing. will not even bother switching selection");
-            //    return;
-            //}
-
-            _selectedMachine = selected;
-            Internal_SelectMachine(_selectedMachine);
-        }
+			Log(LogLevel.Info, "OnLanguageChanged -> Updating text to match selected language.");
+			UpdateLocalizedText();
+		}
+		private void UpdateLocalizedText()
+		{
+			_viewModel.MachineListHeaderText = Helpers.TryGetLocalizedText("ID_03_0001", "MachineList");
+			_viewModel.SelectToScanText = Helpers.TryGetLocalizedText("ID_03_0002", "-- Scan --");
+		}
 
 
-        // Internal Helpers
-        private void Internal_UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
-        {
-            _pcmMachineList = pcmMachineList;
-            if (_pcmMachineList != null)
-            {
-                _viewModel.ListViewItems.Clear();
-                _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::UpdatePcmMachineList -> Filling in listview.");
-                foreach (XmlMachinePCM pcmMachine in _pcmMachineList.Machines)
-                {
-                    MachineListItem item = new MachineListItem();
-                    item.Name = pcmMachine.N17;
-                    item.Tag = pcmMachine;
+		// *******
+		// Events
+		private void OnBundleUpdateStarted(PhoenixSwitcherLogic switcherLogic)
+		{
+			UpdateMachineListEnabledState(switcherLogic);
+		}
+		private void OnBundleUpdateFinished(PhoenixSwitcherLogic switcherLogic)
+		{
+			UpdateMachineListEnabledState(switcherLogic);
+		}
+		private void OnFinishedEspSetup(PhoenixSwitcherLogic switcherLogic, bool bSuccess)
+		{
+			UpdateMachineListEnabledState(switcherLogic);
+		}
+		private void OnProcessStarted(PhoenixSwitcherLogic? switcherLogic, PhoenixSwitcherDone? selectedMachine)
+		{
+			if (switcherLogic == null) return;
+			UpdateMachineListEnabledState(switcherLogic);
+		}
+		private void OnProcessCancelled(PhoenixSwitcherLogic switcherLogic)
+		{
+			UpdateMachineListEnabledState(switcherLogic);
+			if (!_viewModel.bIsMachineListEnabled) return;
+			Log(LogLevel.Info, "OnProcessCancelled -> Reselecting the same machine after cancellation.");
+			SelectMachine(_selectedMachine);
+		}
+		private void OnProcessFinished(PhoenixSwitcherLogic switcherLogic)
+		{
+			UpdateMachineListEnabledState(switcherLogic);
+			if (_switcherLogic != switcherLogic) return;
 
-                    _viewModel.ListViewItems.Add(item);
-                }
-            }
-        }
+			Log(LogLevel.Info, "OnProcessFinished -> Clearing selected machine.");
+			_selectedMachine = null;
+			OnMachineSelected?.Invoke(_switcherLogic, null);
+			Log(LogLevel.Info, "OnProcessFinished -> Putting focus on ScanBox.");
+			ScannedMachineText.Focus();
+		}
 
-        private async Task Internal_SelectMachineFromText(string text)
-        {
-            try
-            {
-                _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Attempting to select machine from text");
-                if (string.IsNullOrEmpty(text))
-                {
-                    _logManager?.Log(LogLevel.Error, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Text was null");
-                    return;
-                }
-                if (_pcmMachineList == null)
-                {
-                    await PhoenixRest.GetInstance().GetPCMMachineFile();
-                    if (_pcmMachineList == null)
-                    {
-                        _logManager?.Log(LogLevel.Error, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Unable to get machinelist to select item from.");
-                        return;
-                    }
-                }
 
-                XmlMachinePCM? foundMachine = null;
-                if (text.Length == 17)
-                {
-                    _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Selecting machine using VIN17");
-                    foundMachine = _pcmMachineList?.Machines.Find(mach => mach.N17 == text);
-                }
-                else if (text.Length <= 10)
-                {
-                    _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Selecting machine using VAN");
-                    while (text.Length < 10) { text = $"0{text}"; }
-                    foundMachine = _pcmMachineList?.Machines.Find(mach => mach.VAN == text);
-                }
-                else
-                {
-                    _logManager?.Log(LogLevel.Error, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Invalid text.");
-                    return;
-                }
+		// ***********
+		// XAML Events
+		private async void OnScannedMachineText_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.Key != Key.Enter)return;
 
-                Internal_SelectMachine(foundMachine);
-            }
-            catch (Exception ex)
-            {
-                _logManager?.Log(LogLevel.Error, $"{_boxText}MachineList::Internal_SelectMachineFromText -> Exception occured while selecting machine.");
-                _logManager?.LogEntireException(ex);
-            }
+			e.Handled = true;
+			string barcode = ScannedMachineText.Text.Trim();
+			Log(LogLevel.Info, $"OnScannedMachineText_KeyUp -> Selecting machine using barcode '{barcode}'.");
+			try
+			{
+				await SelectMachineFromTextAsync(barcode);
+			}
+			finally
+			{
+				ClearScanBox();
+			}
+		}
+		private void OnListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count != 1) return;
+			if (e.AddedItems[0] is not MachineListItem item) return;
+			if (item.Tag is not XmlMachinePCM machine) return;
+			if (IsSameMachine(machine, _selectedMachine))
+			{
+				Log(LogLevel.Warn, "OnListView_SelectionChanged -> Machine is already selected.");
+				return;
+			}
 
-        }
-        private void Internal_SelectMachine(XmlMachinePCM? machine)
-        {
-            try
-            {
-                if (!Internal_CanSelectMachine(true))
-                {
-                    _logManager?.Log(LogLevel.Warn, $"{_boxText}MachineList::Internal_SelectMachine -> Unable to select machine.");
-                    return;
-                }
+			_selectedMachine = machine;
+			SelectMachine(_selectedMachine);
+		}
 
-                _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_SelectMachine -> Machine was selected: {machine?.N17}");
-                XmlProjectSettings settings = Helpers.GetProjectSettings();
-                OnMachineSelected?.Invoke(settings.bShouldSelectPCMForAll ? null : _switcherLogic, machine);
 
-                Internal_UpdateVisualSelection(machine);
-                //Internal_SaveSelectionSetting(machine);
+		// ************
+		// Machine List
+		private void Internal_UpdateMachineList(object? sender, XmlProductionDataPCM? pcmMachineList)
+		{
+			_pcmMachineList = pcmMachineList;
+			UpdateMachineList(_pcmMachineList);
+		}
+		private void UpdateMachineList(XmlProductionDataPCM? pcmMachineList)
+		{
+			_viewModel.ListViewItems.Clear();
+			if (pcmMachineList == null) return;
 
-                if (machine != null && machine.DT == 1.ToString())
-                {
-                    string fallbackText = "Cannot update phoenix software for display type 1. Select new Machine.";
-                    StatusDelegates.UpdateStatus(settings.bShouldSelectPCMForAll ? null : _switcherLogic, StatusLevel.Instruction, "ID_04_0015", fallbackText);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logManager?.Log(LogLevel.Error, $"{_boxText}MachineList::Internal_SelectMachine -> Exception occured while selecting machine.");
-                _logManager?.LogEntireException(ex);
-            }
-        }
+			Log(LogLevel.Info, "UpdateMachineList -> Filling machine list.");
+			foreach (XmlMachinePCM machine in pcmMachineList.Machines)
+			{
+				_viewModel.ListViewItems.Add(CreateMachineListItem(machine));
+			}
+		}
+		private static MachineListItem CreateMachineListItem(XmlMachinePCM machine)
+		{
+			return new MachineListItem
+			{
+				Name = machine.N17,
+				Tag = machine
+			};
+		}
 
-        private bool Internal_ShouldMachineListBeActive(PhoenixSwitcherLogic switcherLogic)
-        {
-            try
-            {
-                XmlProjectSettings settings = Helpers.GetProjectSettings();
-                if (settings.bShouldSelectPCMForAll)
-                {
-                    return PhoenixSwitcherLogic.NumOngoingBundleUpdates <= 0
-                        && PhoenixSwitcherLogic.NumConnectedEspControllers >= Helpers.GetNumActiveEspController()
-                        && PhoenixSwitcherLogic.NumActiveSetups <= 0;
-                }
-                else if (switcherLogic == _switcherLogic && switcherLogic != null)
-                {
-                    return switcherLogic.HasEspConnection() && !switcherLogic.bIsUpdatingBundles 
-                        && !switcherLogic.bIsPhoenixSetupOngoing && !switcherLogic.bIsInitializingEsp;
-                }
-                return _viewModel.bIsMachineListEnabled;
-            }
-            catch (Exception ex)
-            {
-                _logManager?.Log(LogLevel.Error, $"{_boxText}MachineList::Internal_ShouldMachineListBeActive -> Exception occured while checking if machinelist hould be active.");
-                _logManager?.LogEntireException(ex);
-                return true;
-            }
-        }
-        private bool Internal_CanSelectMachine(bool showMessage)
-        {
-            string fallbackText;
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_CanSelectMachine -> Checking if we can select machine.");
-            if (_switcherLogic != null)
-            {
-                if (_switcherLogic.bIsPhoenixSetupOngoing)
-                {
-                    fallbackText = "Cannot select a new machine when ControllerBox is still initializing.";
-                    if (showMessage) Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0023", fallbackText);
-                    return false;
-                }
-                else if (!_switcherLogic.HasEspConnection())
-                {
-                    fallbackText = "Cannot select a new machine when ControllerBox is not connected.";
-                    if (showMessage) Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0024", fallbackText);
-                    return false;
-                }
-                if (_switcherLogic.bIsUpdatingBundles)
-                {
-                    fallbackText = "Cannot select a machine when bundle update is ongoing.";
-                    if (showMessage) Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0028", fallbackText);
-                    return false;
-                }
-            }
-            if (settings.bShouldSelectPCMForAll)
-            {
-                if (PhoenixSwitcherLogic.NumConnectedEspControllers < Helpers.GetNumActiveEspController())
-                {
-                    fallbackText = "Cannot select a new machine in multiselect mode when not all ControllerBoxes are ready.";
-                    if (showMessage) Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0026", fallbackText);
-                    return false;
-                }
-                else if (PhoenixSwitcherLogic.NumActiveSetups > 0)
-                {
-                    fallbackText = "Cannot select a machine in multiselect mode when a setup is still ongoing.";
-                    if (showMessage) Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_04_0027", fallbackText);
-                    return false;
-                }
-            }
-            return true;
-        }
-        private void Internal_UpdateVisualSelection(XmlMachinePCM? machine)
-        {
-            // Update visual selection in the ListBox and scroll it into view.
-            if (machine != null)
-            {
-                _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_UpdateVisualSelection -> Update visual selection inside machine list");
-                MachineListItem? targetItem = _viewModel.ListViewItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == machine.N17);
-                if (targetItem != null)
-                {
-                    MachineListBox.SelectedItem = targetItem;
-                    MachineListBox.ScrollIntoView(targetItem);
-                }
-            }
-        }
-        private void Internal_SaveSelectionSetting(XmlMachinePCM? machine)
-        {
-            if (_switcherLogic != null)
-            {
-                _logManager?.Log(LogLevel.Info, $"{_boxText}MachineList::Internal_SaveSelectionSetting -> Saving selected machine in settings.");
 
-                XmlProjectSettings settings = Helpers.GetProjectSettings();
-                foreach (EspControllerInfo espInfo in settings.EspControllers)
-                {
-                    if (espInfo != _switcherLogic.EspInfo) continue;
-                    espInfo.LastSelectedMachineN17 = machine != null ? machine.N17 : "";
-                    settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
-                }
-            }
-        }
-    }
+		// *****************
+		// Machine Selection
+		private async Task SelectMachineFromTextAsync(string text)
+		{
+			try
+			{
+				if (string.IsNullOrWhiteSpace(text))
+				{
+					Log(LogLevel.Warn, "SelectMachineFromText -> Scan text was empty.");
+					return;
+				}
+
+				XmlProductionDataPCM? machineList = await EnsureMachineListLoadedAsync();
+
+				if (machineList == null)
+				{
+					Log(LogLevel.Error, "SelectMachineFromText -> Unable to load machine list.");
+					return;
+				}
+
+				XmlMachinePCM? machine = FindMachineFromScanText(machineList, text.Trim());
+				if (machine == null)
+				{
+					Log(LogLevel.Warn, $"SelectMachineFromText -> No machine found for '{text}'.");
+					return;
+				}
+
+				SelectMachine(machine);
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, "SelectMachineFromText -> Exception occurred while selecting machine.");
+				_logManager?.LogEntireException(ex);
+			}
+		}
+		private async Task<XmlProductionDataPCM?> EnsureMachineListLoadedAsync()
+		{
+			if (_pcmMachineList != null) return _pcmMachineList;
+			Log(LogLevel.Info, "EnsureMachineListLoaded -> Machine list not loaded. Requesting machine file.");
+			await PhoenixRest.GetInstance().GetPCMMachineFile();
+			return _pcmMachineList;
+		}
+		private XmlMachinePCM? FindMachineFromScanText(XmlProductionDataPCM machineList, string text)
+		{
+			if (text.Length == 17)
+			{
+				Log(LogLevel.Info, "FindMachineFromScanText -> Selecting machine using VIN17.");
+				return machineList.Machines.Find(machine => machine.N17 == text);
+			}
+
+			if (text.Length <= 10)
+			{
+				Log(LogLevel.Info, "FindMachineFromScanText -> Selecting machine using VAN.");
+				string van = text.PadLeft(10, '0');
+				return machineList.Machines.Find(machine => machine.VAN == van);
+			}
+
+			Log(LogLevel.Warn, "FindMachineFromScanText -> Invalid scan text.");
+			return null;
+		}
+		private void SelectMachine(XmlMachinePCM? machine)
+		{
+			try
+			{
+				if (!CanSelectMachine(showMessage: true))
+				{
+					Log(LogLevel.Warn, "SelectMachine -> Unable to select machine.");
+					return;
+				}
+
+				Log(LogLevel.Info, $"SelectMachine -> Machine selected: {machine?.N17 ?? "null"}.");
+				XmlProjectSettings settings = Helpers.GetProjectSettings();
+				PhoenixSwitcherLogic? targetSwitcher = settings.bShouldSelectPCMForAll ? null : _switcherLogic;
+
+				OnMachineSelected?.Invoke(targetSwitcher, machine);
+				UpdateVisualSelection(machine);
+				ShowDisplayTypeWarningIfRequired(machine, targetSwitcher);
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, "SelectMachine -> Exception occurred while selecting machine.");
+				_logManager?.LogEntireException(ex);
+			}
+		}
+		private static void ShowDisplayTypeWarningIfRequired(XmlMachinePCM? machine, PhoenixSwitcherLogic? targetSwitcher)
+		{
+			if (machine == null || machine.DT != "1") return; 
+			const string fallbackText = "Cannot update phoenix software for display type 1. Select new Machine.";
+			StatusDelegates.UpdateStatus(targetSwitcher, StatusLevel.Instruction, "ID_04_0015", fallbackText);
+		}
+		private bool CanSelectMachine(bool showMessage)
+		{
+			XmlProjectSettings settings = Helpers.GetProjectSettings();
+			Log(LogLevel.Info, "CanSelectMachine -> Checking whether machine selection is allowed.");
+			if (_switcherLogic != null && !CanSelectMachineForSwitcher(_switcherLogic, showMessage)) return false;
+			if (!settings.bShouldSelectPCMForAll) return true;
+			return CanSelectMachineForMultiSelect(showMessage);
+		}
+		private static bool CanSelectMachineForSwitcher(PhoenixSwitcherLogic switcherLogic, bool showMessage)
+		{
+			if (switcherLogic.IsPhoenixSetupOngoing)
+			{
+				ShowSelectionError(showMessage, "ID_04_0023", "Cannot select a new machine when ControllerBox is still initializing.");
+				return false;
+			}
+			if (!switcherLogic.HasEspConnection())
+			{
+				ShowSelectionError(showMessage, "ID_04_0024", "Cannot select a new machine when ControllerBox is not connected.");
+				return false;
+			}
+			if (switcherLogic.IsUpdatingBundles)
+			{
+				ShowSelectionError(showMessage, "ID_04_0028", "Cannot select a machine when bundle update is ongoing.");
+				return false;
+			}
+			return true;
+		}
+		private static bool CanSelectMachineForMultiSelect(bool showMessage)
+		{
+			int connectedControllers = PhoenixSwitcherLogic.ConnectedEspControllers;
+			int requiredControllers = Helpers.GetNumActiveEspController();
+			if (connectedControllers < requiredControllers)
+			{
+				ShowSelectionError(showMessage, "ID_04_0026","Cannot select a new machine in multiselect mode when not all ControllerBoxes are ready.");
+				return false;
+			}
+
+			if (PhoenixSwitcherLogic.ActiveSetups > 0)
+			{
+				ShowSelectionError(showMessage,"ID_04_0027","Cannot select a machine in multiselect mode when a setup is still ongoing.");
+				return false;
+			}
+			return true;
+		}
+		private static void ShowSelectionError(bool showMessage, string localizationId, string fallbackText)
+		{
+			if (!showMessage)return;
+			Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, localizationId,fallbackText);
+		}
+		private void UpdateVisualSelection(XmlMachinePCM? machine)
+		{
+			if (machine == null) return;
+
+			Log(LogLevel.Info, "UpdateVisualSelection -> Updating visual selection inside machine list.");
+			MachineListItem? targetItem = _viewModel.ListViewItems.FirstOrDefault(item => (item.Tag as XmlMachinePCM)?.N17 == machine.N17);
+			if (targetItem == null) return;
+
+			MachineListBox.SelectedItem = targetItem;
+			MachineListBox.ScrollIntoView(targetItem);
+		}
+		private static bool IsSameMachine(XmlMachinePCM? first, XmlMachinePCM? second)
+		{
+			if (first == null || second == null) return first == second;
+			return string.Equals(first.N17, second.N17, StringComparison.Ordinal);
+		}
+		private void ClearScanBox()
+		{
+			Log(LogLevel.Info, "ClearScanBox -> Clearing ScanBox and restoring focus.");
+
+			ScannedMachineText.Clear();
+			ScannedMachineText.Focus();
+		}
+
+
+		// ******************
+		// Machine List State
+		private void UpdateMachineListEnabledState(PhoenixSwitcherLogic switcherLogic)
+		{
+			_viewModel.bIsMachineListEnabled = ShouldMachineListBeActive(switcherLogic);
+		}
+		private bool ShouldMachineListBeActive(PhoenixSwitcherLogic switcherLogic)
+		{
+			try
+			{
+				XmlProjectSettings settings = Helpers.GetProjectSettings();
+				if (settings.bShouldSelectPCMForAll) return IsMultiSelectMachineListActive();
+				if (switcherLogic == _switcherLogic && switcherLogic != null) return IsSingleSelectMachineListActive(switcherLogic);
+				return _viewModel.bIsMachineListEnabled;
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, "ShouldMachineListBeActive -> Exception occurred while checking machine list state.");
+				_logManager?.LogEntireException(ex);
+				return true;
+			}
+		}
+		private static bool IsMultiSelectMachineListActive()
+		{
+			return PhoenixSwitcherLogic.OngoingBundleUpdates <= 0
+				   && PhoenixSwitcherLogic.ConnectedEspControllers >= Helpers.GetNumActiveEspController()
+				   && PhoenixSwitcherLogic.ActiveSetups <= 0;
+		}
+		private static bool IsSingleSelectMachineListActive(PhoenixSwitcherLogic switcherLogic)
+		{
+			return switcherLogic.HasEspConnection()
+				   && !switcherLogic.IsUpdatingBundles
+				   && !switcherLogic.IsPhoenixSetupOngoing
+				   && !switcherLogic.IsInitializingEsp;
+		}
+
+
+		// *****
+		// Other
+		public void Dispose()
+		{
+			if (_isDisposed) return;
+			_isDisposed = true;
+
+			UnregisterEvents();
+
+			_switcherLogic = null;
+			_pcmMachineList = null;
+			_selectedMachine = null;
+			GC.SuppressFinalize(this);
+		}
+		private void Log(LogLevel level, string message)
+		{
+			_logManager?.Log(level, $"{_switcherLogic?.BoxText ?? ""}MachineList::{message}");
+		}
+	}
 }

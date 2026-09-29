@@ -1,116 +1,158 @@
 ﻿using System.Windows.Media;
 using System.Windows.Controls;
+
 using CosntCommonLibrary.Settings;
+using CosntCommonLibrary.Tools.Logging;
+
+using PhoenixSwitcher.Phoenix;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
-using CosntCommonLibrary.Tools.Logging;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
-    /// <summary>
-    /// Interaction logic for InstructionBar.xaml
-    /// </summary>
-    public partial class StatusBar : UserControl
-    {
-        private StatusBarViewModel _viewModel = new StatusBarViewModel();
-        private PhoenixSwitcherLogic? _switcherLogic = null;
-        private Status _status = new Status();
-        private string _boxText = string.Empty;
+	public enum StatusLevel
+	{
+		Instruction,
+		Status,
+		Error
+	}
 
-        // Struct holding all the status info.
-        public struct Status
-        {
-            public Status(string locaTextID, string fallbackText, bool bPersistent = false) 
-            {
-                LocalizedTextID = locaTextID;
-                FallbackText = fallbackText;
-                bIsDefault = false;
-            }
-            public readonly bool bIsDefault = true;
-            public string LocalizedTextID = "";
-            public string FallbackText = "";
-        }
+	public partial class StatusBar : UserControl
+	{
+		private readonly StatusBarViewModel _viewModel = new();
+		private readonly LogManager? _logManager;
 
-        public StatusBar()
-        {
-            InitializeComponent();
-            this.DataContext = _viewModel;
-        }
-        public void Init(PhoenixSwitcherLogic? switcherLogic)
-        {
-            _switcherLogic = switcherLogic;
-            _boxText = $"Box: {_switcherLogic?.EspInfo.BoxName}\t";
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"{_boxText}StatusBar::Init -> Initializing StatusInstructionBar.");
+		private PhoenixSwitcherLogic? _switcherLogic;
 
-            StatusDelegates.OnLocaStatusTextUpdated += UpdateStatus;
-            StatusDelegates.OnStatusPercentageUpdated += UpdateStatusPercentage;
-            StatusDelegates.OnStatusCleared += ClearStatus;
+		private Status _status = Status.Default;
 
-            // Setup localization for window.
-            LocalizationManager.GetInstance().OnActiveLanguageChanged += UpdateStatusText;
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"{_boxText}StatusBar::Init -> Finished initializing StatusInstructionBar.");
-        }
+		private string _boxText = string.Empty;
 
-        public void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaStatusId, string fallbackStatusText)
-        {
-            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            _status = new Status(locaStatusId, fallbackStatusText);
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"{_boxText}StatusBar::UpdateNewStatus -> Recieved new status: {fallbackStatusText}");
-            switch (level)
-            {
-                case StatusLevel.Instruction:
-                    _viewModel.StatusColor = Brushes.DeepSkyBlue;
-                    break;
-                case StatusLevel.Error:
-                    _viewModel.StatusColor = Brushes.Orange;
-                    break;
-                case StatusLevel.Status:
-                    default:
-                    _viewModel.StatusColor = Brushes.Gray;
-                    break;
-            }
-            UpdateStatusText();
-        }
-        public void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string text)
-        {
-            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            _status = new Status("", text);
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"{_boxText}StatusBar::UpdateNewStatus -> Recieved new status: {text}");
-            switch (level)
-            {
-                case StatusLevel.Instruction:
-                    _viewModel.StatusColor = Brushes.DeepSkyBlue;
-                    break;
-                case StatusLevel.Error:
-                    _viewModel.StatusColor = Brushes.Orange;
-                    break;
-                case StatusLevel.Status:
-                default:
-                    _viewModel.StatusColor = Brushes.Gray;
-                    break;
-            }
-            _viewModel.MainStatusText = text;
-        }
-        public void UpdateStatusPercentage(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, int newPercentage)
-        {
-            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"{_boxText}StatusBar::UpdateStatusPercentage -> Updating status percentage for specified sstatus level.");
-            int clampedPercentage = Math.Clamp(newPercentage, 0, 100);
-            _viewModel.MainStatusPercentage = clampedPercentage;
-        }
-        public void ClearStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level)
-        {
-            if (_switcherLogic != switcherLogic && switcherLogic != null) return;
-            // When we clear a status we also want to clear all the status messages of lower level.
-            LogManager.GetInstance()?.Log(LogLevel.Info, $"{_boxText}StatusBar::ClearStatus -> Clear status message of specified level and lower levels.");
-            _viewModel.MainStatusPercentage = 0;
-            _viewModel.MainStatusText = string.Empty;
-        }
+		private bool _isSubscribed;
+		private bool _isDisposed;
 
-        private void UpdateStatusText()
-        {
-            //_logger?.LogInfo($"StatusInstructionBar::UpdateStatusText -> Updating Status text for all status levels");
-            _viewModel.MainStatusText = Helpers.TryGetLocalizedText(_status.LocalizedTextID, _status.FallbackText);
-        }
-    }
+		public readonly record struct Status(string LocalizedTextId, string FallbackText)
+		{
+			public static Status Default => new(string.Empty, string.Empty);
+			public bool IsDefault => string.IsNullOrEmpty(LocalizedTextId) && string.IsNullOrEmpty(FallbackText);
+		}
+		public StatusBar()
+		{
+			InitializeComponent();
+			DataContext = _viewModel;
+			_logManager = LogManager.GetInstance();
+		}
+
+		// Init
+		public void Init(PhoenixSwitcherLogic? switcherLogic)
+		{
+			if (_isDisposed) return;
+			if (ReferenceEquals(_switcherLogic, switcherLogic))
+			{
+				SubscribeToEvents();
+				return;
+			}
+
+			UnsubscribeFromEvents();
+			_switcherLogic = switcherLogic;
+
+			string? boxName = _switcherLogic?.EspInfo?.BoxName;
+			_boxText = string.IsNullOrWhiteSpace(boxName) ? string.Empty : $"Box: {boxName}\t";
+
+			SubscribeToEvents();
+			Log(LogLevel.Info, "Init -> StatusBar initialized.");
+		}
+		
+		// Event Subscribtion
+		private void SubscribeToEvents()
+		{
+			if (_isSubscribed || _switcherLogic == null) return;
+			StatusDelegates.OnLocaStatusTextUpdated += OnStatusChanged;
+			StatusDelegates.OnStatusTextUpdated += OnStatusChanged;
+			StatusDelegates.OnStatusCleared += OnStatusCleared;
+
+			LocalizationManager.GetInstance().OnActiveLanguageChanged += UpdateStatusText;
+			_isSubscribed = true;
+		}
+		private void UnsubscribeFromEvents()
+		{
+			if (!_isSubscribed) return;
+			if (_switcherLogic != null)
+			{
+				StatusDelegates.OnLocaStatusTextUpdated += OnStatusChanged;
+				StatusDelegates.OnStatusTextUpdated += OnStatusChanged;
+				StatusDelegates.OnStatusCleared += OnStatusCleared;
+			}
+			LocalizationManager.GetInstance().OnActiveLanguageChanged -= UpdateStatusText;
+			_isSubscribed = false;
+		}
+
+		// Status Events
+		private void OnStatusChanged(PhoenixSwitcherLogic? switcher, StatusLevel level, string localizedTextId, string fallbackText)
+		{
+			if (_isDisposed || switcher != _switcherLogic) return;
+
+			_status = new Status(localizedTextId ?? string.Empty, fallbackText ?? string.Empty);
+			ApplyStatusLevel(level);
+			Log(LogLevel.Info, $"OnStatusChanged -> Received status: {_status.FallbackText}");
+			UpdateStatusText();
+		}
+		private void OnStatusChanged(PhoenixSwitcherLogic? switcher, StatusLevel level, string text)
+		{
+			if (_isDisposed || switcher != _switcherLogic) return;
+
+			_status = new Status(string.Empty, text ?? string.Empty);
+			ApplyStatusLevel(level);
+			Log(LogLevel.Info, $"OnStatusChanged -> Received status: {_status.FallbackText}");
+			_viewModel.MainStatusText = _status.FallbackText;
+		}
+		private void OnStatusCleared(PhoenixSwitcherLogic? switcher, StatusLevel level)
+		{
+			if (_isDisposed || switcher != _switcherLogic) return;
+			
+			Log(LogLevel.Info, $"OnStatusCleared -> Clearing status level: {level}.");
+			_status = Status.Default;
+			_viewModel.MainStatusPercentage = 0;
+			_viewModel.MainStatusText = string.Empty;
+		}
+		private void ApplyStatusLevel(StatusLevel level)
+		{
+			switch (level)
+			{
+				case StatusLevel.Instruction:
+					_viewModel.StatusColor = Brushes.DeepSkyBlue;
+					break;
+				case StatusLevel.Error:
+					_viewModel.StatusColor = Brushes.Orange;
+					break;
+				case StatusLevel.Status:
+					_viewModel.StatusColor = Brushes.Gray;
+					break;
+				default:
+					_viewModel.StatusColor = Brushes.Gray;
+					break;
+			}
+		}
+
+		private void UpdateStatusText()
+		{
+			if (_isDisposed) return;
+
+			_viewModel.MainStatusText = Helpers.TryGetLocalizedText(_status.LocalizedTextId, _status.FallbackText);
+		}
+
+		// Other
+		public void Dispose()
+		{
+			if (_isDisposed) return;
+
+			_isDisposed = true;
+			UnsubscribeFromEvents();
+			_switcherLogic = null;
+		}
+		private void Log(LogLevel level, string message)
+		{
+			_logManager?.Log(level, $"{_boxText}StatusBar::{message}");
+		}
+	}
 }

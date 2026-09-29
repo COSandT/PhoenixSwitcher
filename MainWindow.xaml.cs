@@ -1,349 +1,510 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Windows;
 using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
+using System.Diagnostics;
 using System.Windows.Input;
+using System.Windows.Controls;
+
 using AdonisUI;
+
+using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Helpers;
 using CosntCommonLibrary.Settings;
 using CosntCommonLibrary.Tools.Logging;
-using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
-using PhoenixSwitcher.ControlTemplates;
-using PhoenixSwitcher.Delegates;
-using PhoenixSwitcher.Models;
-using PhoenixSwitcher.ViewModels;
+
 using PhoenixSwitcher.Windows;
-using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
+using PhoenixSwitcher.Phoenix;
+using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.ViewModels;
+using PhoenixSwitcher.ControlTemplates;
 
 namespace PhoenixSwitcher
 {
     public partial class MainWindow : Window
     {
-        private readonly List<PhoenixSoftwareUpdater> _softwareUpdaters = new List<PhoenixSoftwareUpdater>();
-        private readonly MainWindowViewModel _viewModel = new MainWindowViewModel();
-        private readonly LogManager? _logManager;
+		private const string SettingsDirectory = @"C:\COSnT\PhoenixUpdater\Settings\";
+		private const string ProjectSettingsPath = @"C:\COSnT\PhoenixUpdater\Settings\ProjectSettings.xml";
+		private const string LastSuccessfulMachineListFileName = "LastSuccessfulPCMMachineList.xml";
 
-        private int _gridColumns;
-        private int _gridRows;
+		private const long DefaultGridResizeDelayMilliseconds = 1000;
 
-        private long _millisecondsToWaitGridUpdate = 1000;
-        private bool _bCanUpdateGrid = true;
+		private readonly List<PhoenixSoftwareUpdater> _softwareUpdaters = new();
+		private readonly MainWindowViewModel _viewModel = new();
+		private readonly LogManager? _logManager;
 
-        public XmlProductionDataPCM? PCMMachineList { get; private set; }
+		private int _gridColumns;
+		private int _gridRows;
 
-        public delegate void MachineListUpdated(XmlProductionDataPCM? pcmMachineList);
-        public static event MachineListUpdated? OnMachineListUpdated;
+		private long _millisecondsToWaitGridUpdate = DefaultGridResizeDelayMilliseconds;
 
-        public MainWindow()
-        {
-            InitializeComponent();
-            this.DataContext = _viewModel;
+		private bool _canUpdateGrid = true;
+		private bool _isClosing;
+		private bool _isDisposed;
 
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            LogManager.Initialize(settings.LogDirectory, settings.LogFileName);
-            LocalizationManager.Initialize("C:\\COSnT\\PhoenixUpdater\\Settings\\");
+		public XmlProductionDataPCM? PCMMachineList { get; private set; }
+		public static event EventHandler<XmlProductionDataPCM?>? OnMachineListUpdated;
 
+		public MainWindow()
+		{
+			InitializeComponent();
+			DataContext = _viewModel;
+			
+			XmlProjectSettings settings = Helpers.GetProjectSettings();
+			LogManager.Initialize(settings.LogDirectory, settings.LogFileName);
+			LocalizationManager.Initialize(SettingsDirectory);
+			_logManager = LogManager.GetInstance();
+			LogApplicationVersion();
 
-            AssemblyName ExecutingAssemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName ?? "");
-            string Major = "0", Minor = "0", Build = "0", Revision = "0";
-            if (ExecutingAssemblyName.Version != null)
-            {
-                Major = ExecutingAssemblyName.Version.Major.ToString();
-                Minor = ExecutingAssemblyName.Version.Minor.ToString();
-                Build = ExecutingAssemblyName.Version.Build.ToString();
-                Revision = ExecutingAssemblyName.Version.Revision.ToString();
-            }
-            string version = $"Version: {Major}.{Minor}.{Build}.{Revision}";
-            _logManager = LogManager.GetInstance();
-            _logManager?.Log(LogLevel.Info, "********************************\n\n\n");
-            _logManager?.Log(LogLevel.Info, "________________________________");
-            _logManager?.Log(LogLevel.Info, $"PhoenixSwitcher {version}");
-            _logManager?.Log(LogLevel.Info, "MainWindow::Constructor -> Start initializing.");
+			Log(LogLevel.Info, "Constructor -> Start initializing.");
+			UpdateTheme(settings.Theme);
+			InitializeEspControllers();
+			InitializeLanguageSettings();
+			Log(LogLevel.Info, "Constructor -> Finished initializing.");
+		}
+		private void SubscribeToEvents()
+		{
+			LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
+		}
+		private void UnsubscribeFromEvents()
+		{
+			LocalizationManager.GetInstance().OnActiveLanguageChanged -= OnLanguageChanged;
+		}
+		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		{
+			if (_isClosing)
+			{
+				base.OnClosing(e);
+				return;
+			}
 
-            Internal_UpdateTheme(settings.Theme);
-            InitializeEspControllers();
-            InitLanguageSettings();
+			_isClosing = true;
 
-            _logManager?.Log(LogLevel.Info, "MainWindow::Constructor -> Finished initializing.");
-        }
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            //close logic here
-            _logManager?.Log(LogLevel.Info, "MainWindow::OnClosing -> Mainwindow is closing.");
-            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
-            {
-                updater.PhoenixSwitcher?.Disconnect();
-            }
-            base.OnClosing(e);
-        }
-        private void InitializeEspControllers()
-        {
-            _logManager?.Log(LogLevel.Info, "MainWindow::InitializeEspControllers -> Start initializing.");
-            Mouse.OverrideCursor = Cursors.Wait;
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-
-            //Math to determing how many rows/columns should be made.
-            List<EspControllerInfo> activeControllers = new List<EspControllerInfo>();
-            foreach (EspControllerInfo espController in settings.EspControllers)
-            {
-                if (!espController.bIsActive) continue;
-                activeControllers.Add(espController);
-            }
-            _logManager?.Log(LogLevel.Info, $"MainWindow::InitializeEspControllers -> settings contains {activeControllers.Count} espcontrollers.");
-            SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
-            _gridRows = (int)Math.Round(Math.Sqrt(activeControllers.Count));
-            _gridColumns = (int)Math.Ceiling((double)activeControllers.Count / (double)_gridRows);
-            for (int i = 0; i < _gridRows; ++i)
-            {
-                StackPanel panel = new StackPanel();
-                SoftwareUpdaterGrid.Children.Add(panel);
-                panel.Orientation = Orientation.Horizontal;
-                panel.VerticalAlignment = VerticalAlignment.Stretch;
-                panel.HorizontalAlignment = HorizontalAlignment.Stretch;
-
-                for (int j = 0; j < _gridColumns; ++j)
-                {
-                    int index = i * _gridColumns + j;
-                    if (activeControllers.Count <= index) break;
-
-                    EspControllerInfo espController = activeControllers[index];
-                    PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(this, espController);
-                    string info = $"DriveName: {espController.DriveName}, ComID: {espController.COMPortID}, EspID: {espController.EspID}";
-                    _logManager?.Log(LogLevel.Info, $"MainWindow::InitializeEspControllers -> Generating window for controller with info: {info}");
-                    _softwareUpdaters.Add(updater);
-                    panel.Children.Add(updater);
-                    Task.Delay(1000);
-                    updater.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    updater.VerticalAlignment = VerticalAlignment.Stretch;
-                    //updater.MachineListControl.MachineListBox.SelectionChanged += OnMachineListSelectionChanged;
-                }
-            }
-
-            // Slight delay giving the stackpanels time to load so their height is set.
-            Task.Delay(500);
-            UpdateGridSize();
-            SoftwareUpdaterGrid.Visibility = Visibility.Visible;
-
-            TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours
-                , settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds
-                , 24, new Action(UpdatePcmMachineList));
-            UpdatePcmMachineList(); 
-            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
-            {
-                updater.InitPhoenixSwitcher();
-            }
-            Mouse.OverrideCursor = null;
-        }
-        private void SoftwareUpdaterGrid_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            CheckUpdateGridSize(500);
-        }
-        private async void CheckUpdateGridSize(long timer)
-        {
-            _millisecondsToWaitGridUpdate = timer;
-            if (_bCanUpdateGrid == true)
-            {
-                _bCanUpdateGrid = false;
-                while (_millisecondsToWaitGridUpdate > 0.0)
-                {
-                    Stopwatch sw = Stopwatch.StartNew();
-                    await Task.Delay(250);
-                    _millisecondsToWaitGridUpdate -= sw.ElapsedMilliseconds;
-                }
-                UpdateGridSize();
-                _bCanUpdateGrid = true;
-            }
-        }
-        private void UpdateGridSize()
-        {
-            foreach (StackPanel panel in SoftwareUpdaterGrid.Children)
-            {
-                panel.MaxHeight = GridBorder.ActualHeight / _gridRows;
-                panel.Height = GridBorder.ActualHeight / _gridRows;
-                panel.MaxWidth = GridBorder.ActualWidth;
-                panel.Width = GridBorder.ActualWidth;
-                foreach (PhoenixSoftwareUpdater updater in panel.Children)
-                {
-                    updater.MaxHeight = panel.Height;
-                    updater.MaxWidth = panel.Width / _gridColumns;
-                    updater.Height = panel.Height;
-                    updater.Width = panel.Width / _gridColumns;
-                }
-            }
-        }
+			Log(LogLevel.Info, "OnClosing -> MainWindow is closing.");
+			DisconnectSoftwareUpdaters();
+			UnsubscribeFromEvents();
+			base.OnClosing(e);
+		}
+		protected override void OnClosed(EventArgs e)
+		{
+			_isDisposed = true;
+			base.OnClosed(e);
+		}
+		private void DisconnectSoftwareUpdaters()
+		{
+			foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+			{
+				try
+				{
+					updater.PhoenixSwitcher?.Disconnect();
+				}
+				catch (Exception ex)
+				{
+					Log(LogLevel.Error, $"DisconnectSoftwareUpdaters -> Failed to disconnect updater: {ex.Message}");
+				}
+			}
+		}
 
 
-        // Init
-        public async void UpdatePcmMachineList()
-        {
-            StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
-            _logManager?.Log(LogLevel.Info, $"MainWindow::UpdatePcmMachineList -> Started updating pcm machine list.");
-            await Application.Current.Dispatcher.Invoke(async delegate
-            {
-                Mouse.OverrideCursor = Cursors.Wait;
-                try
-                {
-                    _logManager?.Log(LogLevel.Info, $"MainWindow::UpdatePcmMachineList -> Getting machine file from RestAPI");
-                    PCMMachineList = await Task.Run(() => PhoenixRest.GetInstance().GetPCMMachineFile());
-                    if (PCMMachineList == null || PCMMachineList.Machines.Count <= 0) throw new Exception("pcm machine list is null.");
-                    OnMachineListUpdated?.Invoke(PCMMachineList);
-                    PCMMachineList.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\LastSuccessfulPCMMachineList.xml");
-                }
-                catch (Exception ex)
-                {
-                    StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0005", "Failed to update pcm machine list.");
-                    _logManager?.Log(LogLevel.Error, $"MainWindow::UpdatePcmMachineList -> exception occured: {ex.Message}\nWill try to use backup list");
-                    Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
-                    XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>("LastSuccessfulPCMMachineList.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings\\");
-                    machineListSettings.Load();
-                    if (machineListSettings?.Settings?.Machines.Count > 0)
-                    {
-                        PCMMachineList = machineListSettings.Settings;
-                        OnMachineListUpdated?.Invoke(PCMMachineList);
-                    }
-                }
-                Mouse.OverrideCursor = null;
-                _logManager?.Log(LogLevel.Info, $"MainWindow::UpdatePcmMachineList -> Finished updating pcm machine list");
-            });
-        }
-        private void InitLanguageSettings()
-        {
-            foreach (string language in LocalizationManager.GetInstance().AvailableLanguages)
-            {
-                MenuItem item = new MenuItem();
-                item.Header = language;
-                item.Click += ChangeLanguage_Click;
-                item.IsCheckable = true;
-                LanguageSettings.Items.Add(item);
-            }
-            LocalizationManager.GetInstance().OnActiveLanguageChanged += OnLanguageChanged;
-            OnLanguageChanged();
-        }
+		// **********
+		// Initialize
+		private async void InitializeEspControllers()
+		{
+			Log(LogLevel.Info, "InitializeEspControllers -> Start initializing.");
+			Mouse.OverrideCursor = Cursors.Wait;
+			try
+			{
+				XmlProjectSettings settings = Helpers.GetProjectSettings();
+				List<EspControllerInfo> activeControllers = GetActiveControllers(settings);
+				Log(LogLevel.Info, $"InitializeEspControllers -> Settings contains {activeControllers.Count} active ESP controllers.");
+				
+				SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
+				ConfigureGridDimensions(activeControllers.Count);
+				CreateSoftwareUpdaterGrid(activeControllers);
+				UpdateGridSize();
+
+				SoftwareUpdaterGrid.Visibility = Visibility.Visible;
+				//ScheduleMachineListUpdate(settings);
+				await UpdatePcmMachineListAsync();
+				await InitializeSoftwareUpdaters();
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, "InitializeEspControllers -> Exception occurred while initializing ESP controllers.");
+				_logManager?.LogEntireException(ex);
+			}
+			finally
+			{
+				Mouse.OverrideCursor = null;
+			}
+		}
+		private static List<EspControllerInfo> GetActiveControllers(XmlProjectSettings settings)
+		{
+			return settings.EspControllers.Where(controller => controller.bIsActive).ToList();
+		}
+		private void ConfigureGridDimensions(int controllerCount)
+		{
+			if (controllerCount <= 0)
+			{
+				_gridRows = 0;
+				_gridColumns = 0;
+				return;
+			}
+			_gridRows = Math.Max(1, (int)Math.Round(Math.Sqrt(controllerCount)));
+			_gridColumns = Math.Max(1, (int)Math.Ceiling((double)controllerCount / _gridRows));
+		}
+		private void CreateSoftwareUpdaterGrid(List<EspControllerInfo> activeControllers)
+		{
+			SoftwareUpdaterGrid.Children.Clear();
+			if (activeControllers.Count == 0) return;
+
+			for (int row = 0; row < _gridRows; row++)
+			{
+				StackPanel panel = CreateGridRow();
+				SoftwareUpdaterGrid.Children.Add(panel);
+				for (int column = 0; column < _gridColumns; column++)
+				{
+					int index = row * _gridColumns + column;
+					if (index >= activeControllers.Count) break;
+
+					EspControllerInfo controller = activeControllers[index];
+					PhoenixSoftwareUpdater updater = CreateSoftwareUpdater(controller);
+					panel.Children.Add(updater);
+				}
+			}
+		}
+		private static StackPanel CreateGridRow()
+		{
+			return new StackPanel
+			{
+				Orientation = Orientation.Horizontal,
+				VerticalAlignment = VerticalAlignment.Stretch,
+				HorizontalAlignment = HorizontalAlignment.Stretch
+			};
+		}
+		private PhoenixSoftwareUpdater CreateSoftwareUpdater(EspControllerInfo controller)
+		{
+			PhoenixSoftwareUpdater updater = new PhoenixSoftwareUpdater(controller, PCMMachineList);
+			string info = $"DriveName: {controller.DriveName}, ComID: {controller.COMPortID}, EspID: {controller.EspID}";
+			Log(LogLevel.Info, $"CreateSoftwareUpdater -> Generating updater for controller: {info}");
+			updater.HorizontalAlignment = HorizontalAlignment.Stretch;
+			updater.VerticalAlignment = VerticalAlignment.Stretch;
+			_softwareUpdaters.Add(updater);
+			return updater;
+		}
+		//private void ScheduleMachineListUpdate(XmlProjectSettings settings)
+		//{
+		//	  TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours, settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds, 24, UpdatePcmMachineListAsync);
+		//}
+		private async Task InitializeSoftwareUpdaters()
+		{
+			foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+			{
+				try
+				{
+					await updater.InitPhoenixSwitcherAsync();
+				}
+				catch (Exception ex)
+				{
+					Log(LogLevel.Error, $"InitializeSoftwareUpdaters -> Failed to initialize updater: {ex.Message}");
+					_logManager?.LogEntireException(ex);
+				}
+			}
+		}
+		private void InitializeLanguageSettings()
+		{
+			LanguageSettings.Items.Clear();
+			foreach (string language in LocalizationManager.GetInstance().AvailableLanguages)
+			{
+				MenuItem item = new MenuItem{ Header = language, IsCheckable = true };
+				item.Click += ChangeLanguage_Click;
+				LanguageSettings.Items.Add(item);
+			}
+			SubscribeToEvents();
+			UpdateLocalizedText();
+		}
 
 
-        // Click Events
-        private void ChangeSettings_Click(object sender, RoutedEventArgs e)
-        {
-            _logManager?.Log(LogLevel.Info, "MainWindow::ChangeSettings_Click -> Change settings clicked, opening xml settings editor.");
+		// ****
+		// Grid
+		private void SoftwareUpdaterGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			ScheduleGridSizeUpdate(500);
+		}
+		private async void ScheduleGridSizeUpdate(long delayMilliseconds)
+		{
+			if (_isDisposed || _isClosing) return;
 
-            //XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings");
-            SettingsWindow settingsWindow = new SettingsWindow();
-            settingsWindow.Topmost = true;
-            settingsWindow.ShowDialog();
+			_millisecondsToWaitGridUpdate = Math.Max(0, delayMilliseconds);
+			if (!_canUpdateGrid) return;
 
-        }
-        private void ChangeLanguage_Click(object sender, RoutedEventArgs e)
-        {
-            MenuItem item = (MenuItem)sender;
-            if (item == null) return;
+			_canUpdateGrid = false;
+			try
+			{
+				while (_millisecondsToWaitGridUpdate > 0)
+				{
+					Stopwatch stopwatch = Stopwatch.StartNew();
+					await Task.Delay(250);
+					_millisecondsToWaitGridUpdate -= stopwatch.ElapsedMilliseconds;
+					if (_isDisposed || _isClosing) return;
+				}
 
-            string? newLanguage = (string?)item.Header;
-            if (newLanguage == null) return;
+				UpdateGridSize();
+			}
+			finally
+			{
+				_canUpdateGrid = true;
+			}
+		}
+		private void UpdateGridSize()
+		{
+			if (_gridRows <= 0 || _gridColumns <= 0) return; 
+			if (GridBorder.ActualHeight <= 0 || GridBorder.ActualWidth <= 0) return; 
 
-            LocalizationManager.GetInstance().SetActiveLanguage(newLanguage);
-        }
-        private void UpdateBundleFiles_Click(object sender, RoutedEventArgs e)
-        {
-            Internal_UpdateBundleFiles();
-        }
-        private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
-        {
-            UpdatePcmMachineList();
-        }
-        private void About_Click(object sender, RoutedEventArgs e)
-        {
-            _logManager?.Log(LogLevel.Info, "MainWindow::About_Click -> About button clicked, opening the about window.");
-            AboutWindow aboutWindow = new AboutWindow();
-            aboutWindow.Topmost = true;
-            aboutWindow.ShowDialog();
-        }
-        private void SwitchThemeDark_Click(object sender, RoutedEventArgs e)
-        {
-            Internal_UpdateTheme("Dark");
-        }
+			double rowHeight = GridBorder.ActualHeight / _gridRows;
+			double updaterWidth = GridBorder.ActualWidth / _gridColumns;
+			foreach (StackPanel panel in SoftwareUpdaterGrid.Children.OfType<StackPanel>())
+			{
+				panel.MaxHeight = rowHeight;
+				panel.Height = rowHeight;
+				panel.MaxWidth = GridBorder.ActualWidth;
+				panel.Width = GridBorder.ActualWidth;
+				foreach (PhoenixSoftwareUpdater updater in panel.Children.OfType<PhoenixSoftwareUpdater>())
+				{
+					updater.MaxHeight = rowHeight;
+					updater.MaxWidth = updaterWidth;
+					updater.Height = rowHeight;
+					updater.Width = updaterWidth;
+				}
+			}
+		}
 
-        private void SwitchThemeLight_Click(object sender, RoutedEventArgs e) 
-        {
-            Internal_UpdateTheme("Light");
-        }
 
-        // Other
-        private void OnLanguageChanged()
-        {
-            _logManager?.Log(LogLevel.Info, "MainWindow::OnLanguageChanged -> Updating localized text to newly selected language.");
-            _viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoenix Switcher");
-            _viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0002", "Settings");
-            _viewModel.ProgramSettingsText = Helpers.TryGetLocalizedText("ID_01_0003", "Program Settings");
-            _viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0004", "Languages");
-            _viewModel.HelpText = Helpers.TryGetLocalizedText("ID_01_0005", "UpdateBundleFiles");
-            _viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0006", "UpdateMachineList");
-            _viewModel.UpdateText = Helpers.TryGetLocalizedText("ID_01_0007", "UpdateBundleFiles");
-            _viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateBundleFiles");
-            _viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateMachineList");
-            _viewModel.ThemeText = Helpers.TryGetLocalizedText("ID_01_0010", "Theme");
-            _viewModel.DarkModeText = Helpers.TryGetLocalizedText("ID_01_0011", "Dark Mode");
-            _viewModel.LightModeText = Helpers.TryGetLocalizedText("ID_01_0012", "Light Mode");
+		// ************
+		// Machine List
+		public async Task UpdatePcmMachineListAsync()
+		{
+			if (_isDisposed || _isClosing) return; 
 
-            foreach (MenuItem item in LanguageSettings.Items)
-            {
-                string? language = (string?)item.Header;
-                item.IsChecked = language == LocalizationManager.GetInstance().GetActiveLanguage();
-            }
-        }
-        private void OnMachineListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            if (settings == null || !settings.bShouldSelectPCMForAll) return;
-            if (e.AddedItems.Count <= 0) return;
+			StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0004", "Updating pcm machine list, please wait.");
+			Log(LogLevel.Info, "UpdatePcmMachineList -> Started updating PCM machine list.");
+			Mouse.OverrideCursor = Cursors.Wait;
+			try
+			{
+				Log(LogLevel.Info, "UpdatePcmMachineList -> Getting machine file from REST API.");
+				if (!await PhoenixRest.GetInstance().IsApiRunning())
+				{
+					Log(LogLevel.Error, "UpdatePcmMachineList -> REST API is not running is required for both machine list and getting correct bundles.");
+					Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_Unknown", "REST API is not running, pls contact ur system administrators.");
+					TryLoadBackupMachineList();
+				}
+				else
+				{
+					XmlProductionDataPCM? machineList = await PhoenixRest.GetInstance().GetPCMMachineFile();
+					if (machineList == null || machineList.Machines.Count == 0) throw new InvalidOperationException("PCM machine list is null or empty.");
 
-            // Select the same object for all machinelists
-            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
-            {
-                MachineList machineList = updater.MachineListControl;
-                ObservableCollection<MachineListItem> listItems = machineList.GetListItems();
+					PCMMachineList = machineList;
+					OnMachineListUpdated?.Invoke(this, PCMMachineList);
+					SaveSuccessfulMachineList(PCMMachineList);
+					Log(LogLevel.Info, "UpdatePcmMachineList -> Successfully updated PCM machine list.");
+				}
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, $"UpdatePcmMachineList -> Failed to update PCM machine list: {ex.Message}");
+				_logManager?.LogEntireException(ex);
+				StatusDelegates.UpdateStatus(null, StatusLevel.Status, "ID_03_0005", "Failed to update pcm machine list.");
+				Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_0005", "Failed to update pcm machine list. Will try to use backup list.");
+				TryLoadBackupMachineList();
+			}
+			finally
+			{
+				Mouse.OverrideCursor = null;
+				Log(LogLevel.Info, "UpdatePcmMachineList -> Finished updating PCM machine list.");
+			}
+		}
+		private void SaveSuccessfulMachineList(XmlProductionDataPCM machineList)
+		{
+			try
+			{
+				string path = System.IO.Path.Combine(SettingsDirectory, LastSuccessfulMachineListFileName);
+				machineList.TrySave(path);
+				Log(LogLevel.Info, $"SaveSuccessfulMachineList -> Saved machine list to '{path}'.");
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Warn, $"SaveSuccessfulMachineList -> Failed to save backup machine list: {ex.Message}");
+			}
+		}
+		private void TryLoadBackupMachineList()
+		{
+			try
+			{
+				Log(LogLevel.Info, "TryLoadBackupMachineList -> Attempting to load last successful machine list.");
+				XmlSettingsHelper<XmlProductionDataPCM> machineListSettings = new XmlSettingsHelper<XmlProductionDataPCM>(LastSuccessfulMachineListFileName, SettingsDirectory);
+				machineListSettings.Load();
+				XmlProductionDataPCM? backup = machineListSettings.Settings;
+				if (backup?.Machines.Count <= 0)
+				{
+					Log(LogLevel.Warn, "TryLoadBackupMachineList -> Backup machine list is empty.");
+					return;
+				}
 
-                MachineListItem? targetItem = listItems.FirstOrDefault(i => (i.Tag as XmlMachinePCM)?.N17 == ((e.AddedItems[0] as MachineListItem)?.Tag as XmlMachinePCM)?.N17);
-                if (targetItem != null && targetItem.Tag is XmlMachinePCM
-                    && machineList.MachineListBox.SelectedItem != targetItem)
-                {
-                    machineList.MachineListBox.SelectedItem = targetItem;
-                    machineList.MachineListBox.ScrollIntoView(targetItem);
-                }
-            }
-        }
+				PCMMachineList = backup;
+				OnMachineListUpdated?.Invoke(this, PCMMachineList);
+				Log(LogLevel.Info, "TryLoadBackupMachineList -> Successfully loaded backup machine list.");
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, $"TryLoadBackupMachineList -> Failed to load backup machine list: {ex.Message}");
+				_logManager?.LogEntireException(ex);
+			}
+		}
 
-        private void Internal_UpdateBundleFiles()
-        {
-            foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
-            {
-                updater.UpdateBundleFiles();
-            }
-        }
-        private void Internal_UpdateTheme(string theme)
-        {
-            XmlProjectSettings settings = Helpers.GetProjectSettings();
-            Uri colorScheme;
-            switch (theme)
-            {
-                case "Light":
-                    colorScheme = ResourceLocator.LightColorScheme;
-                    settings.Theme = theme;
-                    DarkButton.IsChecked = false;
-                    LightButton.IsChecked = true;
-                    break;
-                case "Dark":
-                default:
-                    colorScheme = ResourceLocator.DarkColorScheme;
-                    settings.Theme = "Dark";
-                    DarkButton.IsChecked = true;
-                    LightButton.IsChecked = false;
-                    break;
-            }
-            ResourceLocator.SetColorScheme(Application.Current.Resources, colorScheme);
-            settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
-        }
 
-    }
+		// ************
+		// Click Events
+		private void ChangeSettings_Click(object sender, RoutedEventArgs e)
+		{
+			Log(LogLevel.Info, "ChangeSettings_Click -> Opening settings editor.");
+			SettingsWindow settingsWindow = new SettingsWindow{ Topmost = true };
+			settingsWindow.ShowDialog();
+		}
+		private void ChangeLanguage_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is not MenuItem item) return;
+			if (item.Header is not string language || string.IsNullOrWhiteSpace(language)) return;
+
+			LocalizationManager.GetInstance().SetActiveLanguage(language);
+		}
+		private void UpdateBundleFiles_Click(object sender, RoutedEventArgs e)
+		{
+			UpdateBundleFiles();
+		}
+		private async void UpdateMachineList_Click(object sender, RoutedEventArgs e)
+		{
+			await UpdatePcmMachineListAsync();
+		}
+		private void About_Click(object sender, RoutedEventArgs e)
+		{
+			Log(LogLevel.Info, "About_Click -> Opening About window.");
+			AboutWindow aboutWindow = new AboutWindow{ Topmost = true };
+			aboutWindow.ShowDialog();
+		}
+		private void SwitchThemeDark_Click(object sender, RoutedEventArgs e)
+		{
+			UpdateTheme("Dark");
+		}
+		private void SwitchThemeLight_Click(object sender, RoutedEventArgs e)
+		{
+			UpdateTheme("Light");
+		}
+		private void UpdateTheme(string theme)
+		{
+			XmlProjectSettings settings = Helpers.GetProjectSettings();
+			Uri colorScheme;
+			switch (theme)
+			{
+				case "Light":
+					colorScheme = ResourceLocator.LightColorScheme;
+					settings.Theme = "Light";
+					DarkButton.IsChecked = false;
+					LightButton.IsChecked = true;
+					break;
+				case "Dark":
+				default:
+					colorScheme = ResourceLocator.DarkColorScheme;
+					settings.Theme = "Dark";
+					DarkButton.IsChecked = true;
+					LightButton.IsChecked = false;
+					break;
+			}
+
+			ResourceLocator.SetColorScheme(Application.Current.Resources, colorScheme);
+			try
+			{
+				settings.TrySave(ProjectSettingsPath);
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, $"UpdateTheme -> Failed to save theme settings: {ex.Message}");
+			}
+		}
+
+
+		// ************
+		// Localization
+		private void OnLanguageChanged()
+		{
+			if (_isDisposed) return;
+
+			Log(LogLevel.Info, "OnLanguageChanged -> Updating localized text.");
+			UpdateLocalizedText();
+		}
+		private void UpdateLocalizedText()
+		{
+			_viewModel.WindowName = Helpers.TryGetLocalizedText("ID_01_0001", "Phoenix Switcher");
+			_viewModel.SettingsText = Helpers.TryGetLocalizedText("ID_01_0002", "Settings");
+			_viewModel.ProgramSettingsText = Helpers.TryGetLocalizedText("ID_01_0003", "Program Settings"); 
+			_viewModel.LanguageSettingsText = Helpers.TryGetLocalizedText("ID_01_0004", "Languages");
+			_viewModel.HelpText = Helpers.TryGetLocalizedText("ID_01_0005", "UpdateBundleFiles");
+			_viewModel.AboutText = Helpers.TryGetLocalizedText("ID_01_0006", "UpdateMachineList");
+			_viewModel.UpdateText = Helpers.TryGetLocalizedText("ID_01_0007", "UpdateBundleFiles");
+			_viewModel.UpdateBundleFilesText = Helpers.TryGetLocalizedText("ID_01_0008", "UpdateBundleFiles");
+			_viewModel.UpdateMachineListText = Helpers.TryGetLocalizedText("ID_01_0009", "UpdateMachineList");
+			_viewModel.ThemeText = Helpers.TryGetLocalizedText("ID_01_0010", "Theme");
+			_viewModel.DarkModeText = Helpers.TryGetLocalizedText("ID_01_0011", "Dark Mode");
+			_viewModel.LightModeText = Helpers.TryGetLocalizedText("ID_01_0012", "Light Mode");
+			UpdateLanguageMenuSelection();
+		}
+		private void UpdateLanguageMenuSelection()
+		{
+			string activeLanguage = LocalizationManager.GetInstance().GetActiveLanguage();
+			foreach (MenuItem item in LanguageSettings.Items.OfType<MenuItem>())
+			{
+				item.IsChecked = string.Equals(item.Header as string, activeLanguage, StringComparison.Ordinal);
+			}
+		}
+
+		// *****
+		// Other
+		private void UpdateBundleFiles()
+		{
+			Log(LogLevel.Info, "UpdateBundleFiles -> Updating bundle files for all controllers.");
+			foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
+			{
+				try
+				{
+					updater.UpdateBundleFiles();
+				}
+				catch (Exception ex)
+				{
+					Log(LogLevel.Error, $"UpdateBundleFiles -> Failed to update controller bundle files: {ex.Message}");
+					_logManager?.LogEntireException(ex);
+				}
+			}
+		}
+
+
+		// *******
+		// Logging
+		private void LogApplicationVersion()
+		{
+			string version = GetApplicationVersion();
+			_logManager?.Log(LogLevel.Spacing, "\n\n\n");
+			_logManager?.Log(LogLevel.Info, "________________________________");
+			_logManager?.Log(LogLevel.Info, $"PhoenixSwitcher {version}");
+		}
+		private static string GetApplicationVersion()
+		{
+			AssemblyName assemblyName = new AssemblyName(Assembly.GetExecutingAssembly().FullName ?? string.Empty);
+			Version? version = assemblyName.Version;
+			if (version == null) return "Version: 0.0.0.0";
+			return $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+		}
+		private void Log(LogLevel level, string message)
+		{
+			_logManager?.Log(level, $"MainWindow::{message}");
+		}
+
+	}
 }

@@ -1,30 +1,16 @@
-﻿
+﻿using PhoenixSwitcher.Phoenix;
+using PhoenixSwitcher.ControlTemplates;
 
 namespace PhoenixSwitcher.Delegates
 {
-    public enum StatusLevel
-    {
-        Instruction,
-        Status,
-        Error,
-    }
     public class StatusDelegates
-    {
-        public delegate void UpdateLocaStatusTextHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaTextId, string fallbackText);
-        public static event UpdateLocaStatusTextHandler? OnLocaStatusTextUpdated;
-        public delegate void UpdateStatusTextHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string text);
-        public static event UpdateStatusTextHandler? OnStatusTextUpdated;
+	{
+		public static event Action<PhoenixSwitcherLogic?, StatusLevel, string, string>? OnLocaStatusTextUpdated;
+		public static event Action<PhoenixSwitcherLogic?, StatusLevel, string>? OnStatusTextUpdated;
+		public static event Action<PhoenixSwitcherLogic?, StatusLevel>? OnStatusCleared;
+
         public static void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string locaTextId, string fallbackText) { OnLocaStatusTextUpdated?.Invoke(switcherLogic, level, locaTextId, fallbackText); }
         public static void UpdateStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, string text) { OnStatusTextUpdated?.Invoke(switcherLogic, level, text); }
-
-
-        public delegate void UpdateStatusPercentageHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, int newPercentage);
-        public static event UpdateStatusPercentageHandler? OnStatusPercentageUpdated;
-        public static void UpdateStatusPercentage(PhoenixSwitcherLogic? switcherLogic, StatusLevel level, int percentage) { OnStatusPercentageUpdated?.Invoke(switcherLogic, level, percentage); }
-
-
-        public delegate void ClearStatusHandler(PhoenixSwitcherLogic? switcherLogic, StatusLevel level);
-        public static event ClearStatusHandler? OnStatusCleared;
         public static void ClearStatus(PhoenixSwitcherLogic? switcherLogic, StatusLevel level) { OnStatusCleared?.Invoke(switcherLogic, level); }
 
     }
