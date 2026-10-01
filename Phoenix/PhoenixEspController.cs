@@ -28,7 +28,6 @@ namespace PhoenixSwitcher.Phoenix
 		public async Task<bool> ConnectAsync()
 		{
 			Log(LogLevel.Info, "Connect -> Starting ESP32 controller connection.");
-
 			if (_espInfo.COMPortID > 0)
 			{
 				Log(LogLevel.Info, $"Connect -> Attempting connection using COM port ID: {_espInfo.COMPortID}");

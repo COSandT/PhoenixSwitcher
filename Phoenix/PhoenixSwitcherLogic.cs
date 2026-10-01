@@ -453,7 +453,7 @@ namespace PhoenixSwitcher.Phoenix
 		{
 			if (switcherLogic != this) return;
 			
-			Log(LogLevel.Error, "TestProcess -> Switching power to Phoenix PCM.");
+			Log(LogLevel.Info, "TestProcess -> Switching power to Phoenix PCM.");
 			SwitchPowerToPhoenix(true);
 		}
 		

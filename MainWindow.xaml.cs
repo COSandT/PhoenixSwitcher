@@ -291,22 +291,13 @@ namespace PhoenixSwitcher
 			try
 			{
 				Log(LogLevel.Info, "UpdatePcmMachineList -> Getting machine file from REST API.");
-				if (!await PhoenixRest.GetInstance().IsApiRunning())
-				{
-					Log(LogLevel.Error, "UpdatePcmMachineList -> REST API is not running is required for both machine list and getting correct bundles.");
-					Helpers.ShowLocalizedOkMessageBox(Application.Current.MainWindow, "ID_03_Unknown", "REST API is not running, pls contact ur system administrators.");
-					TryLoadBackupMachineList();
-				}
-				else
-				{
-					XmlProductionDataPCM? machineList = await PhoenixRest.GetInstance().GetPCMMachineFile();
-					if (machineList == null || machineList.Machines.Count == 0) throw new InvalidOperationException("PCM machine list is null or empty.");
+				XmlProductionDataPCM? machineList = await PhoenixRest.GetInstance().GetPCMMachineFile();
+				if (machineList == null || machineList.Machines.Count == 0) throw new InvalidOperationException("PCM machine list is null or empty.");
 
-					PCMMachineList = machineList;
-					OnMachineListUpdated?.Invoke(this, PCMMachineList);
-					SaveSuccessfulMachineList(PCMMachineList);
-					Log(LogLevel.Info, "UpdatePcmMachineList -> Successfully updated PCM machine list.");
-				}
+				PCMMachineList = machineList;
+				OnMachineListUpdated?.Invoke(this, PCMMachineList);
+				SaveSuccessfulMachineList(PCMMachineList);
+				Log(LogLevel.Info, "UpdatePcmMachineList -> Successfully updated PCM machine list.");
 			}
 			catch (Exception ex)
 			{

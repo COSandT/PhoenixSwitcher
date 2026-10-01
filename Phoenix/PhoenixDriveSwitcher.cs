@@ -97,7 +97,6 @@ namespace PhoenixSwitcher.Phoenix
 			finally
 			{
 				Log(LogLevel.Info, "SwitchConnection -> Deactivating drive-switch relay.");
-
 				if (!_espController.SetRelay1(false))
 				{
 					Log(LogLevel.Error, "SwitchConnection -> Failed to deactivate drive-switch relay.");
