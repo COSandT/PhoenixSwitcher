@@ -277,23 +277,23 @@ namespace PhoenixSwitcher.Phoenix
 		}
 		private void DeleteBundles(IEnumerable<string> bundleFolders)
 		{
-			Log(LogLevel.Info, "UpdateBundleFilesInternal -> Attempting to delete old bundles from drive.");
+			Log(LogLevel.Info, "DeleteBundles -> Attempting to delete old bundles from drive.");
 			foreach (string bundleFolder in bundleFolders)
 			{
 				string bundleName = Path.GetFileName(bundleFolder);
-				Log(LogLevel.Info, $"UpdateBundleFilesInternal -> Deleting bundle: {bundleName}");
+				Log(LogLevel.Info, $"DeleteBundles -> Deleting bundle: {bundleName}");
 				Directory.Delete(bundleFolder, recursive: true);
 			}
 		}
 		private void CopyBundles(IEnumerable<string> sourceBundleFolders)
 		{
-			Log(LogLevel.Info, "UpdateBundleFilesInternal -> Attempting to copy new bundles to drive.");
+			Log(LogLevel.Info, "CopyBundles -> Attempting to copy new bundles to drive.");
 			foreach (string sourceBundleFolder in sourceBundleFolders)
 			{
 				string bundleName = Path.GetFileName(sourceBundleFolder);
 				string targetBundleFolder = Path.Combine(Drive, bundleName);
 
-				Log(LogLevel.Info, $"UpdateBundleFilesInternal -> Copying bundle: {bundleName}");
+				Log(LogLevel.Info, $"CopyBundles -> Copying bundle: {bundleName}");
 				CopyDirectory(sourceBundleFolder, targetBundleFolder);
 			}
 		}

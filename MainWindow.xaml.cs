@@ -17,6 +17,7 @@ using PhoenixSwitcher.Phoenix;
 using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.ControlTemplates;
+using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
 
 namespace PhoenixSwitcher
 {
@@ -123,8 +124,8 @@ namespace PhoenixSwitcher
 				UpdateGridSize();
 
 				SoftwareUpdaterGrid.Visibility = Visibility.Visible;
-				//ScheduleMachineListUpdate(settings);
-				await UpdatePcmMachineListAsync();
+				ScheduleMachineListUpdate(settings);
+				UpdatePcmMachineListAsync();
 				await InitializeSoftwareUpdaters();
 			}
 			catch (Exception ex)
@@ -191,10 +192,10 @@ namespace PhoenixSwitcher
 			_softwareUpdaters.Add(updater);
 			return updater;
 		}
-		//private void ScheduleMachineListUpdate(XmlProjectSettings settings)
-		//{
-		//	  TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours, settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds, 24, UpdatePcmMachineListAsync);
-		//}
+		private void ScheduleMachineListUpdate(XmlProjectSettings settings)
+		{
+			TaskScheduler.GetInstance().ScheduleTask(settings.TimeToUpdateBundleAt.Hours, settings.TimeToUpdateBundleAt.Minutes, settings.TimeToUpdateBundleAt.Seconds, 24, UpdatePcmMachineListAsync);
+		}
 		private async Task InitializeSoftwareUpdaters()
 		{
 			foreach (PhoenixSoftwareUpdater updater in _softwareUpdaters)
@@ -281,7 +282,7 @@ namespace PhoenixSwitcher
 
 		// ************
 		// Machine List
-		public async Task UpdatePcmMachineListAsync()
+		public async void UpdatePcmMachineListAsync()
 		{
 			if (_isDisposed || _isClosing) return; 
 
@@ -371,9 +372,9 @@ namespace PhoenixSwitcher
 		{
 			UpdateBundleFiles();
 		}
-		private async void UpdateMachineList_Click(object sender, RoutedEventArgs e)
+		private void UpdateMachineList_Click(object sender, RoutedEventArgs e)
 		{
-			await UpdatePcmMachineListAsync();
+			UpdatePcmMachineListAsync();
 		}
 		private void About_Click(object sender, RoutedEventArgs e)
 		{

@@ -1,8 +1,7 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
-
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 using CosntCommonLibrary.Xml;
 using CosntCommonLibrary.Settings;
@@ -10,9 +9,10 @@ using CosntCommonLibrary.Tools.Logging;
 using CosntCommonLibrary.Xml.PhoenixSwitcher;
 using CosntCommonLibrary.SQL.Models.PcmAppSetting;
 
-using PhoenixSwitcher.Phoenix;
 using PhoenixSwitcher.Delegates;
+using PhoenixSwitcher.Phoenix;
 using PhoenixSwitcher.ViewModels;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace PhoenixSwitcher.ControlTemplates
 {
@@ -330,10 +330,38 @@ namespace PhoenixSwitcher.ControlTemplates
 				PhoenixSwitcherDone result = _selectedMachineInfo;
 				Log(LogLevel.Info, "PostMachineResults -> Posting machine results to server.");
 				Task.Run(() => PhoenixRest.GetInstance().PostMachineResults(result));
+				
+				// Save result to croix server as xml
+				SavePhoenixResult(result);
 			}
 			catch (Exception ex)
 			{
 				Log(LogLevel.Warn, $"PostMachineResults -> Unable to post machine results: {ex.Message}");
+			}
+		}
+		private void SavePhoenixResult(PhoenixSwitcherDone result, string dir = "")
+		{
+			try
+			{
+				PhoenixResultXml phoenixResult = new PhoenixResultXml(result);
+				string fileName = $"{phoenixResult.Van}_PhoenixResult_Snapshot.xml";
+				string path = string.IsNullOrEmpty(dir) ? Path.Combine(Helpers.GetProjectSettings().SnapshotServerPath, fileName) : dir;
+				if (File.Exists(path))
+				{
+					phoenixResult = PhoenixResultXml.DeserializeFromFile(path);
+					phoenixResult.Num_Displays++;
+				}
+				phoenixResult.TrySave(path);
+			}
+			catch (Exception ex)
+			{
+				Log(LogLevel.Error, $"SavePhoenixResult -> Unable to save machine results on server: {ex.Message}");
+				if (string.IsNullOrEmpty(dir))
+				{
+					string path = Path.Combine(AppContext.BaseDirectory, "Snapshots_Backup");
+					Log(LogLevel.Error, $"SavePhoenixResult -> Attempting to save a backup locally at location: {path}");
+					SavePhoenixResult(result, path);
+				}
 			}
 		}
 		private void HandleFinishMachineSelection()

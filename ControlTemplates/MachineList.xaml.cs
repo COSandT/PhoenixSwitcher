@@ -218,7 +218,6 @@ namespace PhoenixSwitcher.ControlTemplates
 				}
 
 				XmlProductionDataPCM? machineList = await EnsureMachineListLoadedAsync();
-
 				if (machineList == null)
 				{
 					Log(LogLevel.Error, "SelectMachineFromText -> Unable to load machine list.");
