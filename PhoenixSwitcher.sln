@@ -9,30 +9,52 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosntCommonLibrary", "..\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CosntCommonViewLibrary", "..\CosntCommonViewLibrary\CosntCommonViewLibrary\CosntCommonViewLibrary.csproj", "{86D47B49-52C7-29BB-7064-3F56CDDEB185}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PhoenixUpdater", "..\PhoenixUpdater\PhoenixUpdater.vdproj", "{A0D416DD-606E-993B-8316-F48DC2A69B05}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Croix|Any CPU = Debug Croix|Any CPU
+		Debug Eeklo|Any CPU = Debug Eeklo|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Release Croix|Any CPU = Release Croix|Any CPU
+		Release Eeklo|Any CPU = Release Eeklo|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Debug Croix|Any CPU.ActiveCfg = Debug Croix|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Debug Croix|Any CPU.Build.0 = Debug Croix|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Debug Eeklo|Any CPU.ActiveCfg = Debug Eeklo|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Debug Eeklo|Any CPU.Build.0 = Debug Eeklo|Any CPU
 		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Release Croix|Any CPU.ActiveCfg = Release Croix|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Release Croix|Any CPU.Build.0 = Release Croix|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Release Eeklo|Any CPU.ActiveCfg = Release Eeklo|Any CPU
+		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Release Eeklo|Any CPU.Build.0 = Release Eeklo|Any CPU
 		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5339CA2B-E49F-48FF-BEA3-1FB1BFBF5FE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C38F63E9-5056-98C1-805A-96465885E898}.Debug Croix|Any CPU.ActiveCfg = Debug Croix|x64
+		{C38F63E9-5056-98C1-805A-96465885E898}.Debug Croix|Any CPU.Build.0 = Debug Croix|x64
+		{C38F63E9-5056-98C1-805A-96465885E898}.Debug Eeklo|Any CPU.ActiveCfg = Debug Eeklo|x64
+		{C38F63E9-5056-98C1-805A-96465885E898}.Debug Eeklo|Any CPU.Build.0 = Debug Eeklo|x64
 		{C38F63E9-5056-98C1-805A-96465885E898}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C38F63E9-5056-98C1-805A-96465885E898}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C38F63E9-5056-98C1-805A-96465885E898}.Release Croix|Any CPU.ActiveCfg = Release Croix|x64
+		{C38F63E9-5056-98C1-805A-96465885E898}.Release Croix|Any CPU.Build.0 = Release Croix|x64
+		{C38F63E9-5056-98C1-805A-96465885E898}.Release Eeklo|Any CPU.ActiveCfg = Release Eeklo|x64
+		{C38F63E9-5056-98C1-805A-96465885E898}.Release Eeklo|Any CPU.Build.0 = Release Eeklo|x64
 		{C38F63E9-5056-98C1-805A-96465885E898}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C38F63E9-5056-98C1-805A-96465885E898}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Debug Croix|Any CPU.ActiveCfg = Debug Croix|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Debug Croix|Any CPU.Build.0 = Debug Croix|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Debug Eeklo|Any CPU.ActiveCfg = Debug Eeklo|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Debug Eeklo|Any CPU.Build.0 = Debug Eeklo|Any CPU
 		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Release Croix|Any CPU.ActiveCfg = Release Croix|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Release Croix|Any CPU.Build.0 = Release Croix|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Release Eeklo|Any CPU.ActiveCfg = Release Eeklo|Any CPU
+		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Release Eeklo|Any CPU.Build.0 = Release Eeklo|Any CPU
 		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86D47B49-52C7-29BB-7064-3F56CDDEB185}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0D416DD-606E-993B-8316-F48DC2A69B05}.Debug|Any CPU.ActiveCfg = Debug
-		{A0D416DD-606E-993B-8316-F48DC2A69B05}.Debug|Any CPU.Build.0 = Debug
-		{A0D416DD-606E-993B-8316-F48DC2A69B05}.Release|Any CPU.ActiveCfg = Release
-		{A0D416DD-606E-993B-8316-F48DC2A69B05}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

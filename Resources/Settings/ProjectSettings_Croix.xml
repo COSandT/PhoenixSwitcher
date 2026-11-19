@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LogDirectory>\\10.240.103.7\FlexiCOS\PhoenixUpdater\Logs\</LogDirectory>
+  <LogFileName>Log</LogFileName>
+  <BundleFilesDirectory>C:\COSnT\PhoenixUpdater_Bundles\</BundleFilesDirectory>
+  <TimeToUpdateBundleAt>PT1H30M</TimeToUpdateBundleAt>
+  <LastBundleUpdateDate>2026-04-22T07:24:11.7860977+02:00</LastBundleUpdateDate>
+  <RestAPIBaseURL>http://10.240.103.7:5063/PhoenixSwitcher/</RestAPIBaseURL>
+  <ShouldSwitchDriveBeforePower>false</ShouldSwitchDriveBeforePower>
+  <DriveSwitchWaitTimeSec>15</DriveSwitchWaitTimeSec>
+  <ShouldSelectPCMForAll>true</ShouldSelectPCMForAll>
+  <Theme>Dark</Theme>
+  <LanguageSettings>
+	<LanguageFileDirectory>C:\COSnT\PhoenixUpdater\Settings\Languages\</LanguageFileDirectory>
+    <ActiveLanguage>French</ActiveLanguage>
+    <AvailableLanguages>
+      <Language>English</Language>
+      <Language>Dutch</Language>
+      <Language>French</Language>
+      <Language>Polish</Language>
+    </AvailableLanguages>
+  </LanguageSettings>
+  <ESPControllersInfoList>
+    <ESPControllerInfo>
+      <bIsActive>true</bIsActive>
+      <BoxName>ControllerBox1</BoxName>
+      <DriveName>PHOENIXD1</DriveName>
+      <EspID>AAAC</EspID>
+      <COMPortID>18</COMPortID>
+      <LastSelectedMachineN17>HAFX895LPS2123002</LastSelectedMachineN17>
+    </ESPControllerInfo>
+    <ESPControllerInfo>
+      <bIsActive>true</bIsActive>
+      <BoxName>ControllerBox2</BoxName>
+      <DriveName>PHOENIXD2</DriveName>
+      <EspID>AAAB</EspID>
+      <COMPortID>17</COMPortID>
+      <LastSelectedMachineN17>HAFX895LPS2123002</LastSelectedMachineN17>
+    </ESPControllerInfo>
+  </ESPControllersInfoList>
+</ProjectSettings>

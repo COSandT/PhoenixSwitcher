@@ -18,20 +18,22 @@ using PhoenixSwitcher.Delegates;
 using PhoenixSwitcher.ViewModels;
 using PhoenixSwitcher.ControlTemplates;
 using TaskScheduler = CosntCommonLibrary.Helpers.TaskScheduler;
+using System.IO;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PhoenixSwitcher
 {
     public partial class MainWindow : Window
     {
-		private const string SettingsDirectory = @"C:\COSnT\PhoenixUpdater\Settings\";
-		private const string ProjectSettingsPath = @"C:\COSnT\PhoenixUpdater\Settings\ProjectSettings.xml";
 		private const string LastSuccessfulMachineListFileName = "LastSuccessfulPCMMachineList.xml";
+		private string SettingsDirectory = Path.Combine(AppContext.BaseDirectory, "Settings");
 
 		private const long DefaultGridResizeDelayMilliseconds = 1000;
 
 		private readonly List<PhoenixSoftwareUpdater> _softwareUpdaters = new();
 		private readonly MainWindowViewModel _viewModel = new();
 		private readonly LogManager? _logManager;
+		private readonly XmlProjectSettings _projectSettings = Helpers.GetProjectSettings();
 
 		private int _gridColumns;
 		private int _gridRows;
@@ -50,14 +52,14 @@ namespace PhoenixSwitcher
 			InitializeComponent();
 			DataContext = _viewModel;
 			
-			XmlProjectSettings settings = Helpers.GetProjectSettings();
-			LogManager.Initialize(settings.LogDirectory, settings.LogFileName);
-			LocalizationManager.Initialize(SettingsDirectory);
-			_logManager = LogManager.GetInstance();
+			LogManager.Initialize(_projectSettings.LogDirectory, _projectSettings.LogFileName);
+            //LocalizationManager.Initialize(Path.Combine(SettingsDirectory, "Languages"));
+            LocalizationManager.Initialize(_projectSettings.LanguageSettings);
+            _logManager = LogManager.GetInstance();
 			LogApplicationVersion();
 
 			Log(LogLevel.Info, "Constructor -> Start initializing.");
-			UpdateTheme(settings.Theme);
+			UpdateTheme(_projectSettings.Theme);
 			InitializeEspControllers();
 			InitializeLanguageSettings();
 			Log(LogLevel.Info, "Constructor -> Finished initializing.");
@@ -114,8 +116,7 @@ namespace PhoenixSwitcher
 			Mouse.OverrideCursor = Cursors.Wait;
 			try
 			{
-				XmlProjectSettings settings = Helpers.GetProjectSettings();
-				List<EspControllerInfo> activeControllers = GetActiveControllers(settings);
+				List<EspControllerInfo> activeControllers = GetActiveControllers(_projectSettings);
 				Log(LogLevel.Info, $"InitializeEspControllers -> Settings contains {activeControllers.Count} active ESP controllers.");
 				
 				SoftwareUpdaterGrid.Visibility = Visibility.Hidden;
@@ -124,7 +125,7 @@ namespace PhoenixSwitcher
 				UpdateGridSize();
 
 				SoftwareUpdaterGrid.Visibility = Visibility.Visible;
-				ScheduleMachineListUpdate(settings);
+				ScheduleMachineListUpdate(_projectSettings);
 				UpdatePcmMachineListAsync();
 				await InitializeSoftwareUpdaters();
 			}
@@ -318,7 +319,7 @@ namespace PhoenixSwitcher
 		{
 			try
 			{
-				string path = System.IO.Path.Combine(SettingsDirectory, LastSuccessfulMachineListFileName);
+				string path = Path.Combine(SettingsDirectory, LastSuccessfulMachineListFileName);
 				machineList.TrySave(path);
 				Log(LogLevel.Info, $"SaveSuccessfulMachineList -> Saved machine list to '{path}'.");
 			}
@@ -392,20 +393,19 @@ namespace PhoenixSwitcher
 		}
 		private void UpdateTheme(string theme)
 		{
-			XmlProjectSettings settings = Helpers.GetProjectSettings();
 			Uri colorScheme;
 			switch (theme)
 			{
 				case "Light":
 					colorScheme = ResourceLocator.LightColorScheme;
-					settings.Theme = "Light";
+					_projectSettings.Theme = "Light";
 					DarkButton.IsChecked = false;
 					LightButton.IsChecked = true;
 					break;
 				case "Dark":
 				default:
 					colorScheme = ResourceLocator.DarkColorScheme;
-					settings.Theme = "Dark";
+					_projectSettings.Theme = "Dark";
 					DarkButton.IsChecked = true;
 					LightButton.IsChecked = false;
 					break;
@@ -413,9 +413,9 @@ namespace PhoenixSwitcher
 
 			ResourceLocator.SetColorScheme(Application.Current.Resources, colorScheme);
 			try
-			{
-				settings.TrySave(ProjectSettingsPath);
-			}
+            {
+                Helpers.SaveProjectSettings(_projectSettings);
+            }
 			catch (Exception ex)
 			{
 				Log(LogLevel.Error, $"UpdateTheme -> Failed to save theme settings: {ex.Message}");
@@ -429,6 +429,7 @@ namespace PhoenixSwitcher
 		{
 			if (_isDisposed) return;
 
+			Helpers.SaveProjectSettings(_projectSettings);
 			Log(LogLevel.Info, "OnLanguageChanged -> Updating localized text.");
 			UpdateLocalizedText();
 		}

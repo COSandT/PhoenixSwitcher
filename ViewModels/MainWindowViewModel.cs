@@ -17,7 +17,6 @@ namespace PhoenixSwitcher.ViewModels
         public string LightModeText { get; set; } = "";
         public string HelpText { get; set; } = "";
         public string AboutText { get; set; } = "";
-        public string FileEditorName { get; set; } = @"D:\Miel\Git Repos\PhoenixSwitcher\bin\Debug\net8.0-windows\Settings\ProjectSettings.xml";
         public MachineListViewModel MachineListViewModel { get; set; } = new MachineListViewModel();
     }
 }

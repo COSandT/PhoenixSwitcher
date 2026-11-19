@@ -34,10 +34,14 @@ namespace PhoenixSwitcher.ControlTemplates
 		public static event Action<PhoenixSwitcherLogic?>? OnShutOffPower;
 		public static event Action<PhoenixSwitcherLogic?>? OnTest;
 
+		private static int _displayCounter = 0;
+        private int _displayNum;
+
 		public MachineInfoWindow()
 		{
 			InitializeComponent();
 			DataContext = _viewModel;
+			_displayNum = ++_displayCounter;
 		}
 		private void SubscribeToEvents()
 		{
@@ -328,40 +332,14 @@ namespace PhoenixSwitcher.ControlTemplates
 			{
 				_selectedMachineInfo.TimeStamp = DateTime.Now;
 				PhoenixSwitcherDone result = _selectedMachineInfo;
-				Log(LogLevel.Info, "PostMachineResults -> Posting machine results to server.");
+				result.Display_num = _displayNum;
+                Log(LogLevel.Info, "PostMachineResults -> Posting machine results to server.");
 				Task.Run(() => PhoenixRest.GetInstance().PostMachineResults(result));
 				
-				// Save result to croix server as xml
-				SavePhoenixResult(result);
 			}
 			catch (Exception ex)
 			{
 				Log(LogLevel.Warn, $"PostMachineResults -> Unable to post machine results: {ex.Message}");
-			}
-		}
-		private void SavePhoenixResult(PhoenixSwitcherDone result, string dir = "")
-		{
-			try
-			{
-				PhoenixResultXml phoenixResult = new PhoenixResultXml(result);
-				string fileName = $"{phoenixResult.Van}_PhoenixResult_Snapshot.xml";
-				string path = string.IsNullOrEmpty(dir) ? Path.Combine(Helpers.GetProjectSettings().SnapshotServerPath, fileName) : dir;
-				if (File.Exists(path))
-				{
-					phoenixResult = PhoenixResultXml.DeserializeFromFile(path);
-					phoenixResult.Num_Displays++;
-				}
-				phoenixResult.TrySave(path);
-			}
-			catch (Exception ex)
-			{
-				Log(LogLevel.Error, $"SavePhoenixResult -> Unable to save machine results on server: {ex.Message}");
-				if (string.IsNullOrEmpty(dir))
-				{
-					string path = Path.Combine(AppContext.BaseDirectory, "Snapshots_Backup");
-					Log(LogLevel.Error, $"SavePhoenixResult -> Attempting to save a backup locally at location: {path}");
-					SavePhoenixResult(result, path);
-				}
 			}
 		}
 		private void HandleFinishMachineSelection()

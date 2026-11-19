@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using AdonisUI.Controls;
@@ -15,7 +16,14 @@ namespace PhoenixSwitcher
     {
         public static XmlProjectSettings GetProjectSettings()
         {
-            XmlSettingsHelper<XmlProjectSettings> projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", $"C:\\COSnT\\PhoenixUpdater\\Settings\\");
+            XmlSettingsHelper<XmlProjectSettings> projectSettings; //= new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings.xml", Path.Combine(AppContext.BaseDirectory, "Settings"));
+#if RELEASE_CROIX || DEBUG_CROIX        
+            projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings_Croix.xml", Path.Combine(AppContext.BaseDirectory, "Settings"));
+#endif
+#if RELEASE_EEKLO || DEBUG_EEKLO
+            projectSettings = new XmlSettingsHelper<XmlProjectSettings>("ProjectSettings_Eeklo.xml", Path.Combine(AppContext.BaseDirectory, "Settings"));
+#endif
+
             if (!projectSettings.Load())
             {
                 projectSettings.CreateBlank();
@@ -23,6 +31,17 @@ namespace PhoenixSwitcher
             }
             // Normally Settings should always be filled in at this point. 
             return projectSettings.Settings != null ? projectSettings.Settings : new XmlProjectSettings();
+        }
+        public static void SaveProjectSettings(XmlProjectSettings projectSettings)
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "Settings", "ProjectSettings.xml");
+#if RELEASE_CROIX || DEBUG_CROIX
+            path = Path.Combine(AppContext.BaseDirectory, "Settings", "ProjectSettings_Croix.xml");
+#endif
+#if RELEASE_EEKLO || DEBUG_EEKLO
+            path = Path.Combine(AppContext.BaseDirectory, "Settings", "ProjectSettings_Eeklo.xml");
+#endif
+            projectSettings.TrySave(path);
         }
         public static string TryGetLocalizedText(string localizedTextID, string fallBackText)
         {

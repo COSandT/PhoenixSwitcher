@@ -19,7 +19,6 @@ namespace PhoenixSwitcher.ViewModels
         public string EspControllerText { get; set; } = "";
         public string HelpText { get; set; } = "";
         public string AboutText { get; set; } = "";
-        public string FileEditorName { get; set; } = "C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml";
         public MachineListViewModel MachineListViewModel { get; set; } = new MachineListViewModel();
     }
 }

@@ -15,6 +15,7 @@
     <Authors>Miel</Authors>
     <Copyright>COS&amp;T BV</Copyright>
     <PackageIcon>Phoenix_Icon.png</PackageIcon>
+    <Configurations>Debug;Release;Release COSnT;Release Croix;Release Eeklo;Debug Eeklo;Debug Croix</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -76,7 +77,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E" />
+    <Exec Command="xcopy &quot;$(ProjectDir)Resources\Images\*.*&quot; &quot;$(TargetDir)Resources\Images\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Languages\*.*&quot; &quot;$(TargetDir)Settings\Languages\&quot; /Y /E&#xD;&#xA;xcopy &quot;$(ProjectDir)Resources\Settings\*.*&quot; &quot;$(TargetDir)Settings\&quot; /Y /E" />
   </Target>
 
 </Project>

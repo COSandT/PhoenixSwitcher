@@ -22,7 +22,6 @@ namespace PhoenixSwitcher.Phoenix
 
 		private const string PhoenixFileName = "GHMIFiles";
 		private const string BundleDirectoryPrefix = "PCMBUNDLE_";
-		private const string ProjectSettingsPath = @"C:\COSnT\PhoenixUpdater\Settings\ProjectSettings.xml";
 
 		private bool _wasInitialized;
 		private bool _disposed;
@@ -256,7 +255,7 @@ namespace PhoenixSwitcher.Phoenix
 			CopyBundles(bundlesToCopy);
 
 			settings.LastBundleUpdateDate = DateTime.Now;
-			settings.TrySave(ProjectSettingsPath);
+			Helpers.SaveProjectSettings(settings);
 
 			Log(LogLevel.Info, "UpdateBundleFilesInternal -> Bundle update completed.");
 		}

@@ -99,7 +99,7 @@ namespace PhoenixSwitcher.Windows
         private void Internal_SaveSettings()
         {
             LogManager.GetInstance()?.Log(LogLevel.Info, "SettingsWindow::Save_Click -> Attempting to save settings");
-            _settings.TrySave($"C:\\COSnT\\PhoenixUpdater\\Settings\\ProjectSettings.xml");
+            Helpers.SaveProjectSettings(_settings);
             _bHaveSettingsChanged = false;
             Helpers.ShowLocalizedOkMessageBox(this, "ID_06_0005", "File has saved. Restart is required to apply changes.");
         }
